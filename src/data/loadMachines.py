@@ -65,11 +65,11 @@ def recipesFromConfig(project_name, project_folder='projects'):
     CONFIG_FILE_PATH = Path(project_folder) / f'{project_name}'
     project_name = CONFIG_FILE_PATH.name.split('.')[0]
     with open(CONFIG_FILE_PATH, 'r') as f:
-        config = yaml.safe_load(f)
+        config = list(yaml.safe_load_all(f))[-1]
 
     user_config_path = Path(__file__).absolute().parent.parent.parent / 'config_factory_graph.yaml'
     with open(user_config_path, 'r') as f:
-        graph_config = yaml.safe_load(f)
+        graph_config = list(yaml.safe_load_all(f))[-1]
 
     # Prep recipes for graph
     recipes = []

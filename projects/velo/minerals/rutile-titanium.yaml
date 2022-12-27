@@ -1,0 +1,63 @@
+---
+Title: Rutile Dust -> Hot Titanium Processing
+Description: Easy rutile dust into titanium processing with only rutile dust input
+Metadata:
+  Creator: velo
+  Power Output: None
+  Output State: Hot
+  Output Handling: Full
+  Recycling: Full
+---
+
+- m: large chemical reactor
+  tier: HV
+  I:
+    rutile dust: 1
+    carbon dust: 2
+    chlorine: 4000
+  O:
+    carbon monoxide: 2000
+    titanium tetrachloride: 1000
+  eut: 480
+  dur: 20
+- m: electrolyzer
+  tier: MV
+  I:
+    carbon monoxide: 1000
+  O:
+    oxygen: 1000
+    '[recycle] carbon dust': 1
+  eut: 60
+  dur: 5.6
+- m: electric blast furnace
+  tier: EV
+  I:
+    magnesium dust: 2
+    titanium tetrachloride: 1000
+  O:
+    hot titanium ingot: 1
+    magnesium chloride dust: 6
+  eut: 480
+  dur: 40
+  coils: kanthal
+  heat: 2140
+  number: 1
+- m: chemical reactor
+  tier: HV
+  I:
+    magnesium chloride dust: 3
+    sodium dust: 2
+  O:
+    magnesium dust: 1
+    salt: 4
+  eut: 300
+  dur: 10
+- m: electrolyzer
+  tier: LV
+  I:
+    salt: 2
+  O:
+    '[recycle] chlorine': 1000
+    '[recycle] sodium dust': 1
+  eut: 30
+  dur: 16

@@ -1,0 +1,190 @@
+---
+Title: Epoxid Line without Phenol
+Description: Relatively fast epoxid processing line with external phenol input. Also powers itself via refinery gas.
+Metadata:
+    Creator: velo
+    Power Output: Sufficient
+    Output State: Fluid
+    Output Handling: Partial
+    Recycling: Full
+---
+
+- m: lcr # 24
+  tier: MV
+  group: epoxid
+  I:
+    epichlorohydrin: 2000
+    hydrochloric acid 1: 1000
+    phenol: 2000
+    acetone: 1000
+    sodium hydroxide 1: 6
+  O:
+    epoxid: 1000
+    salt water 1: 2000
+  eut: 30
+  dur: 24
+  # target:
+  #   epoxid: 54
+- m: lcr # 24
+  group: epichlorohydrin
+  tier: MV
+  I:
+    propene: 1000
+    water: 1000
+    chlorine 2: 4000
+    sodium hydroxide 2: 3
+  O:
+    epichlorohydrin: 1000
+    hydrochloric acid 2: 2000
+    salt water 2: 1000
+  dur: 32
+  eut: 30
+- m: electrolyzer
+  group: epichlorohydrin
+  tier: MV
+  I:
+    salt water 2: 1000
+  O:
+    sodium hydroxide 2: 3
+    '[recycle] hydrogen': 1000
+    chlorine 2: 1000
+  dur: 36
+  eut: 30
+- m: electrolyzer
+  group: epichlorohydrin
+  tier: LV
+  I:
+    hydrochloric acid 2: 1000
+  O:
+    '[recycle] hydrogen': 1000
+    chlorine 2: 1000
+  eut: 30
+  dur: 36
+- m: electrolyzer
+  group: epoxid
+  tier: MV
+  I:
+    salt water 1: 1000
+  O:
+    sodium hydroxide 1: 3
+    '[recycle] hydrogen': 1000
+    chlorine 2: 1000
+  dur: 36
+  eut: 30
+- m: distillery # 1
+  group: acetone
+  tier: MV
+  I:
+    calcium acetate solution: 500
+  O:
+    quicklime: 1
+    acetone: 500
+  eut: 120
+  dur: 4
+- m: mixer # 1
+  group: acetone
+  tier: LV
+  I:
+    acetic acid: 2000
+    quicklime: 2
+  O:
+    water waste: 1000
+    calcium acetate solution: 1000
+  eut: 16
+  dur: 4
+- m: lcr # 9
+  group: acetone
+  tier: LV
+  I:
+    ethylene: 1000
+    oxygen: 2000
+  O:
+    acetic acid: 1000
+  eut: 30
+  dur: 5
+# - m: lcr
+#   group: acetone
+#   tier: HV
+#   I:
+#     acetic acid: 2000
+#   O:
+#     acetone: 1000
+#     co2 gas: 1000
+#   eut: 480
+#   dur: 20
+
+### oil shit
+- m: distillation tower # 9
+  group: oil
+  tier: HV
+  I:
+    oil: 500
+  O:
+    sulfuric light fuel: 500
+    sulfuric gas: 600
+  eut: 480
+  dur: 1.6
+  number: 1
+- m: lcr # 4
+  group: oil
+  tier: LV
+  I:
+    sulfuric gas: 12000
+    hydrogen: 2000
+  O:
+    hydrogen sulfide: 1000
+    refinery gas: 12000
+  eut: 30
+  dur: 8
+- m: lcr # 4
+  group: oil
+  tier: LV
+  I:
+    sulfuric light fuel: 12000
+    hydrogen: 2000
+  O:
+    hydrogen sulfide: 1000
+    light fuel: 12000
+  eut: 30
+  dur: 8
+- m: fluid heater
+  group: oil
+  tier: LV
+  I:
+    water: 6
+  O:
+    steam: 960
+  eut: 30
+  dur: 1.5
+- m: oil cracker # 3
+  group: oil
+  tier: HV
+  I:
+    light fuel: 1000
+    steam: 1000
+  O:
+    ssc light fuel: 1200
+  eut: 240
+  dur: 3
+- m: distillation tower
+  group: oil
+  tier: MV
+  I:
+    ssc light fuel: 1000
+  O:
+    # You are Loved
+    benzene: 150
+    propene: 250
+    ethylene: 250
+
+    # Fuck off
+    # methane: 250
+    # ethane: 50
+    # propane: 50
+    # butadiene: 50
+    # toluene: 30
+    # butene: 65
+    # heavy fuel: 50
+    # naphtha: 100
+  eut: 120
+  dur: 6

@@ -1,0 +1,50 @@
+---
+Title: Polytetrafluoroethylene Production Line
+Description: PTFE production line with only Methane, Fluorine and Oxygen input
+Metadata:
+    Creator: velo
+    Power Output: 
+    Output State:
+    Output Handling:
+    Recycling: 
+---
+
+- m: chemical reactor
+  tier: LV
+  I:
+    hydrogen: 1000
+    fluorine: 1000
+  O:
+    hydrofluoric acid: 1000
+  dur: 3
+  eut: 7
+- m: large chemical reactor
+  tier: HV
+  I:
+    chlorine: 12000
+    methane: 2000
+    hydrofluoric acid: 4000
+  O:
+    tetrafluoroethylene: 1000
+    hydrochloric acid: 12000
+  eut: 240
+  dur: 27
+- m: electrolyzer
+  tier: LV
+  I: 
+    hydrochloric acid: 1000
+  O:
+    '[recycle] chlorine': 1000
+    '[recycle] hydrogen': 1000
+  eut: 30
+  dur: 36
+- m: chemical reactor
+  tier: MV
+  I:
+    oxygen: 1000
+    tetrafluoroethylene: 144
+  O:
+    polytetrafluoroethylene: 216
+  dur: 8
+  eut: 30
+  number: 1

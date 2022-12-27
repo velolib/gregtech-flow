@@ -1,0 +1,146 @@
+---
+Title: Slow Constant ITNT Line
+Description: Constant ITNT production for Implosion Compressor with only Heavy Oil input
+Metadata:
+    Creator: velo
+    Power Output: None
+    Output State: Item
+    Output Handling: Full
+    Recycling: Full
+---
+
+- m: chemical reactor
+  tier: HV
+  eut: 480
+  dur: 4
+  I:
+    gelled toluene: 4
+    nitration mixture: 200
+  O:
+    industrial tnt: 1
+    diluted sulfuric acid: 150
+  target:
+    industrial tnt: 0.125
+- m: fluid solidifier
+  group: toluene
+  tier: LV
+  eut: 16
+  dur: 5
+  I:
+    toluene: 100
+  O:
+    gelled toluene: 1
+- m: distillery
+  group: toluene
+  tier: LV
+  eut: 24
+  dur: 0.8
+  I:
+    heavy fuel: 10
+  O:
+    toluene: 4
+- m: chemical reactor
+  group: toluene
+  tier: LV
+  eut: 30
+  dur: 1
+  I:
+    sulfuric heavy fuel: 1000
+    hydrogen x: 250
+  O:
+    heavy fuel: 1000
+    hydrogen x sulfide: 125
+- m: electrolyzer
+  tier: MV
+  eut: 60
+  dur: 7.2
+  I:
+    hydrogen x sulfide: 1000
+  O:
+    '[recycle] hydrogen x': 2000
+    '[recycle] sulfur': 1
+- m: distillery
+  group: toluene
+  tier: MV
+  eut: 72
+  dur: 1
+  I:
+    heavy oil: 50
+  O:
+    sulfuric heavy fuel: 125
+# - m: distillery
+#   group: toluene
+#   tier: LV
+#   eut: 24
+#   dur: 2
+#   I:
+#     oil: 50
+#   O:
+#     sulfuric heavy fuel: 15
+- m: mixer
+  group: nitration
+  tier: LV
+  eut: 2
+  dur: 24
+  I:
+    sulfuric acid: 1000
+    nitric acid: 1000
+  O:
+    nitration mixture: 2000
+- m: large chemical reactor
+  group: nitration
+  tier: LV
+  eut: 30
+  dur: 16
+  I:
+    oxygen: 4000
+    ammonia: 1000
+  O:
+    nitric acid: 1000
+    water waste: 1000
+- m: chemical reactor
+  group: nitration
+  tier: HV
+  eut: 384
+  dur: 16
+  I:
+    nitrogen: 1000
+    hydrogen y: 3000
+  O:
+    ammonia: 1000
+- m: distillery
+  tier: LV
+  eut: 30
+  dur: 1.5
+  I:
+    diluted sulfuric acid: 75
+  O:
+    '[recycle] sulfuric acid': 50
+- m: centrifuge
+  group: nitration
+  tier: LV
+  I:
+    air: 10000
+  O:
+    '[recycle] nitrogen': 3900
+    oxygen: 1000
+  eut: 7
+  dur: 80
+- m: compressor
+  group: nitration
+  tier: LV
+  I: {}
+  O:
+    air: 2000
+  eut: 2
+  dur: 15
+- m: electrolyzer
+  group: nitration
+  tier: LV
+  I:
+    water: 1000
+  O:
+    hydrogen y: 2000
+    oxygen waste: 1000
+  eut: 30
+  dur: 100

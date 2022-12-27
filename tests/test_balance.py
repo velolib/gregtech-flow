@@ -9,7 +9,7 @@ from graphClasses.graph import Graph
 import json
 def loadTestConfig():
     with open('config_factory_graph.yaml', 'r') as f:
-        graph_config = yaml.safe_load(f)
+        graph_config = list(yaml.safe_load_all(f))[-1]
     return graph_config
 
 

@@ -1,0 +1,51 @@
+---
+Title: TGSless Benzene Power Plant
+Description: Benzene burning power line without TGS, and using LGTs with Shadowmetal Turbines
+Metadata:
+    Creator: velo
+    Power Output: Significant
+    Output State: Energy
+    Output Handling: Full
+    Recycling: Full
+---
+
+- m: industrial coke oven
+  tier: EV
+  I:
+    oak wood: 4
+  O:
+    charcoal: 5
+    wood tar: 375
+  eut: 96
+  dur: 6.4
+- m: fluid extractor
+  tier: MV
+  I:
+    charcoal: 1
+  O:
+    ashes: 1
+    wood tar: 100
+  eut: 16
+  dur: 1.5
+- m: distillation tower
+  tier: HV
+  I:
+    wood tar: 1000
+  O:
+    dimethylbenzene: 200
+    toluene: 75
+    benzene: 350
+    phenol: 75
+    creosote oil: 300
+  eut: 256
+  dur: 2
+  number: 6
+- m: LGT
+  tier: EV
+  I:
+    benzene: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large

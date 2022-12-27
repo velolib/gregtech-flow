@@ -18,6 +18,9 @@ try: # Linux
 except Exception: # Windows
     import pyreadline3 as readline
 
+import os
+os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
+
 
 class ProgramContext:
 
@@ -42,7 +45,7 @@ class ProgramContext:
             graph_gen = self.standardGraphGen
 
         with open('config_factory_graph.yaml', 'r') as f:
-            graph_config = yaml.safe_load(f)
+            graph_config = list(yaml.safe_load_all(f))[-1]
         
         if graph_config['USE_NEW_SOLVER']:
             graph_gen = systemOfEquationsSolverGraphGen

@@ -1,19 +1,14 @@
 # === FUNCTIONALITY SETTINGS ===
-POWER_LINE: false # Automatically burns all leftover fuels
+POWER_LINE: true # Automatically burns all leftover fuels
 DO_NOT_BURN: # If POWER_LINE is true, don't burn these
-  - toluene
   - phenol
   - hydrogen
-  - creosote oil
-  - sulfuric naphtha
-  - sulfuric gas
-  - sulfuric heavy fuel
-  - sulfuric light fuel
   - coal tar oil
   - naphtha
-  - creosote oil
   - biomass
   - oil
+  - steam
+  - creosote oil
 OUTPUT_FORMAT: png # png or pdf (pdf is searchable)
 USE_RAINBOW_EDGES: true # feature to help distinguish between overlapping edges
 DUR_FORMAT: sec # choose either "ticks" or "sec"
@@ -27,27 +22,35 @@ MAX_BOTTLENECKS: 5
 USE_NEW_SOLVER: true
 
 # === VISUALS ===
-GENERAL_FONT: arial  # nodes and edges
+GENERAL_FONT: arial # nodes and edges
 SUMMARY_FONT: arial
-GROUP_FONT: verdana
-NODE_FONTSIZE: 11
-EDGE_FONTSIZE: 10
-GROUP_FONTSIZE: 18
-BACKGROUND_COLOR: '#043742'
+GROUP_FONT: renogare
+NODE_FONTSIZE: 14
+EDGE_FONTSIZE: 13
+GROUP_FONTSIZE: 20
+BACKGROUND_COLOR: '#140e52'
 EDGECOLOR_CYCLE:
-  - '#b58900' # 'yellow'
-  - '#cb4b16' # 'orange'
-  - '#dc322f' # 'red'
-  - '#d33682' # 'magenta'
-  - '#6c71c4' # 'violet'
-  - '#268bd2' # 'blue'
-  - '#2aa198' # 'cyan'
-  - '#859900' # 'green'
-SOURCESINK_COLOR: 'ghostwhite'
-NONLOCKEDNODE_COLOR: 'lightblue2'
-LOCKEDNODE_COLOR: 'green'
-POSITIVE_COLOR: '#859900'
-NEGATIVE_COLOR: '#dc322f'
+  # - '#b58900' # 'yellow'
+  # - '#cb4b16' # 'orange'
+  # - '#dc322f' # 'red'
+  # - '#d33682' # 'magenta'
+  # - '#6c71c4' # 'violet'
+  # - '#268bd2' # 'blue'
+  # - '#2aa198' # 'cyan'
+  # - '#859900' # 'green'
+  - '#ff6961'
+  - '#ffb480'
+  - '#f8f38d'
+  - '#42d6a4'
+  - '#08cad1'
+  - '#59adf6'
+  - '#9d94ff'
+  - '#c780e8'
+SOURCESINK_COLOR: 'grey100'
+NONLOCKEDNODE_COLOR: 'lightcyan'
+LOCKEDNODE_COLOR: 'chartreuse'
+POSITIVE_COLOR: 'chartreuse'
+NEGATIVE_COLOR: 'crimson'
 
 ORIENTATION: 'TB'
 # TB: Vertical, LR: Horizontal, BT: Vertical Inverted, RL: Horizontal Inverted
@@ -56,8 +59,8 @@ ORIENTATION: 'TB'
 LINE_STYLE: 'spline'
 # [line, spline, polyline, curved] 
 
-RANKSEP: '1.25'
-NODESEP: '0.25'
+RANKSEP: '1.5'
+NODESEP: '0.5'
 # Node separation size in X/Y. 
 # This is a suggestion, the graphing algorithm will ignore numbers that are too small.
 
