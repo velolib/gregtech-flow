@@ -3,10 +3,10 @@ Title: Polytetrafluoroethylene Production Line
 Description: PTFE production line with only Methane, Fluorine and Oxygen input
 Metadata:
     Creator: velo
-    Power Output: 
-    Output State:
-    Output Handling:
-    Recycling: 
+    Power Output: None
+    Output State: Fluid
+    Output Handling: Full
+    Recycling: Full
 ---
 
 - m: chemical reactor
