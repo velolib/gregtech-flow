@@ -1,6 +1,8 @@
 # Standard libraries
 import logging
 import os
+import sys
+import argparse
 from pathlib import Path
 
 # Pypi libraries
@@ -45,7 +47,7 @@ class ProgramContext:
             graph_gen = self.standardGraphGen
 
         with open('config_factory_graph.yaml', 'r') as f:
-            graph_config = list(yaml.safe_load_all(f))[-1]
+            graph_config = yaml.safe_load(f)
         
         if graph_config['USE_NEW_SOLVER']:
             graph_gen = systemOfEquationsSolverGraphGen
@@ -76,22 +78,43 @@ class ProgramContext:
                     return completion
                 else:
                     return None
+                
+            
+            def create_graph(project_name):
+                if not project_name.endswith('.yaml'):
+                    # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
+                    # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
+                    project_name += '.yaml'
+                
+                project_relpath = projects_path / f'{project_name}'
+                
+                if project_relpath.exists():
+                    with project_relpath.open(mode='r') as f:
+                        metadata = list(yaml.safe_load_all(f))[0]
+                        cprint(f'{metadata["title"]}', 'blue')
+                        cprint(f'{metadata["description"]}', 'green')
+                    
 
-            readline.set_completer(completer)
+                    recipes = recipesFromConfig(project_name)
 
-            cprint('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', 'blue')
-            project_name = input(colored('> ', 'green'))
-            if not project_name.endswith('.yaml'):
-                # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
-                # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
-                project_name += '.yaml'
+                    if project_name.endswith('.yaml'):
+                        project_name = project_name[:-5]
 
-            recipes = recipesFromConfig(project_name)
+                    graph_gen(self, project_name, recipes, graph_config)
+                else:
+                    raise FileNotFoundError(f'[Errno 2] No such file or directory: \'{project_relpath}\'')
 
-            if project_name.endswith('.yaml'):
-                project_name = project_name[:-5]
-
-            graph_gen(self, project_name, recipes, graph_config)
+            if not len(sys.argv) > 1:
+                readline.set_completer(completer)
+                cprint('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', 'blue')
+                create_graph(input(colored('> ', 'green')))
+                
+            else:
+                parser = argparse.ArgumentParser(description='Input project path (example: "power/oil/light_fuel.yaml")')
+                parser.add_argument('projectpath')
+                args = parser.parse_args()
+                create_graph(args.projectpath)
+                break
 
 
     @staticmethod
