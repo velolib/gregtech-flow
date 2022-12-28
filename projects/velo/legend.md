@@ -2,14 +2,14 @@
 The following code block is the metadata to put on top of the .yaml files
 ```YAML
 ---
-Title:
-Description:
-Metadata:
-    Creator:
-    Power Output:
-    Output State:
-    Output Handling:
-    Recycling: 
+title:
+description:
+metadata:
+    creator:
+    power output:
+    output state:
+    output handling:
+    recycling: 
 ---
 
 ```

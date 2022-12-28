@@ -69,7 +69,7 @@ def recipesFromConfig(project_name, project_folder='projects'):
 
     user_config_path = Path(__file__).absolute().parent.parent.parent / 'config_factory_graph.yaml'
     with open(user_config_path, 'r') as f:
-        graph_config = list(yaml.safe_load_all(f))[-1]
+        graph_config = yaml.safe_load(f)
 
     # Prep recipes for graph
     recipes = []

@@ -1,12 +1,12 @@
 ---
-Title: Slow Constant ITNT Line
-Description: Constant ITNT production for Implosion Compressor with only Heavy Oil input
-Metadata:
-    Creator: velo
-    Power Output: None
-    Output State: Item
-    Output Handling: Full
-    Recycling: Full
+title: Slow Constant ITNT Line
+description: Constant ITNT production for Implosion Compressor with only Heavy Oil input
+metadata:
+    creator: velo
+    power output: None
+    output state: Item
+    output handling: Full
+    recycling: Full
 ---
 
 - m: chemical reactor

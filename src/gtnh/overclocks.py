@@ -27,7 +27,7 @@ class OverclockHandler:
                                        # USER_VOLTAGE < EUT
 
         with open('data/overclock_data.yaml', 'r') as f:
-            self.overclock_data = list(yaml.safe_load_all(f))[-1]
+            self.overclock_data = yaml.safe_load(f)
 
         self.voltages = self.overclock_data['voltage_data']['tiers']
         self.voltage_cutoffs = [32*pow(4, x) + 1 for x in range(len(self.voltages))]
@@ -307,7 +307,7 @@ class OverclockHandler:
         size = recipe.size.lower()
 
         with open('data/turbine_data.yaml', 'r') as f:
-            turbine_data = list(yaml.safe_load_all(f))[-1]
+            turbine_data = yaml.safe_load(f)
         assert fuel in turbine_data[fuel_type], f'Unsupported fuel "{fuel}"'
         assert material in turbine_data['materials'], f'Unsupported material "{material}"'
         assert size in turbine_data['rotor_size'], f'Unsupported size "{size}"'

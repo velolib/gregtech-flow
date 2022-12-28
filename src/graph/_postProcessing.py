@@ -23,7 +23,7 @@ def _addPowerLineNodes(self):
     }
 
     with open('data/power_data.yaml', 'r') as f:
-        power_data = list(yaml.safe_load_all(f))[-1]
+        power_data = yaml.safe_load(f)
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']
@@ -136,9 +136,9 @@ def _addSummaryNode(self):
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
     with open('data/misc.yaml', 'r') as f:
-        misc_data = list(yaml.safe_load_all(f))[-1]
+        misc_data = yaml.safe_load(f)
     with open('data/overclock_data.yaml', 'r') as f:
-        overclock_data = list(yaml.safe_load_all(f))[-1]
+        overclock_data = yaml.safe_load(f)
 
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']

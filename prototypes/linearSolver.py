@@ -695,9 +695,9 @@ def addPowerLineNodesV2(self):
     }
 
     with open('data/power_data.yaml', 'r') as f:
-        power_data = list(yaml.safe_load_all(f))[-1]
+        power_data = yaml.safe_load(f)
     with open('data/overclock_data.yaml', 'r') as f:
-        overclock_data = list(yaml.safe_load_all(f))[-1]
+        overclock_data = yaml.safe_load(f)
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']
