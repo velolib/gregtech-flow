@@ -113,10 +113,13 @@ class ProgramContext:
                 create_graph(input(colored('> ', 'green')))
                 
             else:
-                parser = argparse.ArgumentParser(description='Input project path (example: "power/oil/light_fuel.yaml")')
-                parser.add_argument('projectpath')
+                parser = argparse.ArgumentParser(description='Input project path')
+                parser.add_argument('project_path')
+                parser.add_argument('format_override', nargs='?', choices=['png', 'pdf'], default=None)
                 args = parser.parse_args()
-                create_graph(args.projectpath)
+                if args.format_override:
+                    graph_config['OUTPUT_FORMAT'] = args.format_override
+                create_graph(args.project_path)
                 break
 
 
