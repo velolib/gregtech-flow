@@ -253,11 +253,13 @@ def _addSummaryNode(self):
     # Create final table
     io_label = ''.join(io_label_lines)
     io_label = f'<<table border="0">{io_label}</table>>'
-
+    
     # Add to graph
     self.addNode(
         'total_io_node',
         label=io_label,
+        # invert hex
+        color='#' + self.graph_config['BACKGROUND_COLOR'][1:].lower().translate(self.graph_config['BACKGROUND_COLOR'].maketrans('0123456789abcdef', 'fedcba9876543210')),
         fillcolor=self.graph_config['BACKGROUND_COLOR'],
         shape='box'
     )

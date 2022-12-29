@@ -6,13 +6,14 @@ from src.gtnh.overclocks import OverclockHandler
 class Graph:
 
 
-    def __init__(self, graph_name, recipes, parent_context, graph_config=None):
+    def __init__(self, graph_name, recipes, parent_context, title, graph_config=None):
         self.graph_name = graph_name
         self.recipes = {str(i): x for i, x in enumerate(recipes)}
         self.nodes = {}
         self.edges = {} # uniquely defined by (machine from, machine to, ing name)
         self.parent_context = parent_context
         self.graph_config = graph_config
+        self.title = title
         if self.graph_config == None:
             self.graph_config = {}
 

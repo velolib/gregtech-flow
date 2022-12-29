@@ -1,5 +1,5 @@
-### Top-line Block
-The following code block is the metadata to put on top of the .yaml files
+## YAML Header
+The following code block is the header YAML document to put on top. This is not required for the program to run.
 ```YAML
 ---
 title:
@@ -14,14 +14,15 @@ metadata:
 
 ```
 
-### Classification
-There are 4 types of lines classified by how much power they generate (Power Output):
+
+### Accepted Values
+These are the accepted values for **Power Output**:
 - **None**: Does not generate sufficient power to matter
 - **Partial**: Generates energy to power part of itself
 - **Sufficient**: Generates enough energy to power itself
-- **Significant**: Generates enough energy to power itself and others
+- **Significant**: Generates energy as its main function
 
-There are 4 types of lines classified by what they mainly output in order of priority (Output State):
+These are the accepted values for **Output State**:
 - **Hot**: Hot material that needs to be cooled
 - **Dust**: Dusts for various uses
 - **Fluid**: Fluids, may be gas or liquid
@@ -29,18 +30,18 @@ There are 4 types of lines classified by what they mainly output in order of pri
 - **Item**: General item
 - **Misc**: Anything else
 
-There are 3 types of lines classified by how meticulous the outputs are (Output Handling):
+These are the accepted values for **Output Handling**:
 - **None**: Only shows the relevant outputs
 - **Partial**: Shows some but not all irrelevant outputs
 - **Full**: Shows every single output
   
-Lastly, there are 3 types of lines classified by amount of recycling (Recycling):
+These are the accepted values for **Recycling**:
 - **None**: Does not recycle outputs
 - **Partial**: Recycles some outputs
 - **Full**: Recycles all possible outputs
 
-### Filenames
-Here are some ways to format filenames:
+## Filenames
+Here are some standards to format filenames:
 - **Output**  
 The filename is just the main output, simple as.  
 Example: epoxid.yaml, ptfe.yaml
@@ -53,3 +54,6 @@ Example: tgsless_benzene.yaml, renewable_aluminium.yaml
 - **Proc_Output**  
 Only used for complicated processing lines  
 Example: proc_platinum.yaml, proc_monazite.yaml
+
+## Why format like this?
+This formatting is used to increase readability of information in projects without needing to dive deep into the document or having to generate the graph.

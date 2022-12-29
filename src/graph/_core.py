@@ -207,6 +207,11 @@ def outputGraphviz(self):
             'rankdir': self.graph_config['ORIENTATION'],
             'ranksep': self.graph_config['RANKSEP'],
             'nodesep': self.graph_config['NODESEP'],
+            'label': self.title,
+            'labelloc': 't',
+            'fontsize': str(self.graph_config["TITLE_FONTSIZE"]*2),
+            'fontname': self.graph_config["TITLE_FONT"],
+            'fontcolor': 'white'
         }
     )
 
