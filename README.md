@@ -2,10 +2,13 @@
 
 ## What is it?
 
-This is my fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtnh-flow).  
+This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtnh-flow). In addition to the functionalities of the original tool, this fork has:
+1. Extended formatting of projects
+2. Added stylization of graphs
+3. Standards to increase readability
+
 Visit the original github page of [gtnh-flow](https://github.com/OrderedSet86/gtnh-flow) to view the full description and installation guide.
 
-This repository only serves to be a place for the graphs I make using this tool with my own special formatting.
 ## Samples
 <details>
     <summary>Click to reveal</summary>

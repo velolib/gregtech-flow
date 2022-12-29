@@ -3,17 +3,17 @@ The following code block is the header YAML document to put on top. This is not 
 ```YAML
 ---
 title:
+creator:
 description:
 metadata:
-    creator:
-    power output:
-    output state:
-    output handling:
-    recycling: 
+  power output:
+  output state:
+  output handling:
+  recycling: 
 ---
 
 ```
-
+This is only a suggestion, and is not required. 
 
 ### Accepted Values
 These are the accepted values for **Power Output**:
@@ -56,4 +56,4 @@ Only used for complicated processing lines
 Example: proc_platinum.yaml, proc_monazite.yaml
 
 ## Why format like this?
-This formatting is used to increase readability of information in projects without needing to dive deep into the document or having to generate the graph.
+This formatting is used to increase readability of information in projects without needing to dive deep into the project or having to generate the graph.
