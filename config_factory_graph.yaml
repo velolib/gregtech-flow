@@ -30,6 +30,8 @@ EDGE_FONTSIZE: 13
 GROUP_FONTSIZE: 20
 TITLE_FONTSIZE: 40
 BACKGROUND_COLOR: '#140e52'
+TITLE_COLOR: '#ffffff'
+SUMMARY_COLOR: '#ffffff'
 EDGECOLOR_CYCLE:
   # - '#b58900' # 'yellow'
   # - '#cb4b16' # 'orange'
@@ -47,7 +49,7 @@ EDGECOLOR_CYCLE:
   - '#59adf6'
   - '#9d94ff'
   - '#c780e8'
-SOURCESINK_COLOR: 'grey100'
+SOURCESINK_COLOR: 'white'
 NONLOCKEDNODE_COLOR: 'lightcyan'
 LOCKEDNODE_COLOR: 'chartreuse'
 POSITIVE_COLOR: 'chartreuse'

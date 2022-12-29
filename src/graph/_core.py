@@ -209,9 +209,9 @@ def outputGraphviz(self):
             'nodesep': self.graph_config['NODESEP'],
             'label': self.title,
             'labelloc': 't',
-            'fontsize': str(self.graph_config["TITLE_FONTSIZE"]*2),
+            'fontsize': str(self.graph_config["TITLE_FONTSIZE"]),
             'fontname': self.graph_config["TITLE_FONT"],
-            'fontcolor': 'white'
+            'fontcolor': self.graph_config["TITLE_COLOR"]
         }
     )
 

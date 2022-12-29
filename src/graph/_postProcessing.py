@@ -258,8 +258,7 @@ def _addSummaryNode(self):
     self.addNode(
         'total_io_node',
         label=io_label,
-        # invert hex
-        color='#' + self.graph_config['BACKGROUND_COLOR'][1:].lower().translate(self.graph_config['BACKGROUND_COLOR'].maketrans('0123456789abcdef', 'fedcba9876543210')),
+        color=self.graph_config['SUMMARY_COLOR'],
         fillcolor=self.graph_config['BACKGROUND_COLOR'],
         shape='box'
     )
