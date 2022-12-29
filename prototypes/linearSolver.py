@@ -639,14 +639,18 @@ def createMachineLabels(self):
         label_lines = []
 
         # Standard label
-        label_lines.extend([
+        
+        default_label = [
             f'{round(rec.multiplier, 2)}x {rec.user_voltage.upper()} {capitalizeMachine(rec.machine)}',
             f'Cycle: {rec.dur/20}s',
             f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
             f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
-        ])
+        ]
+        
         if rec.circuit:
-            label_lines.extend([f'Circuit: {rec.circuit}',])
+            default_label[0] = f'{default_label[0]} # {rec.circuit}'
+        
+        label_lines.extend(default_label)
 
         # Edits for power machines
         recognized_basic_power_machines = {

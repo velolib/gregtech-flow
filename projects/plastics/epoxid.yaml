@@ -9,7 +9,7 @@ metadata:
   recycling: Full
 ---
 
-- m: lcr # 24
+- m: lcr
   tier: MV
   group: epoxid
   I:
@@ -23,9 +23,8 @@ metadata:
     '[1] salt water': 2000
   eut: 30
   dur: 24
-  # target:
-  #   epoxid: 54
-- m: lcr # 24
+  circuit: 24
+- m: lcr
   group: epichlorohydrin
   tier: MV
   I:
@@ -39,6 +38,7 @@ metadata:
     '[2] salt water': 1000
   dur: 32
   eut: 30
+  circuit: 24
 - m: electrolyzer
   group: epichlorohydrin
   tier: MV

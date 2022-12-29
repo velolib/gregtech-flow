@@ -50,14 +50,18 @@ def _lockMachine(self, rec_id, rec, determined=False):
     self.recipes[rec_id] *= final_multiplier
 
     existing_label = self.nodes[rec_id]['label']
-    self.nodes[rec_id]['label'] = '\n'.join([
+    
+    default_label = [
         f'{round(rec.multiplier, 2)}x {rec.user_voltage} {existing_label}',
         f'Cycle: {rec.dur/20}s',
         f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
         f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
-    ])
+    ]
+    
     if rec.circuit:
-        self.nodes[rec_id]['label'].join([f'Circuit: {rec.circuit}',])
+        default_label[0] = f'{default_label[0]} # {rec.circuit}'
+            
+    self.nodes[rec_id]['label'] = '\n'.join(default_label)
 
     # Lock ingredient edges using new quant
     self._lockMachineEdges(rec_id, rec)

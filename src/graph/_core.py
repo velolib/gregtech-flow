@@ -47,14 +47,18 @@ def balanceGraph(self):
             # Color edge as "locked"
             self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
             existing_label = self.nodes[rec_id]['label']
-            self.nodes[rec_id]['label'] = '\n'.join([
+            default_label = [
                 f'{round(rec.multiplier, 2)}x {rec.user_voltage} {existing_label}',
                 f'Cycle: {rec.dur/20}s',
                 f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
                 f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
-            ])
+            ]
+            
             if rec.circuit:
-                self.nodes[rec_id]['label'].join([f'Circuit: {rec.circuit}',])
+                default_label[0] = f'{default_label[0]} # {rec.circuit}'
+            
+            self.nodes[rec_id]['label'] = '\n'.join(default_label)
+
 
             # Lock all adjacent ingredient edges
             self._simpleLockMachineEdges(str(rec_id), rec) # Used when multiplier is known
@@ -85,14 +89,18 @@ def balanceGraph(self):
         # Color edge as locked
         self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
         existing_label = self.nodes[rec_id]['label']
-        self.nodes[rec_id]['label'] = '\n'.join([
+
+        default_label = [
             f'{round(rec.multiplier, 2)}x {rec.user_voltage} {existing_label}',
             f'Cycle: {rec.dur/20}s',
             f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
             f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
-        ])
+        ]
+        
         if rec.circuit:
-            self.nodes[rec_id]['label'].join([f'Circuit: {rec.circuit}',])
+            default_label[0] = f'{default_label[0]} # {rec.circuit}'
+        
+        self.nodes[rec_id]['label'] = '\n'.join(default_label)
 
 
         # Lock all adjacent ingredient edges
