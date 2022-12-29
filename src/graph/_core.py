@@ -53,6 +53,8 @@ def balanceGraph(self):
                 f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
                 f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
             ])
+            if rec.circuit:
+                self.nodes[rec_id]['label'].join([f'Circuit: {rec.circuit}',])
 
             # Lock all adjacent ingredient edges
             self._simpleLockMachineEdges(str(rec_id), rec) # Used when multiplier is known
@@ -89,6 +91,8 @@ def balanceGraph(self):
             f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
             f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
         ])
+        if rec.circuit:
+            self.nodes[rec_id]['label'].join([f'Circuit: {rec.circuit}',])
 
 
         # Lock all adjacent ingredient edges

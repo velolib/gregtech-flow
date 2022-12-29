@@ -627,6 +627,7 @@ def createMachineLabels(self):
     # Cycle: 2.0s
     # Amoritized: 1.46K EU/t
     # Per Machine: 256EU/t
+    # Circuit: 9
     
     for node_id in self.nodes:
         if self._checkIfMachine(node_id):
@@ -644,6 +645,8 @@ def createMachineLabels(self):
             f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
             f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
         ])
+        if rec.circuit:
+            label_lines.extend([f'Circuit: {rec.circuit}',])
 
         # Edits for power machines
         recognized_basic_power_machines = {

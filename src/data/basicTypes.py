@@ -55,6 +55,7 @@ class Recipe:
             outputs,
             eut,
             dur,
+            circuit=0,
             **kwargs
         ):
         self.machine = machine_name
@@ -63,6 +64,7 @@ class Recipe:
         self.O = outputs
         self.eut = eut
         self.dur = dur
+        self.circuit = circuit
         self.multiplier = -1
         self.base_eut = eut # Used for final graph output
         for key, value in kwargs.items():

@@ -56,6 +56,8 @@ def _lockMachine(self, rec_id, rec, determined=False):
         f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
         f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
     ])
+    if rec.circuit:
+        self.nodes[rec_id]['label'].join([f'Circuit: {rec.circuit}',])
 
     # Lock ingredient edges using new quant
     self._lockMachineEdges(rec_id, rec)
