@@ -20,5 +20,5 @@ sample_paths = [
 for project in sample_paths:
     with subprocess.Popen([sys.executable, 'factory_graph.py', str(project), 'png']):
         pass
-    graph_path = Path('output/') / project
-    graph_path.rename(sample_dir / f'{graph_path.stem}.png')
+    graph_path = Path('output/') / f'{project}.png'
+    shutil.copy(graph_path, sample_dir)
