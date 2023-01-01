@@ -1,5 +1,6 @@
 import logging
 import math
+import yaml
 from collections import defaultdict
 
 from termcolor import cprint
@@ -51,15 +52,25 @@ def _lockMachine(self, rec_id, rec, determined=False):
 
     existing_label = self.nodes[rec_id]['label']
     
-    default_label = [
+    label_lines = [
         f'{round(rec.multiplier, 2)}x {rec.user_voltage} {existing_label}',
         f'Cycle: {rec.dur/20}s',
         f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
         f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
     ]
-    
+    if self.graph_config['POWER_UNITS'] != 'eut':
+        with open('data/overclock_data.yaml', 'r') as f:
+            overclock_data = yaml.safe_load(f)
+        if self.graph_config['POWER_UNITS'] == 'auto':
+            tier_idx = overclock_data['voltage_data']['tiers'].index(rec.user_voltage)
+            voltage_at_tier = 32 * pow(4, tier_idx)
+        else:
+            tier_idx = overclock_data['voltage_data']['tiers'].index(self.graph_config['POWER_UNITS'])
+            voltage_at_tier = 32 * pow(4, tier_idx)
+        label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
+        label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
             
-    self.nodes[rec_id]['label'] = '\n'.join(default_label)
+    self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
     # Lock ingredient edges using new quant
     self._lockMachineEdges(rec_id, rec)

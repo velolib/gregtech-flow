@@ -22,14 +22,18 @@ MAX_BOTTLENECKS: 5
 USE_NEW_SOLVER: true
 
 # === VISUALS ===
+## === FONTS ===
 GENERAL_FONT: noto sans # nodes and edges
 SUMMARY_FONT: noto sans
 GROUP_FONT: renogare
 TITLE_FONT: renogare
+
 NODE_FONTSIZE: 14
 EDGE_FONTSIZE: 13
 GROUP_FONTSIZE: 20
 TITLE_FONTSIZE: 40
+
+## === COLORS ===
 BACKGROUND_COLOR: '#140e52'
 TITLE_COLOR: '#ffffff'
 SUMMARY_COLOR: '#ffffff'
@@ -55,6 +59,13 @@ NONLOCKEDNODE_COLOR: 'lightcyan'
 LOCKEDNODE_COLOR: 'chartreuse'
 POSITIVE_COLOR: 'chartreuse'
 NEGATIVE_COLOR: 'crimson'
+
+## === EXTRA ===
+POWER_UNITS: eut
+# Options (only affects nodes)
+# eut: Uses absolute eu/t numbers, example: 32 EU/t
+# auto: Uses user-defined power tier
+# lv, mv, hv, ev, etc.: Uses amps
 
 ORIENTATION: 'TB'
 # TB: Vertical, LR: Horizontal, BT: Vertical Inverted, RL: Horizontal Inverted
