@@ -3,13 +3,14 @@
 import subprocess
 import sys
 import shutil
-import os
+import time
 from pathlib import Path
 
 sample_dir = Path('samples/')
 
 if sample_dir.exists():
     shutil.rmtree(sample_dir)
+time.sleep(0.01)
 sample_dir.mkdir()
 
 sample_paths = [
