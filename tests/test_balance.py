@@ -3,8 +3,11 @@ import math
 import pytest
 import yaml
 
-from dataClasses.load import recipesFromConfig
-from graphClasses.graph import Graph
+from src.data.loadMachines import recipesFromConfig
+from src.graph import Graph
+from factory_graph import ProgramContext
+
+pc = ProgramContext()
 
 import json
 def loadTestConfig():
@@ -14,13 +17,13 @@ def loadTestConfig():
 
 
 def test_balanceSimple():
-    project_name = 'simpleGraph'
+    project_name = 'simpleGraph.yaml'
 
     # Load recipes
     recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
 
     # Create graph
-    g = Graph(project_name, recipes, loadTestConfig())
+    g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
     g.connectGraph()
     g.balanceGraph()
 
@@ -41,13 +44,13 @@ def test_balanceLoop():
     # This is expected to have the same fail/pass as test_balanceSimple thanks to
     # g.removeBackEdges(), but adding this just in case.
 
-    project_name = 'loopGraph'
+    project_name = 'loopGraph.yaml'
 
     # Load recipes
     recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
 
     # Create graph
-    g = Graph(project_name, recipes, loadTestConfig())
+    g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
     g.connectGraph()
     g.balanceGraph()
 
