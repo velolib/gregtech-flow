@@ -62,10 +62,10 @@ NEGATIVE_COLOR: 'crimson'
 
 ## === EXTRA ===
 POWER_UNITS: eut
-# Options (only affects nodes)
-# eut: Uses absolute eu/t numbers, example: 32 EU/t
-# auto: Uses user-defined power tier
-# lv, mv, hv, ev, etc.: Uses amps
+# Only affects nodes
+# eut: Use absolute eu/t numbers, example: 32 EU/t
+# auto: Use user-defined power tier
+# lv, mv, hv, ev, etc.: Use amps
 
 ORIENTATION: 'TB'
 # TB: Vertical, LR: Horizontal, BT: Vertical Inverted, RL: Horizontal Inverted
