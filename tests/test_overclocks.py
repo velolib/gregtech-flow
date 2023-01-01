@@ -11,11 +11,6 @@ pc = ProgramContext()
 oh = OverclockHandler(ProgramContext)
 
 import json
-def loadTestConfig():
-    with open('config_factory_graph.yaml', 'r') as f:
-        graph_config = yaml.safe_load(f)
-    return graph_config
-
 
 def test_standardOverclock():
     r_base = Recipe(
