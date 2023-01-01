@@ -89,7 +89,7 @@ class ProgramContext:
                 project_relpath = projects_path / f'{project_name}'
                 
                 if project_relpath.exists():
-                    title = ''
+                    title = None
                     with project_relpath.open(mode='r') as f:
                         doc_load = list(yaml.safe_load_all(f))
                         if len(doc_load) >= 2: 
@@ -103,7 +103,7 @@ class ProgramContext:
                     if project_name.endswith('.yaml'):
                         project_name = project_name[:-5]
 
-                    graph_gen(self, project_name, recipes, title, graph_config)
+                    graph_gen(self, project_name, recipes, graph_config, title)
                 else:
                     raise FileNotFoundError(f'[Errno 2] No such file or directory: \'{project_relpath}\'')
 
@@ -124,9 +124,9 @@ class ProgramContext:
 
 
     @staticmethod
-    def standardGraphGen(self, project_name, recipes, title, graph_config):
+    def standardGraphGen(self, project_name, recipes, graph_config, title=None):
         # Create graph and render
-        g = Graph(project_name, recipes, self, title, graph_config=graph_config)
+        g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
         g.connectGraph()
         g.balanceGraph()
         g.outputGraphviz()

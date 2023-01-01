@@ -6,7 +6,8 @@ from src.gtnh.overclocks import OverclockHandler
 class Graph:
 
 
-    def __init__(self, graph_name, recipes, parent_context, title=None, graph_config=None):
+
+    def __init__(self, graph_name, recipes, parent_context, graph_config=None, title=None):
         self.graph_name = graph_name
         self.recipes = {str(i): x for i, x in enumerate(recipes)}
         self.nodes = {}

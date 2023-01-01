@@ -873,8 +873,8 @@ def graphPostProcessing(self):
         self._combineOutputs()
 
 
-def systemOfEquationsSolverGraphGen(self, project_name, recipes, title, graph_config):
-    g = Graph(project_name, recipes, self, title, graph_config=graph_config)
+def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, title=None):
+    g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
     graphPreProcessing(g)
 
     g.parent_context.cLog('Running linear solver...', 'green', level=logging.INFO)
