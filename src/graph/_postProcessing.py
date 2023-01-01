@@ -143,11 +143,13 @@ def _addSummaryNode(self):
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']
     
-    def makeLineHtml(lab_text, amt_text, lab_color, amt_color):
+    def makeLineHtml(lab_text, amt_text, lab_color, amt_color, unit=None):
+        if not unit:
+            unit = ''
         return ''.join([
             '<tr>'
             f'<td align="left"><font color="{lab_color}" face="{self.graph_config["SUMMARY_FONT"]}">{self.stripBrackets(lab_text)}</font></td>'
-            f'<td align ="right"><font color="{amt_color}" face="{self.graph_config["SUMMARY_FONT"]}">{amt_text}</font></td>'
+            f'<td align ="right"><font color="{amt_color}" face="{self.graph_config["SUMMARY_FONT"]}">{amt_text}{unit}</font></td>'
             '</tr>'
         ])
 
@@ -199,14 +201,35 @@ def _addSummaryNode(self):
         total_eut += rec.eut
     io_label_lines.append('<hr/>')
     eut_rounded = -int(math.ceil(total_eut))
-    io_label_lines.append(makeLineHtml('Input EU/t:', self.userRound(eut_rounded), 'white', color_negative))
+
+    # Find maximum voltage
+    max_tier = -1
+    tiers = overclock_data['voltage_data']['tiers']
+    for rec in self.recipes.values():
+        tier = tiers.index(rec.user_voltage)
+        if tier > max_tier:
+            max_tier = tier
+    voltage_at_tier = self.tierToVoltage(max_tier)
+    
+    # TODO: Clean this up somehhow. So unreadable
+    match self.graph_config['POWER_UNITS']:
+        case 'auto':
+            fun = lambda z: self.userRound(z/voltage_at_tier)
+            unit = f' {tiers[max_tier].upper()}'
+        case 'eut':
+            unit = None
+            fun = self.userRound
+        case _:
+            fun = lambda z: self.userRound(z/self.tierToVoltage(tiers.index(self.graph_config['POWER_UNITS'])))
+            unit = f' {self.graph_config["POWER_UNITS"].upper()}'
+            
+    io_label_lines.append(makeLineHtml('Input EU/t:', fun(eut_rounded), 'white', color_negative, unit))
     if 'eu' in total_io:
         produced_eut = int(math.floor(total_io['eu'] / 20))
-        io_label_lines.append(makeLineHtml('Output EU/t:', self.userRound(produced_eut), 'white', color_positive))
+        io_label_lines.append(makeLineHtml('Output EU/t:', fun(produced_eut), 'white', color_positive, unit))
         net_eut = produced_eut + eut_rounded
-        lab_color = 'white'
         amt_color = color_positive if net_eut >= 0 else color_negative
-        io_label_lines.append(makeLineHtml('Net EU/t:', self.userRound(net_eut), lab_color, amt_color))
+        io_label_lines.append(makeLineHtml('Net EU/t:', fun(net_eut), 'white', amt_color, unit))
         io_label_lines.append('<hr/>')
 
     # Add total machine multiplier count for renewables spreadsheet numbers
@@ -227,15 +250,6 @@ def _addSummaryNode(self):
     io_label_lines.append(makeLineHtml('Total machine count:', self.userRound(sumval), 'white', color_positive))
 
     # Add peak power load in maximum voltage on chart
-    # Find maximum voltage
-    max_tier = -1
-    tiers = overclock_data['voltage_data']['tiers']
-    for rec in self.recipes.values():
-        tier = tiers.index(rec.user_voltage)
-        if tier > max_tier:
-            max_tier = tier
-    voltage_at_tier = 32 * pow(4, max_tier)
-
     # Compute maximum draw
     max_draw = 0
     for rec in self.recipes.values():

@@ -627,7 +627,9 @@ def createMachineLabels(self):
     # Cycle: 2.0s
     # Amoritized: 1.46K EU/t
     # Per Machine: 256EU/t
-    # Circuit: 9
+    
+    with open('data/overclock_data.yaml', 'r') as f:
+        overclock_data = yaml.safe_load(f)
     
     for node_id in self.nodes:
         if self._checkIfMachine(node_id):
@@ -649,6 +651,15 @@ def createMachineLabels(self):
         
         
         label_lines.extend(default_label)
+        
+        if self.graph_config['POWER_UNITS'] != 'eut':
+            if self.graph_config['POWER_UNITS'] == 'auto':
+                tier_idx = overclock_data['voltage_data']['tiers'].index(rec.user_voltage)
+            else:
+                tier_idx = overclock_data['voltage_data']['tiers'].index(self.graph_config['POWER_UNITS'])
+            voltage_at_tier = self.tierToVoltage(tier_idx)
+            label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
+            label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
 
         # Edits for power machines
         recognized_basic_power_machines = {

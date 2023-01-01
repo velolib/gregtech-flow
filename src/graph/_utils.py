@@ -2,6 +2,8 @@ from collections import defaultdict
 
 from src.data.basicTypes import Recipe
 
+import math
+
 
 def swapIO(io_type):
     if io_type == 'I':
@@ -66,6 +68,10 @@ def createAdjacencyList(self):
             self.parent_context.cLog(f'{io_type} {edges}', 'blue')
     self.parent_context.cLog('')
 
+def tierToVoltage(self, tier_idx):
+    # Return voltage from tier index
+    return 32 * pow(4, tier_idx)
+
 
 def _checkIfMachine(self, rec_id):
     # TODO: Memoize calls
@@ -81,4 +87,3 @@ def _iterateOverMachines(self):
     for rec_id in self.nodes:
         if self._checkIfMachine(rec_id):
             yield self.recipes[rec_id]
-
