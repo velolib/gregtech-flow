@@ -5,8 +5,10 @@ import yaml
 
 from src.data.basicTypes import Ingredient, Recipe, IngredientCollection
 from src.gtnh.overclocks import OverclockHandler
+from factory_graph import ProgramContext
 
-oh = OverclockHandler('test')
+pc = ProgramContext()
+oh = OverclockHandler(ProgramContext)
 
 import json
 def loadTestConfig():
