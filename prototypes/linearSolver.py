@@ -627,7 +627,6 @@ def createMachineLabels(self):
     # Cycle: 2.0s
     # Amoritized: 1.46K EU/t
     # Per Machine: 256EU/t
-    # Circuit: 9
     
     with open('data/overclock_data.yaml', 'r') as f:
         overclock_data = yaml.safe_load(f)
