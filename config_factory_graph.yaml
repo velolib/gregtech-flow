@@ -3,6 +3,7 @@ POWER_LINE: true # Automatically burns all leftover fuels
 DO_NOT_BURN: # If POWER_LINE is true, don't burn these
   - hydrogen
   - coal tar oil
+  - phenol
   - naphtha
   - biomass
   - oil
