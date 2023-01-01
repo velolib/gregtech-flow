@@ -54,8 +54,6 @@ def balanceGraph(self):
                 f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
             ]
             
-            if rec.circuit:
-                default_label[0] = f'{default_label[0]} # {rec.circuit}'
             
             self.nodes[rec_id]['label'] = '\n'.join(default_label)
 
@@ -97,8 +95,6 @@ def balanceGraph(self):
             f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
         ]
         
-        if rec.circuit:
-            default_label[0] = f'{default_label[0]} # {rec.circuit}'
         
         self.nodes[rec_id]['label'] = '\n'.join(default_label)
 
