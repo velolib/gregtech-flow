@@ -45,6 +45,7 @@ class Graph:
         userRound,
         addNode,
         addEdge,
+        tierToVoltage,
         createAdjacencyList,
         _iterateOverMachines,
         _checkIfMachine,

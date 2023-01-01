@@ -61,7 +61,7 @@ POSITIVE_COLOR: 'chartreuse'
 NEGATIVE_COLOR: 'crimson'
 
 ## === EXTRA ===
-POWER_UNITS: eut
+POWER_UNITS: 'eut'
 # Only affects nodes
 # eut: Use absolute eu/t numbers, example: 32 EU/t
 # auto: Use user-defined power tier
