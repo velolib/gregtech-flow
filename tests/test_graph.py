@@ -1,27 +1,30 @@
 import pytest
 import yaml
 
-from dataClasses.load import recipesFromConfig
-from graphClasses.graph import Graph
+from src.data.loadMachines import recipesFromConfig
+from src.graph import Graph
+from factory_graph import ProgramContext
+
+pc = ProgramContext()
 
 import json
 def loadTestConfig():
     with open('config_factory_graph.yaml', 'r') as f:
         graph_config = yaml.safe_load(f)
     return graph_config
-
+    
 # Note that recipe ordering is deterministic!
 # (Thanks to the OrderedDict hook in dataClasses.load.recipesFromConfig)
 
 
 def test_connectionSimple():
-    project_name = 'simpleGraph'
+    project_name = 'simpleGraph.yaml'
 
     # Load recipes
     recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
 
     # Create graph
-    g = Graph(project_name, recipes, loadTestConfig())
+    g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
     g.connectGraph()
 
     ### Check connections
@@ -40,13 +43,13 @@ def test_connectionSimple():
 
 
 def test_connectionLoop():
-    project_name = 'loopGraph'
+    project_name = 'loopGraph.yaml'
 
     # Load recipes
     recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
 
     # Create graph
-    g = Graph(project_name, recipes, loadTestConfig())
+    g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
     g.connectGraph()
     g.removeBackEdges()
 
