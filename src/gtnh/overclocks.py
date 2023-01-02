@@ -52,8 +52,8 @@ class OverclockHandler:
         TOTAL_EUT = x*y
 
         # Debug info
-        self.parent_context.cLog('Base GT++ OC stats:', 'yellow')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}', 'yellow')
+        self.parent_context.cLog('Base GT++ OC stats:')
+        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
 
         # Attempt to GT OC the entire parallel set until no energy is left
         while TOTAL_EUT < available_eut:
@@ -62,8 +62,8 @@ class OverclockHandler:
             if OC_EUT <= available_eut:
                 if OC_DUR < 1:
                     break
-                self.parent_context.cLog('OC to', 'yellow')
-                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}', 'yellow')
+                self.parent_context.cLog('OC to')
+                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}')
                 TOTAL_EUT = OC_EUT
                 NEW_RECIPE_TIME = OC_DUR
             else:
@@ -85,8 +85,8 @@ class OverclockHandler:
         TOTAL_EUT = x*y
         NEW_RECIPE_TIME = round(recipe.dur * (speed_per_tier)**(self.voltages.index(recipe.user_voltage) + 1), 2)
 
-        self.parent_context.cLog('Base GT++ OC stats:', 'yellow')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}', 'yellow')
+        self.parent_context.cLog('Base GT++ OC stats:')
+        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
 
         while TOTAL_EUT < available_eut:
             OC_EUT = TOTAL_EUT * 4
@@ -94,8 +94,8 @@ class OverclockHandler:
             if OC_EUT <= available_eut:
                 if OC_DUR < 20:
                     break
-                self.parent_context.cLog('OC to', 'yellow')
-                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}', 'yellow')
+                self.parent_context.cLog('OC to')
+                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}')
                 TOTAL_EUT = OC_EUT
                 NEW_RECIPE_TIME = OC_DUR
             else:
@@ -249,8 +249,8 @@ class OverclockHandler:
         TOTAL_EUT = x*y
 
         # Debug info
-        self.parent_context.cLog('Base GT++ OC stats:', 'yellow')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}', 'yellow')
+        self.parent_context.cLog('Base GT++ OC stats:')
+        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
 
         ### Now do GT EBF OC
         base_voltage = bisect_right(self.voltage_cutoffs, TOTAL_EUT)

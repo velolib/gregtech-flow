@@ -46,7 +46,7 @@ def _addPowerLineNodes(self):
         quant = edge_data['quant']
 
         if ing_name in known_burnables and not ing_name in self.graph_config['DO_NOT_BURN']:
-            self.parent_context.cLog(f'Detected burnable: {ing_name.title()}! Adding to chart.', 'blue', level=logging.INFO)
+            self.parent_context.cLog(f'Detected burnable: {ing_name.title()}! Adding to chart.', level=logging.INFO)
             generator_idx, eut_per_cell = known_burnables[ing_name]
             gen_name = generator_names[generator_idx].title()
 
@@ -90,7 +90,7 @@ def _addPowerLineNodes(self):
             UCFE_id = rec_id
 
     if UCFE_id is not None:
-        self.parent_context.cLog('Detected UCFE, autobalancing...', 'green', level=logging.INFO)
+        self.parent_context.cLog('Detected UCFE, autobalancing...', level=logging.INFO)
 
         # 2. Determine whether non-combustion promoter input is combustable or gas
         input_ingredient_collection = self.recipes[UCFE_id].I
@@ -122,10 +122,10 @@ def _addPowerLineNodes(self):
         combustion_promoter_quant = input_ingredient_collection['combustion promoter'][0]
         fuel_quant = input_ingredient_collection[fuel_name][0]
         ratio = combustion_promoter_quant / fuel_quant
-        self.parent_context.cLog(f'UCFE power ratio: {ratio}', 'green', level=logging.INFO)
+        self.parent_context.cLog(f'UCFE power ratio: {ratio}', level=logging.INFO)
 
         efficiency = math.exp(-coefficient*ratio) * 1.5
-        self.parent_context.cLog(f'Efficiency stat: {efficiency}', 'green', level=logging.INFO)
+        self.parent_context.cLog(f'Efficiency stat: {efficiency}', level=logging.INFO)
         output_eu = efficiency * burn_value_table[fuel_name] * (fuel_quant / 1000)
 
         # 4. Update edge with new value

@@ -129,7 +129,7 @@ def balanceGraph(self):
     elif ln != 0 and lt != 0:
         raise NotImplementedError('mixed targeted nodes and numbered nodes not supported')
 
-    self.parent_context.cLog(f'Still need locking: {need_locking}', 'red')
+    self.parent_context.cLog(f'Still need locking: {need_locking}')
     self.parent_context.cLog('')
 
     while need_locking:
@@ -148,7 +148,7 @@ def balanceGraph(self):
                 len(self.adj_machine[rec_id]['O']),
             ]
 
-        self.parent_context.cLog(f'Edge determination data:\n{determined_edge_count}', 'green')
+        self.parent_context.cLog(f'Edge determination data:\n{determined_edge_count}')
 
         # Now pick in this order:
         # 1. Edges with complete side determination, using total edge determination ratio as tiebreaker
@@ -197,7 +197,7 @@ def balanceGraph(self):
             if self.graph_config.get('DEBUG_SHOW_EVERY_STEP', False):
                 self.outputGraphviz()
         else:
-            self.parent_context.cLog('Unable to compute some of the tree due to missing information; refer to output graph.', 'red', level=logging.WARNING)
+            self.parent_context.cLog('Unable to compute some of the tree due to missing information; refer to output graph.', level=logging.WARNING)
             break
 
         self.createAdjacencyList()

@@ -7,7 +7,8 @@ from pathlib import Path
 
 # Pypi libraries
 import yaml
-from termcolor import colored, cprint
+from rich import print as rprint
+from rich.logging import RichHandler
 
 # Internal libraries
 from prototypes.linearSolver import systemOfEquationsSolverGraphGen
@@ -28,18 +29,19 @@ class ProgramContext:
 
 
     def __init__(self):
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(handlers=[RichHandler()])
 
 
     @staticmethod
-    def cLog(msg, color='white', level=logging.DEBUG):
+    def cLog(msg, level=logging.DEBUG):
         # Not sure how to level based on a variable, so just if statements for now
+        log = logging.getLogger('rich')
         if level == logging.DEBUG:
-            logging.debug(colored(msg, color))
+            log.debug(f'[bright_green]{msg}')
         elif level == logging.INFO:
-            logging.info(colored(msg, color))
+            log.info(f'[bright_cyan]{msg}')
         elif level == logging.WARNING:
-            logging.warning(colored(msg, color))
+            log.warning(f'[bright_red]{msg}')
 
     
     def run(self, graph_gen=None):
@@ -93,8 +95,6 @@ class ProgramContext:
                     doc_load = list(yaml.safe_load_all(f))
                     if len(doc_load) >= 2: 
                         metadata = doc_load[0]
-                        cprint(f'{metadata["title"]}', 'blue')
-                        cprint(f'{metadata["description"]}', 'green')
                         title = metadata['title']
                 
                 recipes = recipesFromConfig(project_name)
@@ -104,15 +104,16 @@ class ProgramContext:
 
                 graph_gen(self, project_name, recipes, graph_config, title)
             else:
-                cprint('Error: Project could not be found', color='red')
+                rprint('Error: Project could not be found')
 
         while True:
             # Interactive selector
             if not len(sys.argv) > 1:
                 readline.set_completer(completer)
-                cprint('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', 'blue')
-                cprint('Type \'end\' to stop')
-                ip = input(colored('> ', 'green'))
+                rprint('[bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)')
+                rprint('[bright_white]Type[/] \'end\' [bright_white]to stop')
+                rprint('[bright_white]> ', end='')
+                ip = input()
                 if ip.casefold() == 'end':
                     exit()
                 create_graph(ip)

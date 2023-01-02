@@ -85,7 +85,7 @@ COMBINE_OUTPUTS: true
 
 
 # { You should probably only modify these if you are dev
-DEBUG_SHOW_EVERY_STEP: false
+DEBUG_SHOW_EVERY_STEP: true
 SHOW_MACHINE_INDICES: false
 STRIP_BRACKETS: true
 # }

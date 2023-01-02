@@ -14,11 +14,11 @@ def _lockMachine(self, rec_id, rec, determined=False):
         'I': [x for x in self.adj_machine[rec_id]['I'] if self.edges[x].get('locked', False)],
         'O': [x for x in self.adj_machine[rec_id]['O'] if self.edges[x].get('locked', False)],
     }
-    self.parent_context.cLog(f'Locking {rec.machine}...', 'green')
-    self.parent_context.cLog(all_relevant_edges, 'yellow')
+    self.parent_context.cLog(f'Locking {rec.machine}...')
+    self.parent_context.cLog(all_relevant_edges)
 
     if all(len(y) == 0 for x, y in all_relevant_edges.items()):
-        self.parent_context.cLog(f'No locked machine edges adjacent to {rec.machine.title()}. Cannot balance.', 'red', level=logging.WARNING)
+        self.parent_context.cLog(f'No locked machine edges adjacent to {rec.machine.title()}. Cannot balance.', level=logging.WARNING)
         self.outputGraphviz()
         exit(1)
 
@@ -44,9 +44,9 @@ def _lockMachine(self, rec_id, rec, determined=False):
             multipliers.append(quant_per_s / base_speed)
 
     if len(multipliers) == 1:
-        self.parent_context.cLog(f'{rec.machine} {multipliers}', 'white', level=logging.DEBUG)
+        self.parent_context.cLog(f'{rec.machine} {multipliers}', level=logging.DEBUG)
     else:
-        self.parent_context.cLog(f'{rec.machine} {multipliers}', 'red', level=logging.WARNING)
+        self.parent_context.cLog(f'{rec.machine} {multipliers}', level=logging.WARNING)
     final_multiplier = max(multipliers)
     self.recipes[rec_id] *= final_multiplier
 
