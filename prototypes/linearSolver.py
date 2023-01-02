@@ -16,6 +16,8 @@ from src.data.basicTypes import Ingredient, IngredientCollection, Recipe
 from src.graph import Graph
 from src.graph._utils import swapIO
 
+from rich.progress import Progress
+
 
 
 class SympySolver:
@@ -45,19 +47,26 @@ class SympySolver:
             return self.lookup[key]
 
 
-    def run(self):
+    def run(self, progress_cb):
         self._createVariables() # initialize v1, v2, v3 ... (first pass)
+        progress_cb(6.6)
 
         # Construct system of equations
         self._addUserLocking() # add known equations from user "number" and "target" args
+        progress_cb(6.6)
         self._addMachineInternalLocking() # add relations inside machines - eg 1000 wood tar -> 350 benzene
+        progress_cb(6.6)
         self._populateEFPTI() # construct "edge_from_perspective_to_index" - a useful index lookup for next steps
+        progress_cb(6.6)
         self._addMachineMachineEdges() # add equations between machines, including complex situations - eg multi IO
+        progress_cb(6.6)
 
         # Solve and if unsolvable, adjust until it is
         self._solve()
+        progress_cb(6.6)
 
         self._writeQuantsToGraph()
+        progress_cb(6.6)
 
 
     def _createVariables(self):
@@ -860,39 +869,54 @@ def addUserNodeColor(self):
         self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
 
 
-def graphPreProcessing(self):
+def graphPreProcessing(self, progress_cb):
     self.connectGraph()
+    progress_cb(6.6)
     self.removeBackEdges()
+    progress_cb(6.6)
     self.createAdjacencyList()
+    progress_cb(6.6)
 
 
-def graphPostProcessing(self):
+def graphPostProcessing(self, progress_cb):
     if self.graph_config.get('POWER_LINE', False):
         addPowerLineNodesV2(self)
 
     addMachineMultipliers(self)
+    progress_cb(6.6)
     createMachineLabels(self)
+    progress_cb(6.6)
 
     self._addSummaryNode()
 
     addUserNodeColor(self)
+    progress_cb(6.6)
 
     if self.graph_config.get('COMBINE_INPUTS', False):
         self._combineInputs()
     if self.graph_config.get('COMBINE_OUTPUTS', False):
         self._combineOutputs()
+    progress_cb(6.6)
 
 
 def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, title=None):
-    g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
-    graphPreProcessing(g)
+    
+    with Progress() as progress:
+        
+        task = progress.add_task('[cyan]', total=100)
+        
+        progress_fun = lambda advance: progress.update(task, advance=advance)
+        
+        g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
+        graphPreProcessing(g, progress_cb=progress_fun)
 
-    g.parent_context.cLog('Running linear solver...', level=logging.INFO)
-    solver = SympySolver(g)
-    solver.run()
+        g.parent_context.cLog('Running linear solver...', level=logging.INFO)
+        solver = SympySolver(g)
+        solver.run(progress_cb=progress_fun)
 
-    graphPostProcessing(g)
-    g.outputGraphviz()
+        graphPostProcessing(g, progress_cb=progress_fun)
+        g.outputGraphviz()
+        progress_fun(100)
 
 
 if __name__ == '__main__':

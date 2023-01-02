@@ -2,6 +2,7 @@ import logging
 import re
 from io import StringIO
 from collections import defaultdict
+from pathlib import Path
 
 import yaml
 import graphviz
@@ -476,3 +477,5 @@ def outputGraphviz(self):
     
     if self.graph_config.get('PRINT_BOTTLENECKS'):
         self.bottleneckPrint()
+        
+    self.parent_context.cLog(f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)

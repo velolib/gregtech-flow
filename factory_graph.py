@@ -29,7 +29,7 @@ class ProgramContext:
 
 
     def __init__(self):
-        logging.basicConfig(handlers=[RichHandler(level=logging.DEBUG, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+        logging.basicConfig(handlers=[RichHandler(level=logging.INFO, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
 
 
     @staticmethod
