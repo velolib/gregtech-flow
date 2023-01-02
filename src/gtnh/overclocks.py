@@ -215,7 +215,7 @@ class OverclockHandler:
         else:
             recipe.O = IngredientCollection(Ingredient(recipe.O._ings[0].name, TGS_wood_out))
         recipe.eut = self.voltage_cutoffs[oc_idx] - 1
-        print(oc_idx)
+        # print(oc_idx)
         recipe.dur = max(100/(2**(oc_idx)), 1)
 
         return recipe

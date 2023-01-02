@@ -339,7 +339,7 @@ class SympySolver:
     def _solve(self):
         while True: # Loop until solved - algorithm may adjust edges each time it sees an EmptySet
             res = linsolve(self.system, self.variables)
-            print(res)
+            # print(res)
             if isinstance(res, EmptySet):
                 self._searchForInconsistency()
                 exit(1)
