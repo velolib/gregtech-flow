@@ -9,6 +9,9 @@ from pathlib import Path
 import yaml
 from rich import print as rprint
 from rich.logging import RichHandler
+from rich.panel import Panel
+from rich.console import Console, group
+from rich.text import Text
 
 # Internal libraries
 from prototypes.linearSolver import systemOfEquationsSolverGraphGen
@@ -29,8 +32,13 @@ class ProgramContext:
 
 
     def __init__(self):
-        logging.basicConfig(handlers=[RichHandler(level=logging.INFO, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
-
+        with open('config_factory_graph.yaml', 'r') as f:
+            graph_config = yaml.safe_load(f)
+        
+        LOG_LEVEL = logging.INFO
+        if graph_config['DEBUG_LOGGING']:
+            LOG_LEVEL = logging.DEBUG
+        logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
 
     @staticmethod
     def cLog(msg, level=logging.DEBUG):
@@ -103,15 +111,29 @@ class ProgramContext:
                     project_name = project_name[:-5]
 
                 graph_gen(self, project_name, recipes, graph_config, title)
+                print('')
             else:
-                rprint('Error: Project could not be found')
+                rprint('\n[bright_red]Error: Project could not be found\n')
+
+        @group()
+        def get_elements():
+            
+            line_1 = Text()
+            line_1.append('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', style='bright_green')
+            
+            line_2 = Text()
+            line_2.append('Type ', style='bright_white')
+            line_2.append('\'end\' ', style='bright_green')
+            line_2.append('to stop this session', style='bright_white')
+            
+            yield line_1
+            yield line_2
 
         while True:
             # Interactive selector
             if not len(sys.argv) > 1:
                 readline.set_completer(completer)
-                rprint('[bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)')
-                rprint('[bright_white]Type[/] \'end\' [bright_white]to stop')
+                rprint(Panel(get_elements()))
                 rprint('[bright_white]> ', end='')
                 ip = input()
                 if ip.casefold() == 'end':
@@ -142,6 +164,7 @@ class ProgramContext:
 
 
 if __name__ == '__main__':
+    console = Console()
+    console.print(Panel('[bright_blue]gtnh-velo', expand=False))
     pc = ProgramContext()
-    pc.cLog('Wassup')
     pc.run()
