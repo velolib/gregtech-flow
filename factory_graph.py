@@ -29,7 +29,7 @@ class ProgramContext:
 
 
     def __init__(self):
-        logging.basicConfig(handlers=[RichHandler()])
+        logging.basicConfig(handlers=[RichHandler(level=logging.DEBUG, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
 
 
     @staticmethod
@@ -37,11 +37,11 @@ class ProgramContext:
         # Not sure how to level based on a variable, so just if statements for now
         log = logging.getLogger('rich')
         if level == logging.DEBUG:
-            log.debug(f'[bright_green]{msg}')
+            log.debug(f'{msg}')
         elif level == logging.INFO:
-            log.info(f'[bright_cyan]{msg}')
+            log.info(f'{msg}')
         elif level == logging.WARNING:
-            log.warning(f'[bright_red]{msg}')
+            log.warning(f'{msg}')
 
     
     def run(self, graph_gen=None):
@@ -143,4 +143,5 @@ class ProgramContext:
 
 if __name__ == '__main__':
     pc = ProgramContext()
+    pc.cLog('Wassup')
     pc.run()
