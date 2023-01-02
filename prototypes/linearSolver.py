@@ -903,7 +903,7 @@ def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, t
     
     with Progress() as progress:
         
-        task = progress.add_task('[cyan]', total=100)
+        task = progress.add_task(f'[cyan]{project_name}', total=100)
         
         progress_fun = lambda advance: progress.update(task, advance=advance)
         
@@ -917,6 +917,7 @@ def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, t
         graphPostProcessing(g, progress_cb=progress_fun)
         g.outputGraphviz()
         progress_fun(100)
+        progress.stop()
 
 
 if __name__ == '__main__':
