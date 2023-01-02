@@ -5,7 +5,6 @@ from collections import defaultdict
 from copy import deepcopy
 
 import yaml
-from termcolor import colored, cprint
 
 from src.graph._utils import _iterateOverMachines
 from src.gtnh.overclocks import OverclockHandler
@@ -303,6 +302,6 @@ def bottleneckPrint(self):
 
     # Print actual bottlenecks
     for i, rec in zip(range(number_to_print), machine_recipes):
-        cprint(f'{round(rec.multiplier, 2)}x {rec.user_voltage} {rec.machine}', 'red')
+        self.parent_context.cLog(f'{round(rec.multiplier, 2)}x {rec.user_voltage} {rec.machine}', logging.INFO)
         for out in rec.O:
-            cprint(f'    {out.name.title()} ({round(out.quant, 2)})', 'green')
+            self.parent_context.cLog(f'    {out.name.title()} ({round(out.quant, 2)})', logging.INFO)

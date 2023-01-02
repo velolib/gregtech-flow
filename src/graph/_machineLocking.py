@@ -3,8 +3,6 @@ import math
 import yaml
 from collections import defaultdict
 
-from termcolor import cprint
-
 from src.graph._utils import swapIO
 
 
@@ -277,10 +275,10 @@ def _lockMachineEdges(self, rec_id, rec):
                             self.edges[unlocked_edge]['quant'] = -excess
                             self.edges[unlocked_edge]['locked'] = True
                     else:
-                        cprint('Too many undetermined edges! Please define more numbered nodes (or different ones).', 'red')
-                        cprint(f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', 'red')
-                        cprint(f'Inputs for: {rec}', 'red')
-                        cprint(f'Input edges: {edges}', 'red')
+                        self.parent_context.cLog('Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
+                        self.parent_context.cLog(f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', logging.WARNING)
+                        self.parent_context.cLog(f'Inputs for: {rec}', logging.WARNING)
+                        self.parent_context.cLog(f'Input edges: {edges}', logging.WARNING)
 
                         self.createAdjacencyList()
                         self.outputGraphviz()
@@ -404,10 +402,10 @@ def _lockMachineEdges(self, rec_id, rec):
                             self.edges[unlocked_edge]['quant'] = excess
                             self.edges[unlocked_edge]['locked'] = True
                     else:
-                        cprint('Too many undetermined edges! Please define more numbered nodes (or different ones).', 'red')
-                        cprint(f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', 'red')
-                        cprint(f'Outputs for: {rec}', 'red')
-                        cprint(f'Output edges: {edges}', 'red')
+                        self.parent_context.cLog('Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
+                        self.parent_context.cLog(f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', logging.WARNING)
+                        self.parent_context.cLog(f'Outputs for: {rec}', logging.WARNING)
+                        self.parent_context.cLog(f'Output edges: {edges}', logging.WARNING)
 
                         self.createAdjacencyList()
                         self.outputGraphviz()
