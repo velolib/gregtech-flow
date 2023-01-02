@@ -107,6 +107,7 @@ class ProgramContext:
                 cprint('Error: Project could not be found', color='red')
 
         while True:
+            # Interactive selector
             if not len(sys.argv) > 1:
                 readline.set_completer(completer)
                 cprint('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', 'blue')
@@ -115,7 +116,8 @@ class ProgramContext:
                 if ip.casefold() == 'end':
                     exit()
                 create_graph(ip)
-                
+            
+            # CLI Selector
             else:
                 parser = argparse.ArgumentParser(description='Input project path')
                 parser.add_argument('project_path')
