@@ -48,6 +48,7 @@ class ProgramContext:
 
         with open('config_factory_graph.yaml', 'r') as f:
             graph_config = yaml.safe_load(f)
+            #graph_config = 
         
         if graph_config['USE_NEW_SOLVER']:
             graph_gen = systemOfEquationsSolverGraphGen
@@ -114,7 +115,7 @@ class ProgramContext:
                 ip = input(colored('> ', 'green'))
                 if ip.casefold() == 'end':
                     exit()
-                create_graph()
+                create_graph(ip)
                 
             else:
                 parser = argparse.ArgumentParser(description='Input project path')
