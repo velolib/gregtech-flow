@@ -3,7 +3,7 @@ import math
 import yaml
 from collections import defaultdict
 
-from src.graph._utils import swapIO
+from gtnh_velo.graph._utils import swapIO
 
 
 def _lockMachine(self, rec_id, rec, determined=False):

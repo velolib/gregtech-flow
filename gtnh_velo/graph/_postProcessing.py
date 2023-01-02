@@ -6,8 +6,8 @@ from copy import deepcopy
 
 import yaml
 
-from src.graph._utils import _iterateOverMachines
-from src.gtnh.overclocks import OverclockHandler
+from gtnh_velo.graph._utils import _iterateOverMachines
+from gtnh_velo.gtnh.overclocks import OverclockHandler
 
 
 def _addPowerLineNodes(self):

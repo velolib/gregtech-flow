@@ -6,7 +6,7 @@ from bisect import bisect_right
 import yaml
 
 # Internal libraries
-from src.data.basicTypes import Ingredient, IngredientCollection
+from gtnh_velo.data.basicTypes import Ingredient, IngredientCollection
 
 
 def require(recipe, requirements):

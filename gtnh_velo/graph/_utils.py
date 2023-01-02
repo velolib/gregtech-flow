@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from src.data.basicTypes import Recipe
+from gtnh_velo.data.basicTypes import Recipe
 
 import math
 

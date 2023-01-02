@@ -1,8 +1,8 @@
 import logging
 from collections import defaultdict
 
-from src.graph._backEdges import BasicGraph, dfs
-from src.graph._utils import swapIO
+from gtnh_velo.graph._backEdges import BasicGraph, dfs
+from gtnh_velo.graph._utils import swapIO
 
 
 def connectGraph(self):

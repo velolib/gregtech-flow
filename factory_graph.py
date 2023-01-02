@@ -14,9 +14,9 @@ from rich.console import Console, group
 from rich.text import Text
 
 # Internal libraries
-from src.prototypes.linearSolver import systemOfEquationsSolverGraphGen
-from src.graph import Graph
-from src.data.loadMachines import recipesFromConfig
+from gtnh_velo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
+from gtnh_velo.graph import Graph
+from gtnh_velo.data.loadMachines import recipesFromConfig
 
 # Conditional imports based on OS
 try: # Linux

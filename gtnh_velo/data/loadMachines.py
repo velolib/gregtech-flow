@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from src.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gtnh_velo.data.basicTypes import Ingredient, IngredientCollection, Recipe
 
 
 def standardizeMachineName(name):

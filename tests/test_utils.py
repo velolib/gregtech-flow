@@ -1,11 +1,11 @@
 # Tests for _utils.py that are probably not neede
 
 import pytest
-from src.graph._utils import swapIO, userRound
+from gtnh_velo.graph._utils import swapIO, userRound
 import yaml
 
-from src.data.loadMachines import recipesFromConfig
-from src.graph import Graph
+from gtnh_velo.data.loadMachines import recipesFromConfig
+from gtnh_velo.graph import Graph
 from factory_graph import ProgramContext
 
 pc = ProgramContext()

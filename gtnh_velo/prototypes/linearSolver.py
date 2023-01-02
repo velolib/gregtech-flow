@@ -12,9 +12,9 @@ from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
 
-from src.data.basicTypes import Ingredient, IngredientCollection, Recipe
-from src.graph import Graph
-from src.graph._utils import swapIO
+from gtnh_velo.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gtnh_velo.graph import Graph
+from gtnh_velo.graph._utils import swapIO
 
 from rich.progress import Progress
 

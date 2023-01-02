@@ -1,8 +1,8 @@
 import pytest
 import yaml
 
-from src.data.loadMachines import recipesFromConfig
-from src.graph import Graph
+from gtnh_velo.data.loadMachines import recipesFromConfig
+from gtnh_velo.graph import Graph
 from factory_graph import ProgramContext
 
 pc = ProgramContext()
