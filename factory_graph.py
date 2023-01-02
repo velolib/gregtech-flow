@@ -48,7 +48,6 @@ class ProgramContext:
 
         with open('config_factory_graph.yaml', 'r') as f:
             graph_config = yaml.safe_load(f)
-            #graph_config = 
         
         if graph_config['USE_NEW_SOLVER']:
             graph_gen = systemOfEquationsSolverGraphGen
