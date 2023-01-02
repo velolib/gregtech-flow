@@ -14,7 +14,7 @@ from rich.console import Console, group
 from rich.text import Text
 
 # Internal libraries
-from prototypes.linearSolver import systemOfEquationsSolverGraphGen
+from src.prototypes.linearSolver import systemOfEquationsSolverGraphGen
 from src.graph import Graph
 from src.data.loadMachines import recipesFromConfig
 
@@ -64,6 +64,8 @@ class ProgramContext:
         
         # Set up autcompletion config
         projects_path = Path('projects')
+        if not projects_path.exists():
+            projects_path.mkdir()
         readline.parse_and_bind('tab: complete')
         readline.set_completer_delims('')
 
