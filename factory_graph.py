@@ -104,13 +104,17 @@ class ProgramContext:
 
                 graph_gen(self, project_name, recipes, graph_config, title)
             else:
-                raise FileNotFoundError(f'[Errno 2] No such file or directory: \'{project_relpath}\'')
+                cprint('Error: Project could not be found', color='red')
 
         while True:
             if not len(sys.argv) > 1:
                 readline.set_completer(completer)
                 cprint('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', 'blue')
-                create_graph(input(colored('> ', 'green')))
+                cprint('Type \'end\' to stop')
+                ip = input(colored('> ', 'green'))
+                if ip.casefold() == 'end':
+                    exit()
+                create_graph()
                 
             else:
                 parser = argparse.ArgumentParser(description='Input project path')
