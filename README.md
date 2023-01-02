@@ -102,59 +102,72 @@ Some fields you need to know about:
   size: large # Turbine size for turbines
   pipe_casings: tungstensteel # Pipe casings for chemplants
 ```
-Electric Blast Furnace example:
+
+<details>
+    <summary><strong>Special Recipes</strong></summary>
+
 ```yaml
+# Electric Blast Furnace example
 - m: electric blast furance
-  tier: HV
-  I:
+tier: HV
+I:
     tungstic acid: 7
-  O:
+O:
     tungsten trioxide: 4
-  eut: 480
-  dur: 10
-  heat: 1200
-  coils: nichrome
-  number: 1
+eut: 480
+dur: 10
+heat: 1200
+coils: nichrome
+number: 1
 ```
-Chemical Plant example:
+
 ```yaml
+# Chemical Plant example
 - m: chem plant
-  tier: LuV
-  I:
+tier: LuV
+I:
     pine wood: 0.1
-  O:
+O:
     crushed pine materials: 40
-  eut: 120
-  dur: 10
-  coils: tungstensteel
-  pipe_casings: tungstensteel
-```
-GT++ Machine example:
-```yaml
-- m: industrial sifter
-  tier: HV
-  I:
-    platinum salt dust: 1
-  O:
-    refined platinum salt dust: 0.95
-  eut: 30
-  dur: 30
-  group: pmp recycling
-```
-Multiblock turbine example:
-```yaml
-# in the finished graph it will calculate the actual numbers
-- m: LGT
-  tier: EV
-  I:
-    benzene: 1
-  O: {}
-  eut: 0
-  dur: 0
-  material: shadow
-  size: large
+eut: 120
+dur: 10
+coils: tungstensteel
+pipe_casings: tungstensteel
 
 ```
+
+```yaml
+# GT++ Machine example
+- m: industrial sifter
+tier: HV
+I:
+    platinum salt dust: 1
+O:
+    refined platinum salt dust: 0.95
+eut: 30
+dur: 30
+group: pmp recycling
+
+```
+
+```yaml
+# Multiblock turbine example
+# in the finished graph it will calculate the actual numbers
+- m: LGT
+tier: EV
+I:
+    benzene: 1
+O: {}
+eut: 0
+dur: 0
+material: shadow
+size: large
+```
+
+</details>
+
+
 
 ## Thanks
 Visit the original [gtnh-flow by OrderedSet](https://github.com/OrderedSet86/gtnh-flow). Without it this fork would not exist!
+
