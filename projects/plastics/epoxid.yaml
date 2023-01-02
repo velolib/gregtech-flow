@@ -23,7 +23,6 @@ metadata:
     '[1] salt water': 2000
   eut: 30
   dur: 24
-  circuit: 24
 - m: lcr
   group: epichlorohydrin
   tier: MV
@@ -38,7 +37,6 @@ metadata:
     '[2] salt water': 1000
   dur: 32
   eut: 30
-  circuit: 24
 - m: electrolyzer
   group: epichlorohydrin
   tier: MV

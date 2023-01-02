@@ -115,10 +115,12 @@ class ProgramContext:
             else:
                 parser = argparse.ArgumentParser(description='Input project path')
                 parser.add_argument('project_path')
+                
                 parser.add_argument('format_override', nargs='?', choices=['png', 'pdf'], default=None)
                 args = parser.parse_args()
                 if args.format_override:
                     graph_config['OUTPUT_FORMAT'] = args.format_override
+                
                 create_graph(args.project_path)
                 break
 
