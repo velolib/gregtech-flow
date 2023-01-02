@@ -1,0 +1,31 @@
+[project]
+name = "gtnh_velo"
+description = "Factory Optimization Flowcharts for Gregtech: New Horizons"
+version = '0.0.0'
+authors = [
+    { name = "velo", email = "vlocitize@gmail.com" }
+]
+dependencies = [
+    "attrs",
+    "colorama",
+    "commonmark",
+    "exceptiongroup",
+    "graphviz",
+    "iniconfig",
+    "mpmath",
+    "packaging",
+    "pipdeptree",
+    "pluggy",
+    "Pygments",
+    "pyparsing",
+    "pyreadline3",
+    "pytest",
+    "PyYAML",
+    "rich",
+    "sympy",
+    "tomli",
+]
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=3.2,<4"]
