@@ -57,56 +57,56 @@ class ProgramContext:
         readline.parse_and_bind('tab: complete')
         readline.set_completer_delims('')
 
-        while True:
-            def completer(text, state):
-                prefix = ''
-                suffix = text
-                if '/' in text:
-                    parts = text.split('/')
-                    prefix = '/'.join(parts[:-1])
-                    suffix = parts[-1]
+        def completer(text, state):
+            prefix = ''
+            suffix = text
+            if '/' in text:
+                parts = text.split('/')
+                prefix = '/'.join(parts[:-1])
+                suffix = parts[-1]
 
-                target_path = projects_path / prefix
-                valid_tabcompletes = os.listdir(target_path)
-                valid_completions = [x for x in valid_tabcompletes if x.startswith(suffix)]
-                if state < len(valid_completions): # Only 1 match
-                    completion = valid_completions[state]
-                    if prefix != '':
-                        completion = ''.join([prefix, '/', completion])
-                    if not completion.endswith('.yaml'):
-                        completion += '/'
-                    return completion
-                else:
-                    return None
-                
+            target_path = projects_path / prefix
+            valid_tabcompletes = os.listdir(target_path)
+            valid_completions = [x for x in valid_tabcompletes if x.startswith(suffix)]
+            if state < len(valid_completions): # Only 1 match
+                completion = valid_completions[state]
+                if prefix != '':
+                    completion = ''.join([prefix, '/', completion])
+                if not completion.endswith('.yaml'):
+                    completion += '/'
+                return completion
+            else:
+                return None
             
-            def create_graph(project_name):
-                if not project_name.endswith('.yaml'):
-                    # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
-                    # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
-                    project_name += '.yaml'
+        
+        def create_graph(project_name):
+            if not project_name.endswith('.yaml'):
+                # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
+                # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
+                project_name += '.yaml'
+            
+            project_relpath = projects_path / f'{project_name}'
+            
+            if project_relpath.exists():
+                title = None
+                with project_relpath.open(mode='r') as f:
+                    doc_load = list(yaml.safe_load_all(f))
+                    if len(doc_load) >= 2: 
+                        metadata = doc_load[0]
+                        cprint(f'{metadata["title"]}', 'blue')
+                        cprint(f'{metadata["description"]}', 'green')
+                        title = metadata['title']
                 
-                project_relpath = projects_path / f'{project_name}'
-                
-                if project_relpath.exists():
-                    title = None
-                    with project_relpath.open(mode='r') as f:
-                        doc_load = list(yaml.safe_load_all(f))
-                        if len(doc_load) >= 2: 
-                            metadata = doc_load[0]
-                            cprint(f'{metadata["title"]}', 'blue')
-                            cprint(f'{metadata["description"]}', 'green')
-                            title = metadata['title']
-                    
-                    recipes = recipesFromConfig(project_name)
+                recipes = recipesFromConfig(project_name)
 
-                    if project_name.endswith('.yaml'):
-                        project_name = project_name[:-5]
+                if project_name.endswith('.yaml'):
+                    project_name = project_name[:-5]
 
-                    graph_gen(self, project_name, recipes, graph_config, title)
-                else:
-                    raise FileNotFoundError(f'[Errno 2] No such file or directory: \'{project_relpath}\'')
+                graph_gen(self, project_name, recipes, graph_config, title)
+            else:
+                raise FileNotFoundError(f'[Errno 2] No such file or directory: \'{project_relpath}\'')
 
+        while True:
             if not len(sys.argv) > 1:
                 readline.set_completer(completer)
                 cprint('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', 'blue')
