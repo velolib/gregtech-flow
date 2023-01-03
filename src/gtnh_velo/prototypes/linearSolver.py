@@ -916,10 +916,3 @@ def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, t
         g.outputGraphviz()
         progress_fun(100)
         progress.stop()
-
-
-if __name__ == '__main__':
-    from factory_graph import ProgramContext
-    c = ProgramContext()
-
-    c.run(graph_gen=systemOfEquationsSolverGraphGen)
