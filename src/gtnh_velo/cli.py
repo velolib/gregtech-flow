@@ -142,27 +142,32 @@ class ProgramContext:
             readline.set_completer(filepath_completer)
             rprint(Panel(get_elements(), expand=False))
             rprint('[bright_white]> ', end='')
-            the_input = input()
+            the_input = str(input())
             
             match the_input:
                 case 'end':
                     exit()
                 case _:
-                    if not self.create_graph(the_input):
-                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                    return self.create_graph(the_input)
     
     def direct_cli(self, path: Path):
-        print(path)
+        return self.create_graph(str(path))
                 
     def run(self):
         def run_typer(path: Optional[Path] = typer.Argument(None)):
             rprint(Panel('[bright_blue]gtnh-velo', expand=False))
             if path is None:
-                self.interactive_cli()
+                result = self.interactive_cli()
             else:
-                self.direct_cli(path)
+                result = self.direct_cli(path)
+            if not result:
+                rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
         
         typer.run(run_typer)
-if __name__ == '__main__':
+
+def main():
     cli = ProgramContext()
     cli.run()
+
+if __name__ == '__main__':
+    main()
