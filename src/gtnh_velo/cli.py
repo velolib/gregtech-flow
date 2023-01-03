@@ -59,7 +59,12 @@ class ProgramContext:
         
     @staticmethod
     def cLog(msg, level=logging.DEBUG):
-        # Not sure how to level based on a variable, so just if statements for now
+        """Logging for gtnh_velo
+
+        Args:
+            msg (str): The message
+            level (logging.DEBUG, logging.INFO, etc., optional): Logging level. Defaults to logging.DEBUG.
+        """
         log = logging.getLogger('rich')
         if level == logging.DEBUG:
             log.debug(f'{msg}')
@@ -68,15 +73,23 @@ class ProgramContext:
         elif level == logging.WARNING:
             log.warning(f'{msg}')
 
-    @staticmethod
-    def standardGraphGen(self, project_name, recipes, graph_config, title=None):
-        # Create graph and render, this is unused
-        g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
-        g.connectGraph()
-        g.balanceGraph()
-        g.outputGraphviz()
+    # @staticmethod
+    # def standardGraphGen(self, project_name, recipes, graph_config, title=None):
+    #     # Create graph and render, this is unused
+    #     g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
+    #     g.connectGraph()
+    #     g.balanceGraph()
+    #     g.outputGraphviz()
 
-    def create_graph(self, project_name):
+    def create_graph(self, project_name) -> bool:
+        """Centralized graph creation function to check if the project exists or not
+
+        Args:
+            project_name (str): The project's path
+
+        Returns:
+            bool: Whether or not the project exists
+        """
         if not project_name.endswith('.yaml'):
             # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
             # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
@@ -102,7 +115,12 @@ class ProgramContext:
         else:
             return False
     
-    def interactive_cli(self):
+    def interactive_cli(self) -> bool:
+        """The interactive CLI for gtnh_velo
+
+        Returns:
+            bool: Whether or not the project file was found
+        """
         readline.parse_and_bind('tab: complete')
         readline.set_completer_delims('')
         def filepath_completer(text, state):
@@ -125,6 +143,7 @@ class ProgramContext:
                 return completion
             else:
                 return None
+
         @group()
         def get_elements():
             line_1 = Text()
@@ -150,10 +169,20 @@ class ProgramContext:
                 case _:
                     return self.create_graph(the_input)
     
-    def direct_cli(self, path: Path):
+    def direct_cli(self, path: Path) -> bool:
+        """Direct CLI implementation for gtnh_velo
+
+        Args:
+            path (Path): The path inputted from the command line
+
+        Returns:
+            bool: Whether or not a project was found at the inputted path
+        """
         return self.create_graph(str(path))
                 
-    def run(self):
+    def run(self) -> None:
+        """Runs the program
+        """
         def run_typer(path: Optional[Path] = typer.Argument(None)):
             rprint(Panel('[bright_blue]gtnh-velo', expand=False))
             if path is None:
