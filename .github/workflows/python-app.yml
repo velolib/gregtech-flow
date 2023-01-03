@@ -31,6 +31,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-    - name: Format with autopep8
-      run: |
-        autopep8 --max-line-length 160 --ignore E402 --in-place -r
