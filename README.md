@@ -18,7 +18,11 @@ Samples of the graphs in the repository.
 
 ## :arrow_down: Installation
 ### Install as Python Module
-1. In the terminal run `pip install gtnhvelo -U`
+This is the easiest installation method. In the terminal run:
+```
+pip install gtnhvelo -U
+```
+
 
 ### Linux
 1. Clone this repository `git clone https://github.com/velolib/gtnh-velo.git`
@@ -34,7 +38,7 @@ Samples of the graphs in the repository.
 4. Install Graphviz, for Windows there is a guide [here](https://forum.graphviz.org/t/new-simplified-installation-procedure-on-windows/224). Graphviz must be added to the system PATH for all users or the current user which may or may not need a system restart.
     - If Graphviz is not added to the system path, you can add the path to the `/bin` folder in the configuration file.
 
-A note: It's recommended to create a virtual environment before installing the dependencies to isolate the development environment from the global scope.
+>It's recommended to create a virtual environment before installing to isolate the development environment from the global scope.
 
 
 ## :timer_clock: Usage
@@ -46,10 +50,13 @@ This is the usage guide for the first time installing.
     - `flow` then inputting your project name in the dialog
 3. The output graph will pop up and be available in `output/`
 
+When running `flow` the directories `projects/` and `output/` will be created in the working directory if they do not exist already.
+
 
 ## :interrobang: Answers
 ### How to configure
-You can configure a variety of layout and functional choices in `config_factory_graph.yaml`. Make sure to not delete any keys.
+The configuration file `config_factory_graph.yaml` will be created on startup in the working directory if not created already.
+You can configure a variety of layout and functional options using it. Make sure to not delete any keys.
 <!-- <details>
     <summary><strong>Verbose Configuration List</strong></summary>
     coming soon...
@@ -57,7 +64,7 @@ You can configure a variety of layout and functional choices in `config_factory_
 
 
 ### Automatic overclocking
-Yes, all of the names in the following image are recognized and will be overclocked automatically to 1A of the tier you select. This includes the EBF, which will default to 1 hatch of the selected tier.
+All of the names in the following image are recognized and will be overclocked automatically to 1A of the tier you select. This includes the EBF, which will default to 1 hatch of the selected tier.
 <details>
     <summary><strong>Recognized Overclocks</strong></summary>
     <img src="https://github.com/OrderedSet86/gtnh-flow/raw/master/samples/recognized_ocs.png" alt="Recognized overclocks">
@@ -89,7 +96,7 @@ Here is how to write a recipe (note the indentation):
 ```
 In every project there needs to be 1 (and only 1) recipe that needs to be locked. This is the recipe that every other recipe will be balanced off of. Here are the fields you need to add:
 ```yaml
-# These 2 fields are mutually exclusive
+# These 2 fields (target and number) are mutually exclusive!
 - m: example machine
   target: # lock it to the number of a specific ingredient output per second
     trichlorosilane: 4000

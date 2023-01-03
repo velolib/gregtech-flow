@@ -30,6 +30,7 @@ except Exception:  # Windows
 class ProgramContext:
 
     def __init__(self) -> None:
+
         with open('config_factory_graph.yaml', 'r') as f:
             graph_config = yaml.safe_load(f)
 
@@ -51,7 +52,12 @@ class ProgramContext:
             LOG_LEVEL = logging.DEBUG
         logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
 
-        # Other variables
+        # Other stuff
+        output_path = Path('output')
+        if not output_path.exists():
+            output_path.mkdir()
+        self.output_path = output_path
+
         projects_path = Path('projects')
         if not projects_path.exists():
             projects_path.mkdir()
