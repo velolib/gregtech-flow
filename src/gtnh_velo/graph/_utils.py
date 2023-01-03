@@ -40,6 +40,7 @@ def userRound(number):
             rounded = roundfxn(number)
             return rounded
 
+
 def createAdjacencyList(self):
     # Compute "adjacency list" (node -> {I: edges, O: edges}) for edges and machine-involved edges
     adj = defaultdict(lambda: defaultdict(list))
@@ -67,6 +68,7 @@ def createAdjacencyList(self):
         for io_type, edges in io_group.items():
             self.parent_context.cLog(f'{io_type} {edges}')
     self.parent_context.cLog('')
+
 
 def tierToVoltage(self, tier_idx):
     # Return voltage from tier index

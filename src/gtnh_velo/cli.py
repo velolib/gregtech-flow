@@ -11,7 +11,7 @@ import yaml
 from rich import print as rprint
 from rich.logging import RichHandler
 from rich.panel import Panel
-from rich.console import Console, group
+from rich.console import group
 from rich.text import Text
 import typer
 
@@ -21,9 +21,9 @@ from gtnh_velo.graph import Graph
 from gtnh_velo.data.loadMachines import recipesFromConfig
 
 # Conditional imports based on OS
-try: # Linux
+try:  # Linux
     import readline
-except Exception: # Windows
+except Exception:  # Windows
     import pyreadline3 as readline
 
 
@@ -32,7 +32,7 @@ class ProgramContext:
     def __init__(self) -> None:
         with open('config_factory_graph.yaml', 'r') as f:
             graph_config = yaml.safe_load(f)
-        
+
         # Checks for graph_config
         if not graph_config['GRAPHVIZ']:
             raise RuntimeError('Graphviz option not inputted!')
@@ -44,19 +44,19 @@ class ProgramContext:
             else:
                 raise RuntimeError('Graphviz path does not exist')
         self.graph_config = graph_config
-        
+
         # Logger setup
         LOG_LEVEL = logging.INFO
         if graph_config['DEBUG_LOGGING']:
             LOG_LEVEL = logging.DEBUG
         logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
-        
+
         # Other variables
         projects_path = Path('projects')
         if not projects_path.exists():
             projects_path.mkdir()
         self.projects_path = projects_path
-        
+
     @staticmethod
     def cLog(msg, level=logging.DEBUG):
         """Logging for gtnh_velo
@@ -94,17 +94,17 @@ class ProgramContext:
             # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
             # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
             project_name += '.yaml'
-        
+
         project_relpath = self.projects_path / f'{project_name}'
-        
+
         if project_relpath.exists():
             title = None
             with project_relpath.open(mode='r') as f:
                 doc_load = list(yaml.safe_load_all(f))
-                if len(doc_load) >= 2: 
+                if len(doc_load) >= 2:
                     metadata = doc_load[0]
                     title = metadata['title']
-            
+
             recipes = recipesFromConfig(project_name, self.graph_config)
 
             if project_name.endswith('.yaml'):
@@ -114,7 +114,7 @@ class ProgramContext:
             return True
         else:
             return False
-    
+
     def interactive_cli(self) -> bool:
         """The interactive CLI for gtnh_velo
 
@@ -123,6 +123,7 @@ class ProgramContext:
         """
         readline.parse_and_bind('tab: complete')
         readline.set_completer_delims('')
+
         def filepath_completer(text, state):
             prefix = ''
             suffix = text
@@ -134,7 +135,7 @@ class ProgramContext:
             target_path = self.projects_path / prefix
             valid_tabcompletes = os.listdir(target_path)
             valid_completions = [x for x in valid_tabcompletes if x.startswith(suffix)]
-            if state < len(valid_completions): # Only 1 match
+            if state < len(valid_completions):  # Only 1 match
                 completion = valid_completions[state]
                 if prefix != '':
                     completion = ''.join([prefix, '/', completion])
@@ -156,19 +157,19 @@ class ProgramContext:
 
             yield line_1
             yield line_2
-        
+
         while True:
             readline.set_completer(filepath_completer)
             rprint(Panel(get_elements(), expand=False))
             rprint('[bright_white]> ', end='')
             the_input = str(input())
-            
+
             match the_input:
                 case 'end':
                     exit()
                 case _:
                     return self.create_graph(the_input)
-    
+
     def direct_cli(self, path: Path) -> bool:
         """Direct CLI implementation for gtnh_velo
 
@@ -179,7 +180,7 @@ class ProgramContext:
             bool: Whether or not a project was found at the inputted path
         """
         return self.create_graph(str(path))
-                
+
     def run(self) -> None:
         """Runs the program
         """
@@ -191,12 +192,14 @@ class ProgramContext:
                 result = self.direct_cli(path)
             if not result:
                 rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
-        
+
         typer.run(run_typer)
+
 
 def main():
     cli = ProgramContext()
     cli.run()
+
 
 if __name__ == '__main__':
     main()

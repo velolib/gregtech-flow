@@ -41,7 +41,7 @@ def standardizeMachineName(name):
         'high current industrial arc furnace': 'industrial arc furnace',
 
         'lpf': 'large processing factory',
-        
+
         'industrial mixer': 'industrial mixing machine',
 
         'industrial thermal centrifuge': 'large thermal refinery',
@@ -53,7 +53,7 @@ def standardizeMachineName(name):
         'xl turbo gas turbine': 'XL Turbo Gas Turbine',
         'xl gas turbine': 'XL Turbo Gas Turbine',
     }
-    
+
     if name in replacements:
         return replacements[name]
     else:

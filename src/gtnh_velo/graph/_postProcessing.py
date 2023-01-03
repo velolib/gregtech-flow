@@ -30,12 +30,12 @@ def _addPowerLineNodes(self):
     rocket_fuels = power_data['rocket_fuels']
     naqline_fuels = power_data['naqline_fuels']
 
-    known_burnables = {x: [0, y] for x,y in turbineables.items()}
-    known_burnables.update({x: [1, y] for x,y in combustables.items()})
-    known_burnables.update({x: [2, y] for x,y in semifluids.items()})
+    known_burnables = {x: [0, y] for x, y in turbineables.items()}
+    known_burnables.update({x: [1, y] for x, y in combustables.items()})
+    known_burnables.update({x: [2, y] for x, y in semifluids.items()})
     known_burnables['steam'] = [3, 500]
-    known_burnables.update({x: [4, y] for x,y in rocket_fuels.items()})
-    known_burnables.update({x: [5, y] for x,y in naqline_fuels.items()})
+    known_burnables.update({x: [4, y] for x, y in rocket_fuels.items()})
+    known_burnables.update({x: [5, y] for x, y in naqline_fuels.items()})
 
     outputs = self.adj['sink']['I']
     generator_number = 1
@@ -55,7 +55,7 @@ def _addPowerLineNodes(self):
             node_name = f'{gen_name} (100% eff)'
             self.addNode(
                 node_gen,
-                label= node_name,
+                label=node_name,
                 fillcolor=self.graph_config['NONLOCKEDNODE_COLOR'],
                 shape='box'
             )
@@ -81,7 +81,7 @@ def _addPowerLineNodes(self):
             del self.edges[edge]
             self.createAdjacencyList()
 
-    ### Automatically balance the outputs of UCFE
+    # Automatically balance the outputs of UCFE
     # 1. Get UCFE node
     UCFE_id = None
     for rec_id, rec in self.recipes.items():
@@ -123,7 +123,7 @@ def _addPowerLineNodes(self):
         ratio = combustion_promoter_quant / fuel_quant
         self.parent_context.cLog(f'UCFE power ratio: {ratio}', level=logging.INFO)
 
-        efficiency = math.exp(-coefficient*ratio) * 1.5
+        efficiency = math.exp(-coefficient * ratio) * 1.5
         self.parent_context.cLog(f'Efficiency stat: {efficiency}', level=logging.INFO)
         output_eu = efficiency * burn_value_table[fuel_name] * (fuel_quant / 1000)
 
@@ -139,7 +139,7 @@ def _addSummaryNode(self):
 
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']
-    
+
     def makeLineHtml(lab_text, amt_text, lab_color, amt_color, unit=None):
         if not unit:
             unit = ''
@@ -207,19 +207,19 @@ def _addSummaryNode(self):
         if tier > max_tier:
             max_tier = tier
     voltage_at_tier = self.tierToVoltage(max_tier)
-    
+
     # TODO: Clean this up somehhow. So unreadable
     match self.graph_config['POWER_UNITS']:
         case 'auto':
-            fun = lambda z: self.userRound(z/voltage_at_tier)
+            def fun(z): return self.userRound(z / voltage_at_tier)
             unit = f' {tiers[max_tier].upper()}'
         case 'eut':
             unit = None
             fun = self.userRound
         case _:
-            fun = lambda z: self.userRound(z/self.tierToVoltage(tiers.index(self.graph_config['POWER_UNITS'])))
+            def fun(z): return self.userRound(z / self.tierToVoltage(tiers.index(self.graph_config['POWER_UNITS'])))
             unit = f' {self.graph_config["POWER_UNITS"].upper()}'
-            
+
     io_label_lines.append(makeLineHtml('Input EU/t:', fun(eut_rounded), 'white', color_negative, unit))
     if 'eu' in total_io:
         produced_eut = int(math.floor(total_io['eu'] / 20))
@@ -253,8 +253,8 @@ def _addSummaryNode(self):
         max_draw += rec.base_eut * math.ceil(rec.multiplier)
 
     io_label_lines.append(
-        makeLineHtml( 
-            'Peak power draw:', 
+        makeLineHtml(
+            'Peak power draw:',
             f'{round(max_draw/voltage_at_tier, 2)}A {tiers[max_tier].upper()}',
             'white',
             color_negative
@@ -264,7 +264,7 @@ def _addSummaryNode(self):
     # Create final table
     io_label = ''.join(io_label_lines)
     io_label = f'<<table border="0">{io_label}</table>>'
-    
+
     # Add to graph
     self.addNode(
         'total_io_node',
@@ -284,14 +284,14 @@ def bottleneckPrint(self):
     )
 
     max_print = self.graph_config.get('MAX_BOTTLENECKS')
-    number_to_print = max(len(machine_recipes)//10, max_print)
+    number_to_print = max(len(machine_recipes) // 10, max_print)
 
     if self.graph_config.get('USE_BOTTLENECK_EXACT_VOLTAGE'):
         # Want to overclock and underclock to force the specific voltage
         chosen_voltage = self.graph_config.get('BOTTLENECK_MIN_VOLTAGE')
 
         oh = OverclockHandler(self.parent_context)
-        raise NotImplementedError() # FIXME: Add negative overclocking
+        raise NotImplementedError()  # FIXME: Add negative overclocking
         for i, rec in enumerate(self.recipes):
             rec.user_voltage = chosen_voltage
 

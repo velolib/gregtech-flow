@@ -9,7 +9,6 @@ import graphviz
 import pkgutil
 
 
-
 def balanceGraph(self):
     # Applies locking info to existing graph
     self.removeBackEdges()
@@ -46,7 +45,7 @@ def balanceGraph(self):
             rec = self.recipes[rec_id]
 
             # Multiply I/O and eut
-            self.recipes[rec_id] *= getattr(rec, 'number') # NOTE: Sets rec.multiplier
+            self.recipes[rec_id] *= getattr(rec, 'number')  # NOTE: Sets rec.multiplier
 
             # Color edge as "locked"
             self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
@@ -57,7 +56,7 @@ def balanceGraph(self):
                 f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
                 f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
             ]
-            
+
             if self.graph_config['POWER_UNITS'] != 'eut':
                 if self.graph_config['POWER_UNITS'] == 'auto':
                     tier_idx = overclock_data['voltage_data']['tiers'].index(rec.user_voltage)
@@ -66,13 +65,11 @@ def balanceGraph(self):
                 voltage_at_tier = self.tierToVoltage(tier_idx)
                 label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
                 label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
-            
-            
+
             self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
-
             # Lock all adjacent ingredient edges
-            self._simpleLockMachineEdges(str(rec_id), rec) # Used when multiplier is known
+            self._simpleLockMachineEdges(str(rec_id), rec)  # Used when multiplier is known
             self.createAdjacencyList()
 
     elif ln == 0 and lt != 0:
@@ -95,7 +92,7 @@ def balanceGraph(self):
 
         # Update on graph
         # Multiply I/O and eut
-        self.recipes[rec_id] *= machine_multiplier # NOTE: Sets rec.multiplier
+        self.recipes[rec_id] *= machine_multiplier  # NOTE: Sets rec.multiplier
 
         # Color edge as locked
         self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
@@ -116,12 +113,11 @@ def balanceGraph(self):
             voltage_at_tier = self.tierToVoltage(tier_idx)
             label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
             label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
-        
+
         self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
-
         # Lock all adjacent ingredient edges
-        self._simpleLockMachineEdges(str(rec_id), rec) # Used when multiplier is known
+        self._simpleLockMachineEdges(str(rec_id), rec)  # Used when multiplier is known
         self.createAdjacencyList()
 
         # self.outputGraphviz()
@@ -180,15 +176,15 @@ def balanceGraph(self):
             raise RuntimeError('A machine is disconnected from all the others. Please check for typos. A graph will be output.')
 
         edge_priority = sorted([
-                [stats, rec_id]
-                for rec_id, stats
-                in determination_score.items()
-            ],
+            [stats, rec_id]
+            for rec_id, stats
+            in determination_score.items()
+        ],
             reverse=True,
             key=lambda x: x[0]
         )
         picked_edge = edge_priority[0]
-        if picked_edge[0][1] > 0: # At least one determined edge
+        if picked_edge[0][1] > 0:  # At least one determined edge
             rec_id = picked_edge[1]
             rec = self.recipes[rec_id]
             self._lockMachine(rec_id, rec)
@@ -229,7 +225,7 @@ def outputGraphviz(self):
     }
     g = graphviz.Digraph(
         engine='dot',
-        strict=False, # Prevents edge grouping
+        strict=False,  # Prevents edge grouping
         graph_attr={
             'bgcolor': self.graph_config['BACKGROUND_COLOR'],
             'splines': self.graph_config['LINE_STYLE'],
@@ -265,26 +261,25 @@ def outputGraphviz(self):
         num_outputs = len(outputs) if outputs is not None else 0
         has_input = num_inputs > 0
         has_output = num_outputs > 0
-        
+
         if not has_input and not has_output:
             return (False, lab)
 
         machine_cell = ['<br />'.join(lab.split('\n'))]
         lines = [
-            ('i',inputs), 
-            (None,machine_cell), 
-            ('o',outputs)
+            ('i', inputs),
+            (None, machine_cell),
+            ('o', outputs)
         ]
         if is_inverted:
             lines.reverse()
-        lines = [(x,y) for x,y in lines if y]
+        lines = [(x, y) for x, y in lines if y]
 
-        
         io = StringIO()
         if is_vertical:
             # Each Row is a table
             io.write('<<table border="0" cellspacing="0">')
-            for port_type,line in lines:
+            for port_type, line in lines:
                 io.write('<tr>')
                 io.write('<td>')
                 io.write('<table border="0" cellspacing="0">')
@@ -305,7 +300,7 @@ def outputGraphviz(self):
             # Each columns is a table
             io.write('<<table border="0" cellspacing="0">')
             io.write('<tr>')
-            for port_type,line in lines:
+            for port_type, line in lines:
                 io.write('<td>')
                 io.write('<table border="0" cellspacing="0">')
                 for cell in line:
@@ -331,12 +326,12 @@ def outputGraphviz(self):
         def unique(sequence):
             seen = set()
             return [x for x in sequence if not (x in seen or seen.add(x))]
-        
+
         if node_name == 'source':
-            names = unique([name for src,_,name in self.edges.keys() if src == 'source'])
+            names = unique([name for src, _, name in self.edges.keys() if src == 'source'])
             isTable, newLabel = make_table(label, None, names)
         elif node_name == 'sink':
-            names = unique([name for _,dst,name in self.edges.keys() if dst == 'sink'])
+            names = unique([name for _, dst, name in self.edges.keys() if dst == 'sink'])
             isTable, newLabel = make_table(label, names, None)
         elif re.match(r'^\d+$', node_name):
             rec = self.recipes[node_name]
@@ -347,7 +342,7 @@ def outputGraphviz(self):
         if isTable:
             kwargs['label'] = newLabel
             kwargs['shape'] = 'plain'
-        
+
         graph.node(
             f'{node_name}',
             **kwargs,
@@ -380,7 +375,7 @@ def outputGraphviz(self):
 
     inPort = self.getInputPortSide()
     outPort = self.getOutputPortSide()
-    
+
     is_inverted = self.graph_config['ORIENTATION'] in ['BT', 'RL']
     is_vertical = self.graph_config['ORIENTATION'] in ['TB', 'BT']
 
@@ -412,7 +407,7 @@ def outputGraphviz(self):
         dst_port = f'{dst_port}:{inPort}' if dst_has_port else dst_port
 
         port_style = dict(edge_style)
-        
+
         angle = 60 if is_vertical else 20
         dist = 2.5 if is_vertical else 4
         port_style.update(labeldistance=str(dist), labelangle=str(angle))
@@ -435,24 +430,23 @@ def outputGraphviz(self):
         dst_is_joint_i = re.match('^joint_i', dst_node)
         src_is_joint_o = re.match('^joint_o', src_node)
         dst_is_joint_o = re.match('^joint_o', dst_node)
-        
-        #if src_is_joint_o:
+
+        # if src_is_joint_o:
         #    port_style.update(taillabel=f'{lab}')
         if src_has_port and dst_is_joint_o:
             port_style.update(headlabel=f'{lab}')
         if src_is_joint_i and dst_has_port:
             port_style.update(taillabel=f'{lab}')
-        #if dst_is_joint_i:
+        # if dst_is_joint_i:
         #    port_style.update(headlabel=f'{lab}')
 
         def mulcolor(h, f):
             h = h.lstrip('#')
-            r,g,b = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-            r = max(0,min(255,int(r * f)))
-            g = max(0,min(255,int(g * f)))
-            b = max(0,min(255,int(b * f)))
-            return '#' + ''.join(hex(x)[2:].zfill(2) for x in [r,g,b])
-
+            r, g, b = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+            r = max(0, min(255, int(r * f)))
+            g = max(0, min(255, int(g * f)))
+            b = max(0, min(255, int(b * f)))
+            return '#' + ''.join(hex(x)[2:].zfill(2) for x in [r, g, b])
 
         g.edge(
             src_port,
@@ -473,8 +467,8 @@ def outputGraphviz(self):
 
     if self.graph_config.get('DEBUG_SHOW_EVERY_STEP', False):
         input()
-    
+
     if self.graph_config.get('PRINT_BOTTLENECKS'):
         self.bottleneckPrint()
-        
+
     self.parent_context.cLog(f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)

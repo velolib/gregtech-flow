@@ -49,7 +49,7 @@ def connectGraph(self):
             fillcolor=self.graph_config['NONLOCKEDNODE_COLOR'],
             label=machine_label
         )
-    
+
     # Add I/O connections
     added_edges = set()
     for rec_id, rec in self.recipes.items():
@@ -134,4 +134,3 @@ def removeBackEdges(self):
             )
 
             del self.edges[edge_def]
-
