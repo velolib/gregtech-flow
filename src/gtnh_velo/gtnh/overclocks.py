@@ -1,12 +1,13 @@
 # Standard libraries
 import math
 from bisect import bisect_right
+import pkgutil
 
 # Pypi libraries
 import yaml
 
 # Internal libraries
-from src.data.basicTypes import Ingredient, IngredientCollection
+from gtnh_velo.data.basicTypes import Ingredient, IngredientCollection
 
 
 def require(recipe, requirements):
@@ -20,18 +21,15 @@ def require(recipe, requirements):
 
 class OverclockHandler:
 
-
     def __init__(self, parent_context):
         self.parent_context = parent_context
-        self.ignore_underclock = False # Whether to throw an error or actually underclock if
-                                       # USER_VOLTAGE < EUT
+        self.ignore_underclock = False  # Whether to throw an error or actually underclock if
+        # USER_VOLTAGE < EUT
 
-        with open('data/overclock_data.yaml', 'r') as f:
-            self.overclock_data = yaml.safe_load(f)
+        self.overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
 
         self.voltages = self.overclock_data['voltage_data']['tiers']
-        self.voltage_cutoffs = [32*pow(4, x) + 1 for x in range(len(self.voltages))]
-
+        self.voltage_cutoffs = [32 * pow(4, x) + 1 for x in range(len(self.voltages))]
 
     def modifyGTpp(self, recipe):
         if recipe.machine not in self.overclock_data['GTpp_stats']:
@@ -39,7 +37,7 @@ class OverclockHandler:
 
         # Get per-machine boosts
         SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['GTpp_stats'][recipe.machine]
-        SPEED_BOOST = 1/(SPEED_BOOST+1)
+        SPEED_BOOST = 1 / (SPEED_BOOST + 1)
 
         # Calculate base parallel count and clip time to 1 tick
         available_eut = self.voltage_cutoffs[self.voltages.index(recipe.user_voltage)]
@@ -48,12 +46,12 @@ class OverclockHandler:
 
         # Calculate current EU/t spend
         x = recipe.eut * EU_DISCOUNT
-        y = min(int(available_eut/x), MAX_PARALLEL)
-        TOTAL_EUT = x*y
+        y = min(int(available_eut / x), MAX_PARALLEL)
+        TOTAL_EUT = x * y
 
         # Debug info
-        self.parent_context.cLog('Base GT++ OC stats:', 'yellow')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}', 'yellow')
+        self.parent_context.cLog('Base GT++ OC stats:')
+        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
 
         # Attempt to GT OC the entire parallel set until no energy is left
         while TOTAL_EUT < available_eut:
@@ -62,8 +60,8 @@ class OverclockHandler:
             if OC_EUT <= available_eut:
                 if OC_DUR < 1:
                     break
-                self.parent_context.cLog('OC to', 'yellow')
-                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}', 'yellow')
+                self.parent_context.cLog('OC to')
+                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}')
                 TOTAL_EUT = OC_EUT
                 NEW_RECIPE_TIME = OC_DUR
             else:
@@ -76,17 +74,16 @@ class OverclockHandler:
 
         return recipe
 
-
     def modifyGTppSetParallel(self, recipe, MAX_PARALLEL, speed_per_tier=1):
         available_eut = self.voltage_cutoffs[self.voltages.index(recipe.user_voltage)]
 
         x = recipe.eut
-        y = min(int(available_eut/x), MAX_PARALLEL)
-        TOTAL_EUT = x*y
+        y = min(int(available_eut / x), MAX_PARALLEL)
+        TOTAL_EUT = x * y
         NEW_RECIPE_TIME = round(recipe.dur * (speed_per_tier)**(self.voltages.index(recipe.user_voltage) + 1), 2)
 
-        self.parent_context.cLog('Base GT++ OC stats:', 'yellow')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}', 'yellow')
+        self.parent_context.cLog('Base GT++ OC stats:')
+        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
 
         while TOTAL_EUT < available_eut:
             OC_EUT = TOTAL_EUT * 4
@@ -94,8 +91,8 @@ class OverclockHandler:
             if OC_EUT <= available_eut:
                 if OC_DUR < 20:
                     break
-                self.parent_context.cLog('OC to', 'yellow')
-                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}', 'yellow')
+                self.parent_context.cLog('OC to')
+                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}')
                 TOTAL_EUT = OC_EUT
                 NEW_RECIPE_TIME = OC_DUR
             else:
@@ -107,7 +104,6 @@ class OverclockHandler:
         recipe.O *= y
 
         return recipe
-
 
     def modifyChemPlant(self, recipe):
         require(
@@ -121,7 +117,8 @@ class OverclockHandler:
 
         chem_plant_pipe_casings = self.overclock_data['pipe_casings']
         if recipe.pipe_casings not in chem_plant_pipe_casings:
-            raise RuntimeError(f'Expected chem pipe casings in {list(chem_plant_pipe_casings)}\ngot "{recipe.pipe_casings}". (More are allowed, I just haven\'t added them yet.)')
+            raise RuntimeError(
+                f'Expected chem pipe casings in {list(chem_plant_pipe_casings)}\ngot "{recipe.pipe_casings}". (More are allowed, I just haven\'t added them yet.)')
 
         recipe.dur /= self.overclock_data['coil_multipliers'][recipe.coils]
         throughput_multiplier = chem_plant_pipe_casings[recipe.pipe_casings]
@@ -132,13 +129,11 @@ class OverclockHandler:
 
         return recipe
 
-
     def modifyZhuhai(self, recipe):
         recipe = self.modifyStandard(recipe)
-        parallel_count = (self.voltages.index(recipe.user_voltage) + 2)*2
+        parallel_count = (self.voltages.index(recipe.user_voltage) + 2) * 2
         recipe.O *= parallel_count
         return recipe
-
 
     def modifyEBF(self, recipe):
         require(
@@ -162,7 +157,6 @@ class OverclockHandler:
 
         return recipe
 
-
     def modifyPyrolyse(self, recipe):
         require(
             recipe,
@@ -176,7 +170,6 @@ class OverclockHandler:
 
         return recipe
 
-
     def modifyMultiSmelter(self, recipe):
         recipe.eut = 4
         recipe.dur = 500
@@ -186,7 +179,6 @@ class OverclockHandler:
         recipe.I *= batch_size
         recipe.O *= batch_size
         return recipe
-
 
     def modifyTGS(self, recipe):
         require(
@@ -204,7 +196,7 @@ class OverclockHandler:
 
         oc_idx = self.voltages.index(recipe.user_voltage)
         tTier = oc_idx + 1
-        TGS_base_output = (2*(tTier**2) - (2*tTier) + 5) * 5
+        TGS_base_output = (2 * (tTier**2) - (2 * tTier) + 5) * 5
         TGS_wood_out = TGS_base_output * saw_multipliers[recipe.saw_type]
 
         assert len(recipe.O) <= 1, 'Automatic TGS overclocking only supported for single output - ask dev to support saplings'
@@ -215,11 +207,10 @@ class OverclockHandler:
         else:
             recipe.O = IngredientCollection(Ingredient(recipe.O._ings[0].name, TGS_wood_out))
         recipe.eut = self.voltage_cutoffs[oc_idx] - 1
-        print(oc_idx)
-        recipe.dur = max(100/(2**(oc_idx)), 1)
+        # print(oc_idx)
+        recipe.dur = max(100 / (2**(oc_idx)), 1)
 
         return recipe
-
 
     def modifyUtupu(self, recipe):
         require(
@@ -230,13 +221,13 @@ class OverclockHandler:
             ]
         )
 
-        ### First do parallel step of GTpp
+        # First do parallel step of GTpp
         if recipe.machine not in self.overclock_data['GTpp_stats']:
             raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:GTpp_stats')
 
         # Get per-machine boosts
         SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['GTpp_stats'][recipe.machine]
-        SPEED_BOOST = 1/(SPEED_BOOST+1)
+        SPEED_BOOST = 1 / (SPEED_BOOST + 1)
 
         # Calculate base parallel count and clip time to 1 tick
         available_eut = self.voltage_cutoffs[self.voltages.index(recipe.user_voltage)]
@@ -245,19 +236,19 @@ class OverclockHandler:
 
         # Calculate current EU/t spend
         x = recipe.eut * EU_DISCOUNT
-        y = min(int(available_eut/x), MAX_PARALLEL)
-        TOTAL_EUT = x*y
+        y = min(int(available_eut / x), MAX_PARALLEL)
+        TOTAL_EUT = x * y
 
         # Debug info
-        self.parent_context.cLog('Base GT++ OC stats:', 'yellow')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}', 'yellow')
+        self.parent_context.cLog('Base GT++ OC stats:')
+        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
 
-        ### Now do GT EBF OC
+        # Now do GT EBF OC
         base_voltage = bisect_right(self.voltage_cutoffs, TOTAL_EUT)
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
 
-        actual_heat = self.overclock_data['coil_heat'][recipe.coils] # + 100 * min(0, user_voltage - 1) # I assume there's no bonus heat on UT
+        actual_heat = self.overclock_data['coil_heat'][recipe.coils]  # + 100 * min(0, user_voltage - 1) # I assume there's no bonus heat on UT
         excess_heat = actual_heat - recipe.heat
         eut_discount = 0.95 ** (excess_heat // 900)
         perfect_ocs = (excess_heat // 1800)
@@ -268,7 +259,6 @@ class OverclockHandler:
         recipe.O *= y
 
         return recipe
-
 
     def modifyFusion(self, recipe):
         # Ignore "tier" and just use "mk" argument for OCs
@@ -292,7 +282,6 @@ class OverclockHandler:
         recipe.machine = f'MK{recipe.mk} {recipe.machine}'
         return recipe
 
-
     def modifyTurbine(self, recipe, fuel_type):
         require(
             recipe,
@@ -306,8 +295,7 @@ class OverclockHandler:
         material = recipe.material.lower()
         size = recipe.size.lower()
 
-        with open('data/turbine_data.yaml', 'r') as f:
-            turbine_data = yaml.safe_load(f)
+        turbine_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/turbine_data.yaml'))
         assert fuel in turbine_data[fuel_type], f'Unsupported fuel "{fuel}"'
         assert material in turbine_data['materials'], f'Unsupported material "{material}"'
         assert size in turbine_data['rotor_size'], f'Unsupported size "{size}"'
@@ -319,13 +307,13 @@ class OverclockHandler:
             # Calculate optimal gas flow for turbine (in EU/t)
             optimal_eut = (
                 material_data['mining speed']
-                    * turbine_data['rotor_size'][size]['multiplier']
-                    * 50
+                * turbine_data['rotor_size'][size]['multiplier']
+                * 50
             )
             efficiency = (
-                (material_data['tier'] * 10) 
-                    + 100 
-                    + turbine_data['rotor_size'][size]['efficiency']
+                (material_data['tier'] * 10)
+                + 100
+                + turbine_data['rotor_size'][size]['efficiency']
             )
 
             burn_value = turbine_data[fuel_type][fuel]
@@ -333,7 +321,7 @@ class OverclockHandler:
             output_eut = math.floor(optimal_flow_L_t * burn_value * efficiency / 100)
         else:
             raise NotImplementedError('Specifying "flow" feature not implemented yet')
-        
+
         # print(f'{optimal_eut=}')
         # print(f'{optimal_flow_L_t=}')
         # print(f'{efficiency=}')
@@ -341,7 +329,7 @@ class OverclockHandler:
 
         additional = []
         if fuel_type == 'steam_fuels':
-            additional.append(Ingredient('[recycle] distilled water', optimal_flow_L_t//160))
+            additional.append(Ingredient('[recycle] distilled water', optimal_flow_L_t // 160))
 
         recipe.eut = 0
         recipe.dur = 1
@@ -354,14 +342,12 @@ class OverclockHandler:
 
         return recipe
 
-
     def modifyXT(self, recipe, fuel_type):
         recipe = self.modifyTurbine(recipe, fuel_type)
         recipe.I *= 16
         recipe.O *= 16
 
         return recipe
-
 
     def calculateStandardOC(self, recipe):
         base_voltage = bisect_right(self.voltage_cutoffs, recipe.eut)
@@ -371,13 +357,11 @@ class OverclockHandler:
             raise RuntimeError(f'Recipe has negative overclock! Min voltage is {base_voltage}, given OC voltage is {user_voltage}.\n{recipe}')
         return oc_count
 
-
     def modifyStandard(self, recipe):
         oc_count = self.calculateStandardOC(recipe)
         recipe.eut = recipe.eut * 4**oc_count
         recipe.dur = recipe.dur / 2**oc_count
         return recipe
-
 
     def modifyPerfect(self, recipe):
         oc_count = self.calculateStandardOC(recipe)
@@ -385,9 +369,8 @@ class OverclockHandler:
         recipe.dur = recipe.dur / 4**oc_count
         return recipe
 
-
     def overclockRecipe(self, recipe, ignore_underclock=False):
-        ### Modifies recipe according to overclocks
+        # Modifies recipe according to overclocks
         # By the time that the recipe arrives here, it should have a "user_voltage" argument which indicates
         # what the user is actually providing.
         self.ignore_underclock = ignore_underclock

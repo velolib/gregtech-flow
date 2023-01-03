@@ -3,6 +3,9 @@ output/
 
 .vscode/
 
+testing.py
+config_factory_graph.yaml
+
 # === STANDARD PYTHON IGNORES ===
 # from https://github.com/github/gitignore/blob/main/Python.gitignore
 

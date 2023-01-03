@@ -3,9 +3,9 @@ import math
 import pytest
 import yaml
 
-from src.data.loadMachines import recipesFromConfig
-from src.graph import Graph
-from factory_graph import ProgramContext
+from gtnh_velo.data.loadMachines import recipesFromConfig
+from gtnh_velo.graph import Graph
+from gtnh_velo.cli import ProgramContext
 
 pc = ProgramContext()
 
@@ -20,7 +20,7 @@ def test_balanceSimple():
     project_name = 'simpleGraph.yaml'
 
     # Load recipes
-    recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
+    recipes = recipesFromConfig(project_name, loadTestConfig(), project_folder='tests/testProjects')
 
     # Create graph
     g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
@@ -47,7 +47,7 @@ def test_balanceLoop():
     project_name = 'loopGraph.yaml'
 
     # Load recipes
-    recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
+    recipes = recipesFromConfig(project_name, loadTestConfig(), project_folder='tests/testProjects')
 
     # Create graph
     g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())

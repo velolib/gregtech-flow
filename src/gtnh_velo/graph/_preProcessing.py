@@ -1,8 +1,8 @@
 import logging
 from collections import defaultdict
 
-from src.graph._backEdges import BasicGraph, dfs
-from src.graph._utils import swapIO
+from gtnh_velo.graph._backEdges import BasicGraph, dfs
+from gtnh_velo.graph._utils import swapIO
 
 
 def connectGraph(self):
@@ -49,7 +49,7 @@ def connectGraph(self):
             fillcolor=self.graph_config['NONLOCKEDNODE_COLOR'],
             label=machine_label
         )
-    
+
     # Add I/O connections
     added_edges = set()
     for rec_id, rec in self.recipes.items():
@@ -114,7 +114,7 @@ def removeBackEdges(self):
 
         for edge_def, edge_data in relevant_edges:
             node_from, node_to, ing_name = edge_def
-            self.parent_context.cLog(f'Fixing factory cycle by redirecting "{ing_name.title()}" to sink', 'yellow', level=logging.INFO)
+            self.parent_context.cLog(f'Fixing factory cycle by redirecting "{ing_name.title()}" to sink', level=logging.INFO)
 
             # Redirect looped ingredient to sink
             self.addEdge(
@@ -134,4 +134,3 @@ def removeBackEdges(self):
             )
 
             del self.edges[edge_def]
-

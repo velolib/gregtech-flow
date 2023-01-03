@@ -3,9 +3,9 @@ from copy import deepcopy
 import pytest
 import yaml
 
-from src.data.basicTypes import Ingredient, Recipe, IngredientCollection
-from src.gtnh.overclocks import OverclockHandler
-from factory_graph import ProgramContext
+from gtnh_velo.data.basicTypes import Ingredient, Recipe, IngredientCollection
+from gtnh_velo.gtnh.overclocks import OverclockHandler
+from gtnh_velo.cli import ProgramContext
 
 pc = ProgramContext()
 oh = OverclockHandler(ProgramContext)

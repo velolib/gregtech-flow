@@ -1,12 +1,12 @@
 # Tests for _utils.py that are probably not neede
 
 import pytest
-from src.graph._utils import swapIO, userRound
+from gtnh_velo.graph._utils import swapIO, userRound
 import yaml
 
-from src.data.loadMachines import recipesFromConfig
-from src.graph import Graph
-from factory_graph import ProgramContext
+from gtnh_velo.data.loadMachines import recipesFromConfig
+from gtnh_velo.graph import Graph
+from gtnh_velo.cli import ProgramContext
 
 pc = ProgramContext()
 
@@ -39,12 +39,12 @@ def test_tierToVoltage():
     project_name = 'simpleGraph.yaml'
 
     # Load recipes
-    recipes = recipesFromConfig(project_name, project_folder='tests/testProjects')
+    recipes = recipesFromConfig(project_name, loadTestConfig(), project_folder='tests/testProjects')
 
     # Create graph
     g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
 
-    with open('data/overclock_data.yaml', 'r') as f:
+    with open('src/gtnh_velo/resources/overclock_data.yaml', 'r') as f:
         tiers = yaml.safe_load(f)['voltage_data']['tiers']
     tiers_dict = {
         'lv': 32, 'mv': 128, 'hv': 512, 'ev': 2048,

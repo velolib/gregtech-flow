@@ -4,11 +4,11 @@ import re
 from collections import defaultdict
 from copy import deepcopy
 
+import pkgutil
 import yaml
-from termcolor import colored, cprint
 
-from src.graph._utils import _iterateOverMachines
-from src.gtnh.overclocks import OverclockHandler
+from gtnh_velo.graph._utils import _iterateOverMachines
+from gtnh_velo.gtnh.overclocks import OverclockHandler
 
 
 def _addPowerLineNodes(self):
@@ -22,8 +22,7 @@ def _addPowerLineNodes(self):
         5: 'large naquadah reactor',
     }
 
-    with open('data/power_data.yaml', 'r') as f:
-        power_data = yaml.safe_load(f)
+    power_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/power_data.yaml'))
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']
@@ -31,12 +30,12 @@ def _addPowerLineNodes(self):
     rocket_fuels = power_data['rocket_fuels']
     naqline_fuels = power_data['naqline_fuels']
 
-    known_burnables = {x: [0, y] for x,y in turbineables.items()}
-    known_burnables.update({x: [1, y] for x,y in combustables.items()})
-    known_burnables.update({x: [2, y] for x,y in semifluids.items()})
+    known_burnables = {x: [0, y] for x, y in turbineables.items()}
+    known_burnables.update({x: [1, y] for x, y in combustables.items()})
+    known_burnables.update({x: [2, y] for x, y in semifluids.items()})
     known_burnables['steam'] = [3, 500]
-    known_burnables.update({x: [4, y] for x,y in rocket_fuels.items()})
-    known_burnables.update({x: [5, y] for x,y in naqline_fuels.items()})
+    known_burnables.update({x: [4, y] for x, y in rocket_fuels.items()})
+    known_burnables.update({x: [5, y] for x, y in naqline_fuels.items()})
 
     outputs = self.adj['sink']['I']
     generator_number = 1
@@ -46,7 +45,7 @@ def _addPowerLineNodes(self):
         quant = edge_data['quant']
 
         if ing_name in known_burnables and not ing_name in self.graph_config['DO_NOT_BURN']:
-            self.parent_context.cLog(f'Detected burnable: {ing_name.title()}! Adding to chart.', 'blue', level=logging.INFO)
+            self.parent_context.cLog(f'Detected burnable: {ing_name.title()}! Adding to chart.', level=logging.INFO)
             generator_idx, eut_per_cell = known_burnables[ing_name]
             gen_name = generator_names[generator_idx].title()
 
@@ -56,7 +55,7 @@ def _addPowerLineNodes(self):
             node_name = f'{gen_name} (100% eff)'
             self.addNode(
                 node_gen,
-                label= node_name,
+                label=node_name,
                 fillcolor=self.graph_config['NONLOCKEDNODE_COLOR'],
                 shape='box'
             )
@@ -82,7 +81,7 @@ def _addPowerLineNodes(self):
             del self.edges[edge]
             self.createAdjacencyList()
 
-    ### Automatically balance the outputs of UCFE
+    # Automatically balance the outputs of UCFE
     # 1. Get UCFE node
     UCFE_id = None
     for rec_id, rec in self.recipes.items():
@@ -90,7 +89,7 @@ def _addPowerLineNodes(self):
             UCFE_id = rec_id
 
     if UCFE_id is not None:
-        self.parent_context.cLog('Detected UCFE, autobalancing...', 'green', level=logging.INFO)
+        self.parent_context.cLog('Detected UCFE, autobalancing...', level=logging.INFO)
 
         # 2. Determine whether non-combustion promoter input is combustable or gas
         input_ingredient_collection = self.recipes[UCFE_id].I
@@ -122,10 +121,10 @@ def _addPowerLineNodes(self):
         combustion_promoter_quant = input_ingredient_collection['combustion promoter'][0]
         fuel_quant = input_ingredient_collection[fuel_name][0]
         ratio = combustion_promoter_quant / fuel_quant
-        self.parent_context.cLog(f'UCFE power ratio: {ratio}', 'green', level=logging.INFO)
+        self.parent_context.cLog(f'UCFE power ratio: {ratio}', level=logging.INFO)
 
-        efficiency = math.exp(-coefficient*ratio) * 1.5
-        self.parent_context.cLog(f'Efficiency stat: {efficiency}', 'green', level=logging.INFO)
+        efficiency = math.exp(-coefficient * ratio) * 1.5
+        self.parent_context.cLog(f'Efficiency stat: {efficiency}', level=logging.INFO)
         output_eu = efficiency * burn_value_table[fuel_name] * (fuel_quant / 1000)
 
         # 4. Update edge with new value
@@ -135,14 +134,12 @@ def _addPowerLineNodes(self):
 def _addSummaryNode(self):
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
-    with open('data/misc.yaml', 'r') as f:
-        misc_data = yaml.safe_load(f)
-    with open('data/overclock_data.yaml', 'r') as f:
-        overclock_data = yaml.safe_load(f)
+    misc_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/misc.yaml'))
+    overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
 
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']
-    
+
     def makeLineHtml(lab_text, amt_text, lab_color, amt_color, unit=None):
         if not unit:
             unit = ''
@@ -210,19 +207,19 @@ def _addSummaryNode(self):
         if tier > max_tier:
             max_tier = tier
     voltage_at_tier = self.tierToVoltage(max_tier)
-    
+
     # TODO: Clean this up somehhow. So unreadable
     match self.graph_config['POWER_UNITS']:
         case 'auto':
-            fun = lambda z: self.userRound(z/voltage_at_tier)
+            def fun(z): return self.userRound(z / voltage_at_tier)
             unit = f' {tiers[max_tier].upper()}'
         case 'eut':
             unit = None
             fun = self.userRound
         case _:
-            fun = lambda z: self.userRound(z/self.tierToVoltage(tiers.index(self.graph_config['POWER_UNITS'])))
+            def fun(z): return self.userRound(z / self.tierToVoltage(tiers.index(self.graph_config['POWER_UNITS'])))
             unit = f' {self.graph_config["POWER_UNITS"].upper()}'
-            
+
     io_label_lines.append(makeLineHtml('Input EU/t:', fun(eut_rounded), 'white', color_negative, unit))
     if 'eu' in total_io:
         produced_eut = int(math.floor(total_io['eu'] / 20))
@@ -256,8 +253,8 @@ def _addSummaryNode(self):
         max_draw += rec.base_eut * math.ceil(rec.multiplier)
 
     io_label_lines.append(
-        makeLineHtml( 
-            'Peak power draw:', 
+        makeLineHtml(
+            'Peak power draw:',
             f'{round(max_draw/voltage_at_tier, 2)}A {tiers[max_tier].upper()}',
             'white',
             color_negative
@@ -267,7 +264,7 @@ def _addSummaryNode(self):
     # Create final table
     io_label = ''.join(io_label_lines)
     io_label = f'<<table border="0">{io_label}</table>>'
-    
+
     # Add to graph
     self.addNode(
         'total_io_node',
@@ -287,14 +284,14 @@ def bottleneckPrint(self):
     )
 
     max_print = self.graph_config.get('MAX_BOTTLENECKS')
-    number_to_print = max(len(machine_recipes)//10, max_print)
+    number_to_print = max(len(machine_recipes) // 10, max_print)
 
     if self.graph_config.get('USE_BOTTLENECK_EXACT_VOLTAGE'):
         # Want to overclock and underclock to force the specific voltage
         chosen_voltage = self.graph_config.get('BOTTLENECK_MIN_VOLTAGE')
 
         oh = OverclockHandler(self.parent_context)
-        raise NotImplementedError() # FIXME: Add negative overclocking
+        raise NotImplementedError()  # FIXME: Add negative overclocking
         for i, rec in enumerate(self.recipes):
             rec.user_voltage = chosen_voltage
 
@@ -303,6 +300,6 @@ def bottleneckPrint(self):
 
     # Print actual bottlenecks
     for i, rec in zip(range(number_to_print), machine_recipes):
-        cprint(f'{round(rec.multiplier, 2)}x {rec.user_voltage} {rec.machine}', 'red')
+        self.parent_context.cLog(f'{round(rec.multiplier, 2)}x {rec.user_voltage} {rec.machine}', logging.INFO)
         for out in rec.O:
-            cprint(f'    {out.name.title()} ({round(out.quant, 2)})', 'green')
+            self.parent_context.cLog(f'    {out.name.title()} ({round(out.quant, 2)})', logging.INFO)

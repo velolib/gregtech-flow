@@ -1,17 +1,15 @@
 import itertools
 
-from src.gtnh.overclocks import OverclockHandler
+from gtnh_velo.gtnh.overclocks import OverclockHandler
 
 
 class Graph:
-
-
 
     def __init__(self, graph_name, recipes, parent_context, graph_config=None, title=None):
         self.graph_name = graph_name
         self.recipes = {str(i): x for i, x in enumerate(recipes)}
         self.nodes = {}
-        self.edges = {} # uniquely defined by (machine from, machine to, ing name)
+        self.edges = {}  # uniquely defined by (machine from, machine to, ing name)
         self.parent_context = parent_context
         self.graph_config = graph_config
         self.title = title
@@ -38,7 +36,6 @@ class Graph:
         for rec in recipes:
             self.parent_context.cLog(rec)
         self.parent_context.cLog('')
-
 
     # Graph utility functions
     from ._utils import (

@@ -12,7 +12,7 @@ def stripBrackets(self, ing):
         if ing[:2] == '\u2588 ':
             prefix = True
         stripped = ing.split(']')[-1].strip()
-        if prefix and stripped[:2] != '\u2588 ': 
+        if prefix and stripped[:2] != '\u2588 ':
             stripped = '\u2588 ' + stripped
         return stripped
     else:
@@ -58,7 +58,7 @@ def getUniqueColor(self, id):
 
 
 def getPortId(self, ing_name, port_type):
-    normal = re.sub(' ','_', ing_name).lower().strip()
+    normal = re.sub(' ', '_', ing_name).lower().strip()
     return f'{port_type}_{normal}'
 
 
@@ -93,57 +93,57 @@ def getQuantLabel(self, ing_id, ing_quant):
 
 def _combineOutputs(self):
     ings = defaultdict(list)
-    for src,dst,ing in self.edges.keys():
-        ings[(src,ing)].append(dst)
-    merge = {k:v for k,v in ings.items() if len(v) > 1}
+    for src, dst, ing in self.edges.keys():
+        ings[(src, ing)].append(dst)
+    merge = {k: v for k, v in ings.items() if len(v) > 1}
 
     n = 0
-    for t,lst in merge.items():
-        src,ing = t
-        
+    for t, lst in merge.items():
+        src, ing = t
+
         joint_id = f'joint_o_{n}'
-        n = n+1
+        n = n + 1
 
         ing_id = self.getIngId(ing)
         ing_color = self.getUniqueColor(ing_id)
         self.addNode(joint_id, shape='point', color=ing_color)
         qSum = 0
         for dst in lst:
-            k = (src,dst,ing)
+            k = (src, dst, ing)
             info = self.edges[k]
             self.edges.pop(k)
             quant = info['quant']
             kwargs = info['kwargs']
             qSum = qSum + quant
             self.addEdge(joint_id, dst, ing, quant, **kwargs)
-        
+
         self.addEdge(src, joint_id, ing, qSum)
 
 
 def _combineInputs(self):
     ings = defaultdict(list)
-    for src,dst,ing in self.edges.keys():
-        ings[(dst,ing)].append(src)
-    merge = {k:v for k,v in ings.items() if len(v) > 1}
+    for src, dst, ing in self.edges.keys():
+        ings[(dst, ing)].append(src)
+    merge = {k: v for k, v in ings.items() if len(v) > 1}
 
     n = 0
-    for t,lst in merge.items():
-        dst,ing = t
-        
+    for t, lst in merge.items():
+        dst, ing = t
+
         joint_id = f'joint_i_{n}'
-        n = n+1
+        n = n + 1
 
         ing_id = self.getIngId(ing)
         ing_color = self.getUniqueColor(ing_id)
         self.addNode(joint_id, shape='point', color=ing_color)
         qSum = 0
         for src in lst:
-            k = (src,dst,ing)
+            k = (src, dst, ing)
             info = self.edges[k]
             self.edges.pop(k)
             quant = info['quant']
             kwargs = info['kwargs']
             qSum = qSum + quant
             self.addEdge(src, joint_id, ing, quant, **kwargs)
-        
+
         self.addEdge(joint_id, dst, ing, qSum)

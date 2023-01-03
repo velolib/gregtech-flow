@@ -1,11 +1,10 @@
 import logging
 import math
+import pkgutil
 import yaml
 from collections import defaultdict
 
-from termcolor import cprint
-
-from src.graph._utils import swapIO
+from gtnh_velo.graph._utils import swapIO
 
 
 def _lockMachine(self, rec_id, rec, determined=False):
@@ -14,18 +13,18 @@ def _lockMachine(self, rec_id, rec, determined=False):
         'I': [x for x in self.adj_machine[rec_id]['I'] if self.edges[x].get('locked', False)],
         'O': [x for x in self.adj_machine[rec_id]['O'] if self.edges[x].get('locked', False)],
     }
-    self.parent_context.cLog(f'Locking {rec.machine}...', 'green')
-    self.parent_context.cLog(all_relevant_edges, 'yellow')
+    self.parent_context.cLog(f'Locking {rec.machine}...')
+    self.parent_context.cLog(all_relevant_edges)
 
     if all(len(y) == 0 for x, y in all_relevant_edges.items()):
-        self.parent_context.cLog(f'No locked machine edges adjacent to {rec.machine.title()}. Cannot balance.', 'red', level=logging.WARNING)
+        self.parent_context.cLog(f'No locked machine edges adjacent to {rec.machine.title()}. Cannot balance.', level=logging.WARNING)
         self.outputGraphviz()
         exit(1)
 
     multipliers = []
     for io_type in ['I', 'O']:
         io_side_edges = all_relevant_edges[io_type]
-        total_sided_request = defaultdict(float) # Want to handle multiple ingredient inputs properly
+        total_sided_request = defaultdict(float)  # Want to handle multiple ingredient inputs properly
 
         for edge in io_side_edges:
             node_from, node_to, ing_name = edge
@@ -44,14 +43,14 @@ def _lockMachine(self, rec_id, rec, determined=False):
             multipliers.append(quant_per_s / base_speed)
 
     if len(multipliers) == 1:
-        self.parent_context.cLog(f'{rec.machine} {multipliers}', 'white', level=logging.DEBUG)
+        self.parent_context.cLog(f'{rec.machine} {multipliers}', level=logging.DEBUG)
     else:
-        self.parent_context.cLog(f'{rec.machine} {multipliers}', 'red', level=logging.WARNING)
+        self.parent_context.cLog(f'{rec.machine} {multipliers}', level=logging.WARNING)
     final_multiplier = max(multipliers)
     self.recipes[rec_id] *= final_multiplier
 
     existing_label = self.nodes[rec_id]['label']
-    
+
     label_lines = [
         f'{round(rec.multiplier, 2)}x {rec.user_voltage} {existing_label}',
         f'Cycle: {rec.dur/20}s',
@@ -59,8 +58,7 @@ def _lockMachine(self, rec_id, rec, determined=False):
         f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
     ]
     if self.graph_config['POWER_UNITS'] != 'eut':
-        with open('data/overclock_data.yaml', 'r') as f:
-            overclock_data = yaml.safe_load(f)
+        overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
         if self.graph_config['POWER_UNITS'] == 'auto':
             tier_idx = overclock_data['voltage_data']['tiers'].index(rec.user_voltage)
         else:
@@ -68,7 +66,7 @@ def _lockMachine(self, rec_id, rec, determined=False):
         voltage_at_tier = self.tierToVoltage(tier_idx)
         label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
         label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
-            
+
     self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
     # Lock ingredient edges using new quant
@@ -83,64 +81,64 @@ def _lockMachineEdges(self, rec_id, rec):
 
     # ==[ ALGORITHM ]==
     # For input edges
-        # If single input
-            # If undetermined, lock
-            # If determined
-                # If determined = ing request quant (ish)
-                    # do nothing
-                # If determined > ing request quant
-                    # send to sink
-                # If determined < ing request quant
-                    # take from source
-        # If multiple input
-            # If all determined
-                # Follow single input determined rules, except sum(determined)
-            # If all but one determined
-                # If sum(determined) < ing request quant
-                    # request remainder from undetermined
-                # If sum(determined) >= ing request quant
-                    # ((this might indicate an error, throw warning))
-                    # the most reasonable response would probably be:
-                    # 1. reorganize edges from determined to go to sink (somewhat complicated process)
-                        # there may be a fractional edge
-                    # 2. send undetermined edge to sink
-            # If >1 undetermined
-                # no way to figure out what was meant here
-                # throw error and ask user to specify additional information
+    # If single input
+    # If undetermined, lock
+    # If determined
+    # If determined = ing request quant (ish)
+    # do nothing
+    # If determined > ing request quant
+    # send to sink
+    # If determined < ing request quant
+    # take from source
+    # If multiple input
+    # If all determined
+    # Follow single input determined rules, except sum(determined)
+    # If all but one determined
+    # If sum(determined) < ing request quant
+    # request remainder from undetermined
+    # If sum(determined) >= ing request quant
+    # ((this might indicate an error, throw warning))
+    # the most reasonable response would probably be:
+    # 1. reorganize edges from determined to go to sink (somewhat complicated process)
+    # there may be a fractional edge
+    # 2. send undetermined edge to sink
+    # If >1 undetermined
+    # no way to figure out what was meant here
+    # throw error and ask user to specify additional information
     # For output edges
-        # If single output
-            # If undetermined, lock
-            # If determined
-                # If determined > ing supply quant
-                    # take from source
-                # If determined < ing supply quant
-                    # send excess to sink
-        # If multiple output
-            # If all determined
-                # Follow single output rules, except sum(determined)
-            # If all but one determined
-                # If sum(determined) < ing supply quant
-                    # send remainder to undetermined
-                # If sum(determined) >= ing supply quant
-                    # (another difficult situation)
-                    # (just throw an error for now)
-                    # Some sketch work at a solutions:
-                        # 1. send some from source to supply missing determined
-                        # 2. remove edge to undetermined
-                        # 3.
+    # If single output
+    # If undetermined, lock
+    # If determined
+    # If determined > ing supply quant
+    # take from source
+    # If determined < ing supply quant
+    # send excess to sink
+    # If multiple output
+    # If all determined
+    # Follow single output rules, except sum(determined)
+    # If all but one determined
+    # If sum(determined) < ing supply quant
+    # send remainder to undetermined
+    # If sum(determined) >= ing supply quant
+    # (another difficult situation)
+    # (just throw an error for now)
+    # Some sketch work at a solutions:
+    # 1. send some from source to supply missing determined
+    # 2. remove edge to undetermined
+    # 3.
 
-                        # are there other sources of this item/fluid?
-                            # if no
-                                # supply undetermined and missing determined from source
-                            # if yes, are the other supply nodes locked?
-                                # if all locked
-                                    # if sufficient supply from other locked nodes
-                                        # remove edge with current rec, other machines will supply
-                                    # if insufficient supply from other locked nodes
-                                        #
-            # If >1 undetermined
-                # no way to determine what was meant here
-                # throw error and ask user to specify additional information
+    # are there other sources of this item/fluid?
+    # if no
+    # supply undetermined and missing determined from source
+    # if yes, are the other supply nodes locked?
+    # if all locked
+    # if sufficient supply from other locked nodes
+    # remove edge with current rec, other machines will supply
+    # if insufficient supply from other locked nodes
+    #
+    # If >1 undetermined
+    # no way to determine what was meant here
+    # throw error and ask user to specify additional information
 
     adj_edges = self.adj[rec_id]
     # Create mapping of {io_dir: {ing_name: edges}}
@@ -160,11 +158,11 @@ def _lockMachineEdges(self, rec_id, rec):
             machine_ing_io = sum(getattr(rec, io_dir)[ing_name]) / (rec.dur / 20)
 
             if io_dir == 'I':
-                if num_io == 1: # Single input
-                    if locked_bools[0] == False: # Undetermined
+                if num_io == 1:  # Single input
+                    if locked_bools[0] == False:  # Undetermined
                         self.edges[edges[0]]['quant'] = machine_ing_io
                         self.edges[edges[0]]['locked'] = True
-                    else: # Determined
+                    else:  # Determined
                         locked_quant = self.edges[edges[0]]['quant']
                         excess = locked_quant - machine_ing_io
                         node_from, node_to, _ = edges[0]
@@ -189,11 +187,11 @@ def _lockMachineEdges(self, rec_id, rec):
                                 ing_name,
                                 -excess
                             )
-                else: # Multiple input
-                    if all(locked_bools): # All inputs determined
+                else:  # Multiple input
+                    if all(locked_bools):  # All inputs determined
                         edge_quants = [self.edges[x]['quant'] for x in edges]
                         locked_quant = sum(edge_quants)
-                        excess = locked_quant - machine_ing_io # Excess ingredient available
+                        excess = locked_quant - machine_ing_io  # Excess ingredient available
 
                         if math.isclose(excess, 0, abs_tol=1e-9):
                             continue
@@ -208,7 +206,7 @@ def _lockMachineEdges(self, rec_id, rec):
                         elif excess > 0:
                             # Adjust connected edges down until excess is satisfied
                             # If math doesn't work out without remainder, adjust relevant edge down
-                                # and make a new sink
+                            # and make a new sink
 
                             for idx, quant in enumerate(edge_quants):
                                 relevant_edge = edges[idx]
@@ -225,7 +223,7 @@ def _lockMachineEdges(self, rec_id, rec):
                                     del self.edges[relevant_edge]
                                     if math.isclose(excess, 0, abs_tol=1e-9):
                                         break
-                                else: # Removing edge would cause negative excess, need to make fractional edge
+                                else:  # Removing edge would cause negative excess, need to make fractional edge
                                     excess *= -1
                                     self.edges[relevant_edge]['quant'] -= excess
                                     self.addEdge(
@@ -234,10 +232,10 @@ def _lockMachineEdges(self, rec_id, rec):
                                         ing_name,
                                         quant - excess
                                     )
-                    elif sum(locked_bools) == len(edges) - 1: # 1 input undetermined
+                    elif sum(locked_bools) == len(edges) - 1:  # 1 input undetermined
                         edge_quants = {x: self.edges[x]['quant'] for x in edges if self.edges[x].get('locked', False)}
                         locked_quant = sum(edge_quants.values())
-                        excess = locked_quant - machine_ing_io # Excess ingredient available
+                        excess = locked_quant - machine_ing_io  # Excess ingredient available
                         unlocked_edge = edges[locked_bools.index(False)]
 
                         if excess > 0 or math.isclose(excess, 0, abs_tol=1e-9):
@@ -262,7 +260,7 @@ def _lockMachineEdges(self, rec_id, rec):
                                     del self.edges[edge]
                                     if math.isclose(excess, 0, abs_tol=1e-9):
                                         break
-                                else: # Removing edge would cause negative excess, need to make fractional edge
+                                else:  # Removing edge would cause negative excess, need to make fractional edge
                                     excess *= -1
                                     self.edges[edge]['quant'] -= excess
                                     self.addEdge(
@@ -273,26 +271,27 @@ def _lockMachineEdges(self, rec_id, rec):
                                         locked=True
                                     )
 
-                        elif excess < 0: # Not enough product from locked edges, therefore must come from unlocked
+                        elif excess < 0:  # Not enough product from locked edges, therefore must come from unlocked
                             self.edges[unlocked_edge]['quant'] = -excess
                             self.edges[unlocked_edge]['locked'] = True
                     else:
-                        cprint('Too many undetermined edges! Please define more numbered nodes (or different ones).', 'red')
-                        cprint(f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', 'red')
-                        cprint(f'Inputs for: {rec}', 'red')
-                        cprint(f'Input edges: {edges}', 'red')
+                        self.parent_context.cLog('Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
+                        self.parent_context.cLog(
+                            f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', logging.WARNING)
+                        self.parent_context.cLog(f'Inputs for: {rec}', logging.WARNING)
+                        self.parent_context.cLog(f'Input edges: {edges}', logging.WARNING)
 
                         self.createAdjacencyList()
                         self.outputGraphviz()
                         exit(1)
             elif io_dir == 'O':
-                if num_io == 1: # Single input
-                    if locked_bools[0] == False: # Undetermined
+                if num_io == 1:  # Single input
+                    if locked_bools[0] == False:  # Undetermined
                         self.edges[edges[0]]['quant'] = machine_ing_io
                         self.edges[edges[0]]['locked'] = True
-                    else: # Determined
+                    else:  # Determined
                         locked_quant = self.edges[edges[0]]['quant']
-                        excess = machine_ing_io - locked_quant # Excess rec ingredient available
+                        excess = machine_ing_io - locked_quant  # Excess rec ingredient available
                         node_from, node_to, _ = edges[0]
 
                         if math.isclose(excess, 0, abs_tol=1e-9):
@@ -316,10 +315,10 @@ def _lockMachineEdges(self, rec_id, rec):
                                 locked=True
                             )
                 else:
-                    if all(locked_bools): # All inputs determined
+                    if all(locked_bools):  # All inputs determined
                         edge_quants = [self.edges[x]['quant'] for x in edges]
                         locked_quant = sum(edge_quants)
-                        excess = machine_ing_io - locked_quant # Excess rec ingredient available
+                        excess = machine_ing_io - locked_quant  # Excess rec ingredient available
 
                         if math.isclose(excess, 0, abs_tol=1e-9):
                             continue
@@ -335,7 +334,7 @@ def _lockMachineEdges(self, rec_id, rec):
                         elif excess > 0:
                             # Adjust connected edges down until excess is satisfied
                             # If math doesn't work out without remainder, adjust relevant edge down
-                                # and make a new sink
+                            # and make a new sink
 
                             for idx, quant in enumerate(edge_quants):
                                 relevant_edge = edges[idx]
@@ -353,7 +352,7 @@ def _lockMachineEdges(self, rec_id, rec):
                                     del self.edges[relevant_edge]
                                     if math.isclose(excess, 0, abs_tol=1e-9):
                                         break
-                                else: # Removing edge would cause negative excess, need to make fractional edge
+                                else:  # Removing edge would cause negative excess, need to make fractional edge
                                     self.edges[relevant_edge]['quant'] -= excess
                                     self.addEdge(
                                         node_from,
@@ -362,10 +361,10 @@ def _lockMachineEdges(self, rec_id, rec):
                                         excess,
                                         locked=True,
                                     )
-                    elif sum(locked_bools) == len(edges) - 1: # 1 input undetermined
+                    elif sum(locked_bools) == len(edges) - 1:  # 1 input undetermined
                         edge_quants = {x: self.edges[x]['quant'] for x in edges if self.edges[x].get('locked', False)}
                         locked_quant = sum(edge_quants.values())
-                        excess = machine_ing_io - locked_quant # Excess rec ingredient available
+                        excess = machine_ing_io - locked_quant  # Excess rec ingredient available
                         unlocked_edge = edges[locked_bools.index(False)]
 
                         if excess < 0 or math.isclose(excess, 0, abs_tol=1e-9):
@@ -390,7 +389,7 @@ def _lockMachineEdges(self, rec_id, rec):
                                     del self.edges[edge]
                                     if math.isclose(excess, 0, abs_tol=1e-9):
                                         break
-                                else: # Removing edge would cause too much excess, need to make fractional edge
+                                else:  # Removing edge would cause too much excess, need to make fractional edge
                                     self.edges[edge]['quant'] -= excess
                                     self.addEdge(
                                         node_from,
@@ -400,14 +399,15 @@ def _lockMachineEdges(self, rec_id, rec):
                                         locked=True,
                                     )
 
-                        elif excess > 0: # Send excess to unlocked node
+                        elif excess > 0:  # Send excess to unlocked node
                             self.edges[unlocked_edge]['quant'] = excess
                             self.edges[unlocked_edge]['locked'] = True
                     else:
-                        cprint('Too many undetermined edges! Please define more numbered nodes (or different ones).', 'red')
-                        cprint(f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', 'red')
-                        cprint(f'Outputs for: {rec}', 'red')
-                        cprint(f'Output edges: {edges}', 'red')
+                        self.parent_context.cLog('Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
+                        self.parent_context.cLog(
+                            f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', logging.WARNING)
+                        self.parent_context.cLog(f'Outputs for: {rec}', logging.WARNING)
+                        self.parent_context.cLog(f'Output edges: {edges}', logging.WARNING)
 
                         self.createAdjacencyList()
                         self.outputGraphviz()
@@ -427,11 +427,11 @@ def _simpleLockMachineEdges(self, rec_id, rec):
             else:
                 # Edge is already locked, which means:
                 # If packet sent from destination ("request")
-                    # if packet > locked then get from source
-                    # if packet < locked then send to sink
+                # if packet > locked then get from source
+                # if packet < locked then send to sink
                 # If packet sent from src ("supply")
-                    # if packet > locked then send to sink
-                    # if packet < locked then get from source
+                # if packet > locked then send to sink
+                # if packet < locked then get from source
 
                 if math.isclose(packet_quant, self.edges[edge]['quant']):
                     self.edges[edge]['quant'] = packet_quant

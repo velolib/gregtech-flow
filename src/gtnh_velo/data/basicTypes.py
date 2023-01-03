@@ -48,16 +48,16 @@ class IngredientCollection:
 
 class Recipe:
     def __init__(
-            self,
-            machine_name,
-            user_voltage,
-            inputs,
-            outputs,
-            eut,
-            dur,
-            circuit=0,
-            **kwargs
-        ):
+        self,
+        machine_name,
+        user_voltage,
+        inputs,
+        outputs,
+        eut,
+        dur,
+        circuit=0,
+        **kwargs
+    ):
         self.machine = machine_name
         self.user_voltage = user_voltage
         self.I = inputs
@@ -66,7 +66,7 @@ class Recipe:
         self.dur = dur
         self.circuit = circuit
         self.multiplier = -1
-        self.base_eut = eut # Used for final graph output
+        self.base_eut = eut  # Used for final graph output
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -75,7 +75,7 @@ class Recipe:
 
     def __mul__(self, mul_num):
         assert isinstance(mul_num, (int, float))
-        assert self.multiplier == -1 # Undefined behavior with multiple multiplications
+        assert self.multiplier == -1  # Undefined behavior with multiple multiplications
 
         self.I *= mul_num
         self.O *= mul_num
@@ -83,7 +83,6 @@ class Recipe:
         self.multiplier = mul_num
 
         return self
-
 
 
 if __name__ == '__main__':
