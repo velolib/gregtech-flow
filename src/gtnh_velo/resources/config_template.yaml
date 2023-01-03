@@ -1,5 +1,10 @@
 # GTNH_VELO CONFIGURATION FILE
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
+
+GRAPHVIZ: path
+# Input your graphviz /Graphivz/bin directory path here
+# Type 'path' if you want to use the PATH environment variable
+
 # === FUNCTIONALITY SETTINGS ===
 POWER_LINE: true # Automatically burns all leftover fuels
 DO_NOT_BURN: # If POWER_LINE is true, don't burn these

@@ -24,16 +24,23 @@ try: # Linux
 except Exception: # Windows
     import pyreadline3 as readline
 
-import os
-os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-
-
 class ProgramContext:
 
 
     def __init__(self):
         with open('config_factory_graph.yaml', 'r') as f:
             graph_config = yaml.safe_load(f)
+        
+        if not graph_config['GRAPHVIZ']:
+            raise RuntimeError('Graphviz option not inputted!')
+            
+        if graph_config['GRAPHVIZ'] != 'path':
+            pass
+        else:
+            if Path(graph_config['GRAPHVIZ']).exists():
+                os.environ["PATH"] += os.pathsep + str(Path(graph_config['GRAPHVIZ']))
+            else:
+                raise RuntimeError('Graphviz path does not exist')
         
         self.graph_config = graph_config
         
