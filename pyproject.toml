@@ -3,7 +3,7 @@ name = 'gtnhvelo'
 description = 'Factory Optimization Flowcharts for Gregtech: New Horizons'
 requires-python = '>=3.10'
 readme = 'README.md'
-version = '0.1.0'
+version = '0.1.2'
 authors = [
     { name = 'velo', email = 'vlocitize@gmail.com' }
 ]

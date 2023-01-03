@@ -1,6 +1,6 @@
 <h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1>
 
-## :question: What is it?
+## ❓ What is it?
 
 This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtnh-flow). In addition to the functionalities of the original tool, this fork has:
 1. Extended formatting of projects
@@ -8,7 +8,7 @@ This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtn
 3. Standards to increase readability
 4. A custom CLI
 
-## :book: Samples
+## 📖 Samples
 Samples of the graphs in the repository.
 <details>
     <summary><strong>Samples</strong></summary>
@@ -16,7 +16,7 @@ Samples of the graphs in the repository.
     <img src="samples/epoxid.png" alt="Epoxid">
 </details>
 
-## :arrow_down: Installation
+## ⏲️ Installation
 ### Install as Python Module
 This is the easiest installation method. In the terminal run:
 ```
@@ -41,7 +41,7 @@ pip install gtnhvelo -U
 >It's recommended to create a virtual environment before installing to isolate the development environment from the global scope.
 
 
-## :timer_clock: Usage
+## ⏲️ Usage
 This is the usage guide for the first time installing.
 
 1. Create a project under `projects/`. You can look at existing projects to see the structure.
@@ -53,7 +53,7 @@ This is the usage guide for the first time installing.
 When running `flow` the directories `projects/` and `output/` will be created in the working directory if they do not exist already.
 
 
-## :interrobang: Answers
+## ⁉ Answers
 ### How to configure
 The configuration file `config_factory_graph.yaml` will be created on startup in the working directory if not created already.
 You can configure a variety of layout and functional options using it. Make sure to not delete any keys.
@@ -181,6 +181,6 @@ size: large
 
 
 
-## Thanks
+## 🙏 Thanks
 Visit the original [gtnh-flow by OrderedSet](https://github.com/OrderedSet86/gtnh-flow). Without it this fork would not exist!
 
