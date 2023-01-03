@@ -1,5 +1,6 @@
 # gtnhvelo CONFIGURATION FILE
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
+CONFIG_VER: 0
 
 GRAPHVIZ: path
 # Input your graphviz /Graphivz/bin directory path in quotes
