@@ -113,7 +113,7 @@ class ProgramContext:
 
                 graph_gen(self, project_name, recipes, self.graph_config, title)
             else:
-                rprint('\n[bright_red]Error: Project could not be found\n')
+                rprint('\n[bright_red]Error: Project could not be found')
 
         @group()
         def get_elements():
