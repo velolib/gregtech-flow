@@ -31,24 +31,9 @@ class ProgramContext:
 
     def __init__(self) -> None:
 
-        with open('config_factory_graph.yaml', 'r') as f:
-            graph_config = yaml.safe_load(f)
-
-        # Checks for graph_config
-        if not graph_config['GRAPHVIZ']:
-            raise RuntimeError('Graphviz option not inputted!')
-        if graph_config['GRAPHVIZ'] == 'path':
-            pass
-        else:
-            if Path(graph_config['GRAPHVIZ']).exists():
-                os.environ["PATH"] += os.pathsep + str(Path(graph_config['GRAPHVIZ']))
-            else:
-                raise RuntimeError('Graphviz path does not exist')
-        self.graph_config = graph_config
-
         # Logger setup
         LOG_LEVEL = logging.INFO
-        if graph_config['DEBUG_LOGGING']:
+        if self.graph_config['DEBUG_LOGGING']:
             LOG_LEVEL = logging.DEBUG
         logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
 
@@ -62,6 +47,23 @@ class ProgramContext:
         if not projects_path.exists():
             projects_path.mkdir()
         self.projects_path = projects_path
+
+    @property
+    def graph_config(self):
+        with open('config_factory_graph.yaml', 'r') as f:
+            graph_config = yaml.safe_load(f)
+
+        # Checks for graph_config
+        if not graph_config['GRAPHVIZ']:
+            raise RuntimeError('Graphviz option not inputted!')
+        if graph_config['GRAPHVIZ'] == 'path':
+            pass
+        else:
+            if Path(graph_config['GRAPHVIZ']).exists():
+                os.environ["PATH"] += os.pathsep + str(Path(graph_config['GRAPHVIZ']))
+            else:
+                raise RuntimeError('Graphviz path does not exist')
+        return graph_config
 
     @staticmethod
     def cLog(msg, level=logging.DEBUG):
