@@ -5,7 +5,7 @@ import yaml
 
 from gtnh_velo.data.basicTypes import Ingredient, Recipe, IngredientCollection
 from gtnh_velo.gtnh.overclocks import OverclockHandler
-from factory_graph import ProgramContext
+from gtnh_velo.cli import ProgramContext
 
 pc = ProgramContext()
 oh = OverclockHandler(ProgramContext)
