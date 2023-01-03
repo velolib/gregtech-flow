@@ -2,7 +2,7 @@
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
 
 GRAPHVIZ: path
-# Input your graphviz /Graphivz/bin directory path here
+# Input your graphviz /Graphivz/bin directory path in quotes
 # Type 'path' if you want to use the PATH environment variable
 
 # === FUNCTIONALITY SETTINGS ===
