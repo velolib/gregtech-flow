@@ -112,7 +112,6 @@ class ProgramContext:
                     project_name = project_name[:-5]
 
                 graph_gen(self, project_name, recipes, self.graph_config, title)
-                print('')
             else:
                 rprint('\n[bright_red]Error: Project could not be found\n')
 
@@ -140,8 +139,8 @@ class ProgramContext:
                 if ip.casefold() == 'end':
                     exit()
                 create_graph(ip)
-            
-            # CLI Selector
+                print('')
+            # Manual Selector
             else:
                 parser = argparse.ArgumentParser(description='Input project path')
                 parser.add_argument('project_path')
