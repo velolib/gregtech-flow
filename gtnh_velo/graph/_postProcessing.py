@@ -4,6 +4,7 @@ import re
 from collections import defaultdict
 from copy import deepcopy
 
+import pkgutil
 import yaml
 
 from gtnh_velo.graph._utils import _iterateOverMachines
@@ -21,8 +22,7 @@ def _addPowerLineNodes(self):
         5: 'large naquadah reactor',
     }
 
-    with open('data/power_data.yaml', 'r') as f:
-        power_data = yaml.safe_load(f)
+    power_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/power_data.yaml'))
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']
@@ -134,10 +134,8 @@ def _addPowerLineNodes(self):
 def _addSummaryNode(self):
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
-    with open('data/misc.yaml', 'r') as f:
-        misc_data = yaml.safe_load(f)
-    with open('data/overclock_data.yaml', 'r') as f:
-        overclock_data = yaml.safe_load(f)
+    misc_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/misc.yaml'))
+    overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
 
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']

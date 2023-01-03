@@ -1,5 +1,7 @@
 import pkgutil
+import os
 
-data = pkgutil.get_data(__name__, 'resources/misc.yaml')
-
-print(data)
+print(os.getcwd())
+def data():
+    dt = pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml')
+    return dt

@@ -163,9 +163,11 @@ class ProgramContext:
         g.balanceGraph()
         g.outputGraphviz()
 
-
-if __name__ == '__main__':
+def main():
     console = Console()
     console.print(Panel('[bright_blue]gtnh-velo', expand=False))
     pc = ProgramContext()
     pc.run()
+
+if __name__ == '__main__':
+    main()

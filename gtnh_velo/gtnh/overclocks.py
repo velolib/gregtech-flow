@@ -1,6 +1,7 @@
 # Standard libraries
 import math
 from bisect import bisect_right
+import pkgutil
 
 # Pypi libraries
 import yaml
@@ -26,8 +27,7 @@ class OverclockHandler:
         self.ignore_underclock = False # Whether to throw an error or actually underclock if
                                        # USER_VOLTAGE < EUT
 
-        with open('data/overclock_data.yaml', 'r') as f:
-            self.overclock_data = yaml.safe_load(f)
+        self.overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
 
         self.voltages = self.overclock_data['voltage_data']['tiers']
         self.voltage_cutoffs = [32*pow(4, x) + 1 for x in range(len(self.voltages))]
@@ -306,8 +306,7 @@ class OverclockHandler:
         material = recipe.material.lower()
         size = recipe.size.lower()
 
-        with open('data/turbine_data.yaml', 'r') as f:
-            turbine_data = yaml.safe_load(f)
+        turbine_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/turbine_data.yaml'))
         assert fuel in turbine_data[fuel_type], f'Unsupported fuel "{fuel}"'
         assert material in turbine_data['materials'], f'Unsupported material "{material}"'
         assert size in turbine_data['rotor_size'], f'Unsupported size "{size}"'

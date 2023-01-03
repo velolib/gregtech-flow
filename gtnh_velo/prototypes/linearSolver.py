@@ -8,6 +8,7 @@ from math import isclose
 from string import ascii_uppercase
 
 import yaml
+import pkgutil
 from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
@@ -637,8 +638,7 @@ def createMachineLabels(self):
     # Amoritized: 1.46K EU/t
     # Per Machine: 256EU/t
     
-    with open('data/overclock_data.yaml', 'r') as f:
-        overclock_data = yaml.safe_load(f)
+    overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
     
     for node_id in self.nodes:
         if self._checkIfMachine(node_id):
@@ -719,10 +719,8 @@ def addPowerLineNodesV2(self):
         5: 'large naquadah reactor',
     }
 
-    with open('data/power_data.yaml', 'r') as f:
-        power_data = yaml.safe_load(f)
-    with open('data/overclock_data.yaml', 'r') as f:
-        overclock_data = yaml.safe_load(f)
+    power_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/power_data.yaml'))
+    overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']

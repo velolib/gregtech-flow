@@ -1,5 +1,6 @@
 import logging
 import math
+import pkgutil
 import yaml
 from collections import defaultdict
 
@@ -57,8 +58,7 @@ def _lockMachine(self, rec_id, rec, determined=False):
         f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
     ]
     if self.graph_config['POWER_UNITS'] != 'eut':
-        with open('data/overclock_data.yaml', 'r') as f:
-            overclock_data = yaml.safe_load(f)
+        overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
         if self.graph_config['POWER_UNITS'] == 'auto':
             tier_idx = overclock_data['voltage_data']['tiers'].index(rec.user_voltage)
         else:

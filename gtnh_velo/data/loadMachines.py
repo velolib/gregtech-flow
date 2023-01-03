@@ -60,20 +60,16 @@ def standardizeMachineName(name):
         return name
 
 
-def recipesFromConfig(project_name, project_folder='projects'):
+def recipesFromConfig(project_name, graph_config, project_folder='projects'):
     # Load config file
-    CONFIG_FILE_PATH = Path(project_folder) / f'{project_name}'
-    project_name = CONFIG_FILE_PATH.name.split('.')[0]
-    with open(CONFIG_FILE_PATH, 'r') as f:
-        config = list(yaml.safe_load_all(f))[-1]
-
-    user_config_path = Path(__file__).absolute().parent.parent.parent / 'config_factory_graph.yaml'
-    with open(user_config_path, 'r') as f:
-        graph_config = yaml.safe_load(f)
+    PROJECT_FILE_PATH = Path(project_folder) / f'{project_name}'
+    project_name = PROJECT_FILE_PATH.name.split('.')[0]
+    with open(PROJECT_FILE_PATH, 'r') as f:
+        project = list(yaml.safe_load_all(f))[-1]
 
     # Prep recipes for graph
     recipes = []
-    for rec in config:
+    for rec in project:
         if graph_config.get('DUR_FORMAT', 'ticks') == 'sec':
             rec['dur'] *= 20
 
