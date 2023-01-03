@@ -34,7 +34,7 @@ class ProgramContext:
         if not graph_config['GRAPHVIZ']:
             raise RuntimeError('Graphviz option not inputted!')
             
-        if graph_config['GRAPHVIZ'] != 'path':
+        if graph_config['GRAPHVIZ'] == 'path':
             pass
         else:
             if Path(graph_config['GRAPHVIZ']).exists():
