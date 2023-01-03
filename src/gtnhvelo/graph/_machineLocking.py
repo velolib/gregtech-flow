@@ -4,7 +4,7 @@ import pkgutil
 import yaml
 from collections import defaultdict
 
-from gtnh_velo.graph._utils import swapIO
+from gtnhvelo.graph._utils import swapIO
 
 
 def _lockMachine(self, rec_id, rec, determined=False):
@@ -58,7 +58,7 @@ def _lockMachine(self, rec_id, rec, determined=False):
         f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
     ]
     if self.graph_config['POWER_UNITS'] != 'eut':
-        overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
+        overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
         if self.graph_config['POWER_UNITS'] == 'auto':
             tier_idx = overclock_data['voltage_data']['tiers'].index(rec.user_voltage)
         else:

@@ -1,4 +1,4 @@
-<h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1> 
+<h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1>
 
 ## :question: What is it?
 
@@ -6,6 +6,7 @@ This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtn
 1. Extended formatting of projects
 2. Added stylization add formatting of graphs
 3. Standards to increase readability
+4. A custom CLI
 
 ## :book: Samples
 Samples of the graphs in the repository.
@@ -16,18 +17,23 @@ Samples of the graphs in the repository.
 </details>
 
 ## :arrow_down: Installation
+### Install as Python Module
+1. In the terminal run `pip install gtnhvelo -U`
+
 ### Linux
 1. Clone this repository `git clone https://github.com/velolib/gtnh-velo.git`
 2. Download Python 3 and install from `https://www.python.org/downloads/`
 3. Navigate to the cloned repository and install the required project dependencies `pip install -r requirements.txt`
 4. Install Graphviz, on Debian-based Linux it's `sudo apt-get install graphviz`
+    - If Graphviz is not added to the system path, you can add the path to the `/bin` folder in the configuration file.
 
 ### Windows
 1. Clone this repository `git clone https://github.com/velolib/gtnh-velo.git`
 2. Download Python 3 and install from `https://www.python.org/downloads/`
 3. Navigate to the cloned repository and install the required project dependencies `pip install -r requirements.txt`
 4. Install Graphviz, for Windows there is a guide [here](https://forum.graphviz.org/t/new-simplified-installation-procedure-on-windows/224). Graphviz must be added to the system PATH for all users or the current user which may or may not need a system restart.
-   
+    - If Graphviz is not added to the system path, you can add the path to the `/bin` folder in the configuration file.
+
 A note: It's recommended to create a virtual environment before installing the dependencies to isolate the development environment from the global scope.
 
 
@@ -36,8 +42,8 @@ This is the usage guide for the first time installing.
 
 1. Create a project under `projects/`. You can look at existing projects to see the structure.
 2. The project name is system file path relative to `projects/`, for example `plastics/epoxid`. You can run the graph creator in 2 ways:
-    - `factory_graph.py [project name]`
-    - `factory_graph.py` then inputting your project name in the dialog
+    - `flow [project name]`
+    - `flow` then inputting your project name in the dialog
 3. The output graph will pop up and be available in `output/`
 
 
@@ -91,7 +97,7 @@ In every project there needs to be 1 (and only 1) recipe that needs to be locked
   number: 2 # lock the number of machines for this recipe
 ```
 #### Advanced recipes
-This section will cover the exceptions to the recipes.  
+This section will cover the exceptions to the recipes.
 Some fields you need to know about:
 ``` yaml
 - m: example machine

@@ -5,5 +5,5 @@ print(os.getcwd())
 
 
 def data():
-    dt = pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml')
+    dt = pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml')
     return dt

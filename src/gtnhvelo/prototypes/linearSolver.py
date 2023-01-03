@@ -13,9 +13,9 @@ from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
 
-from gtnh_velo.data.basicTypes import Ingredient, IngredientCollection, Recipe
-from gtnh_velo.graph import Graph
-from gtnh_velo.graph._utils import swapIO
+from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gtnhvelo.graph import Graph
+from gtnhvelo.graph._utils import swapIO
 
 from rich.progress import Progress
 
@@ -623,7 +623,7 @@ def createMachineLabels(self):
     # Amoritized: 1.46K EU/t
     # Per Machine: 256EU/t
 
-    overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
+    overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
 
     for node_id in self.nodes:
         if self._checkIfMachine(node_id):
@@ -703,8 +703,8 @@ def addPowerLineNodesV2(self):
         5: 'large naquadah reactor',
     }
 
-    power_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/power_data.yaml'))
-    overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
+    power_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/power_data.yaml'))
+    overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']

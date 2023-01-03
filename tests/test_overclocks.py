@@ -3,9 +3,9 @@ from copy import deepcopy
 import pytest
 import yaml
 
-from gtnh_velo.data.basicTypes import Ingredient, Recipe, IngredientCollection
-from gtnh_velo.gtnh.overclocks import OverclockHandler
-from gtnh_velo.cli import ProgramContext
+from gtnhvelo.data.basicTypes import Ingredient, Recipe, IngredientCollection
+from gtnhvelo.gtnh.overclocks import OverclockHandler
+from gtnhvelo.cli import ProgramContext
 
 pc = ProgramContext()
 oh = OverclockHandler(ProgramContext)
@@ -54,7 +54,7 @@ def test_perfectOverclock():
         5,
         80
     )
-    
+
 
     r = deepcopy(r_base)
     r.user_voltage = 'mv'
@@ -86,7 +86,7 @@ def test_pyrolyseOverclock():
         96,
         320
     )
-    
+
 
     r = deepcopy(r_base)
     r.user_voltage = 'hv'
@@ -121,7 +121,7 @@ def test_EBFOverclock():
         500,
         heat=1000,
     )
-    
+
 
     r = deepcopy(r_base)
     r.user_voltage = 'mv'

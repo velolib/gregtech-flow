@@ -1,9 +1,9 @@
 import pytest
 import yaml
 
-from gtnh_velo.data.loadMachines import recipesFromConfig
-from gtnh_velo.graph import Graph
-from gtnh_velo.cli import ProgramContext
+from gtnhvelo.data.loadMachines import recipesFromConfig
+from gtnhvelo.graph import Graph
+from gtnhvelo.cli import ProgramContext
 
 pc = ProgramContext()
 
@@ -12,7 +12,7 @@ def loadTestConfig():
     with open('config_factory_graph.yaml', 'r') as f:
         graph_config = yaml.safe_load(f)
     return graph_config
-    
+
 # Note that recipe ordering is deterministic!
 # (Thanks to the OrderedDict hook in dataClasses.load.recipesFromConfig)
 

@@ -1,12 +1,12 @@
 # Tests for _utils.py that are probably not neede
 
 import pytest
-from gtnh_velo.graph._utils import swapIO, userRound
+from gtnhvelo.graph._utils import swapIO, userRound
 import yaml
 
-from gtnh_velo.data.loadMachines import recipesFromConfig
-from gtnh_velo.graph import Graph
-from gtnh_velo.cli import ProgramContext
+from gtnhvelo.data.loadMachines import recipesFromConfig
+from gtnhvelo.graph import Graph
+from gtnhvelo.cli import ProgramContext
 
 pc = ProgramContext()
 
@@ -21,7 +21,7 @@ def test_swapIO():
     _o_ = swapIO('O')
     assert _i_ == 'O'
     assert _o_ == 'I'
-    
+
     with pytest.raises(RuntimeError):
         swapIO('Z')
         swapIO('sonar')
@@ -32,7 +32,7 @@ def test_userRound():
     result = []
     for num in nums:
         result.append(userRound(num))
-    assert result == ['0.0', '512', '2.31K', '7.78K', '2.42M', 
+    assert result == ['0.0', '512', '2.31K', '7.78K', '2.42M',
                       '555.56M', '2.42B', '5.92M']
 
 def test_tierToVoltage():
@@ -44,7 +44,7 @@ def test_tierToVoltage():
     # Create graph
     g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
 
-    with open('src/gtnh_velo/resources/overclock_data.yaml', 'r') as f:
+    with open('src/gtnhvelo/resources/overclock_data.yaml', 'r') as f:
         tiers = yaml.safe_load(f)['voltage_data']['tiers']
     tiers_dict = {
         'lv': 32, 'mv': 128, 'hv': 512, 'ev': 2048,

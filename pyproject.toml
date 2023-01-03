@@ -1,5 +1,5 @@
 [project]
-name = 'gtnh_velo'
+name = 'gtnhvelo'
 description = 'Factory Optimization Flowcharts for Gregtech: New Horizons'
 requires-python = '>=3.10'
 readme = 'README.md'
@@ -55,7 +55,7 @@ build-backend = 'flit_core.buildapi'
 requires = ['flit_core >=3.2,<4']
 
 [project.scripts]
-flow = 'gtnh_velo.cli:main'
+flow = 'gtnhvelo.cli:main'
 
 [project.optional-dependencies]
 tests = [

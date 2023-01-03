@@ -7,7 +7,7 @@ import pkgutil
 import yaml
 
 # Internal libraries
-from gtnh_velo.data.basicTypes import Ingredient, IngredientCollection
+from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection
 
 
 def require(recipe, requirements):
@@ -26,7 +26,7 @@ class OverclockHandler:
         self.ignore_underclock = False  # Whether to throw an error or actually underclock if
         # USER_VOLTAGE < EUT
 
-        self.overclock_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/overclock_data.yaml'))
+        self.overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
 
         self.voltages = self.overclock_data['voltage_data']['tiers']
         self.voltage_cutoffs = [32 * pow(4, x) + 1 for x in range(len(self.voltages))]
@@ -295,7 +295,7 @@ class OverclockHandler:
         material = recipe.material.lower()
         size = recipe.size.lower()
 
-        turbine_data = yaml.safe_load(pkgutil.get_data('gtnh_velo', 'resources/turbine_data.yaml'))
+        turbine_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/turbine_data.yaml'))
         assert fuel in turbine_data[fuel_type], f'Unsupported fuel "{fuel}"'
         assert material in turbine_data['materials'], f'Unsupported material "{material}"'
         assert size in turbine_data['rotor_size'], f'Unsupported size "{size}"'

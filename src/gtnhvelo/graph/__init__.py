@@ -1,6 +1,6 @@
 import itertools
 
-from gtnh_velo.gtnh.overclocks import OverclockHandler
+from gtnhvelo.gtnh.overclocks import OverclockHandler
 
 
 class Graph:

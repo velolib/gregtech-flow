@@ -3,9 +3,9 @@ import math
 import pytest
 import yaml
 
-from gtnh_velo.data.loadMachines import recipesFromConfig
-from gtnh_velo.graph import Graph
-from gtnh_velo.cli import ProgramContext
+from gtnhvelo.data.loadMachines import recipesFromConfig
+from gtnhvelo.graph import Graph
+from gtnhvelo.cli import ProgramContext
 
 pc = ProgramContext()
 

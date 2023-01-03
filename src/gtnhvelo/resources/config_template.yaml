@@ -1,4 +1,4 @@
-# GTNH_VELO CONFIGURATION FILE
+# gtnhvelo CONFIGURATION FILE
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
 
 GRAPHVIZ: path
@@ -27,7 +27,6 @@ BOTTLENECK_MIN_VOLTAGE: IV
 MAX_BOTTLENECKS: 5
 
 USE_NEW_SOLVER: true
-
 
 # === VISUALS ===
 ## === FONTS ===
@@ -80,17 +79,16 @@ ORIENTATION: 'TB'
 # [TB, LR, BT, RL]
 
 LINE_STYLE: 'spline'
-# [line, spline, polyline, curved] 
+# [line, spline, polyline, curved]
 
 RANKSEP: '1.5'
 NODESEP: '0.5'
-# Node separation size in X/Y. 
+# Node separation size in X/Y.
 # This is a suggestion, the graphing algorithm will ignore numbers that are too small.
 
 COMBINE_INPUTS: true
 COMBINE_OUTPUTS: true
 # Whether to (visually) create a new meta node before multi-input/after multi-output ports
-
 
 # { You should probably only modify these if you are dev
 DEBUG_LOGGING: false

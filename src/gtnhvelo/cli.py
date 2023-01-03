@@ -16,9 +16,9 @@ from rich.text import Text
 import typer
 
 # Internal libraries
-from gtnh_velo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
-from gtnh_velo.graph import Graph
-from gtnh_velo.data.loadMachines import recipesFromConfig
+from gtnhvelo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
+from gtnhvelo.graph import Graph
+from gtnhvelo.data.loadMachines import recipesFromConfig
 
 # Conditional imports based on OS
 try:  # Linux
@@ -59,7 +59,7 @@ class ProgramContext:
 
     @staticmethod
     def cLog(msg, level=logging.DEBUG):
-        """Logging for gtnh_velo
+        """Logging for gtnhvelo
 
         Args:
             msg (str): The message
@@ -116,7 +116,7 @@ class ProgramContext:
             return False
 
     def interactive_cli(self) -> bool:
-        """The interactive CLI for gtnh_velo
+        """The interactive CLI for gtnhvelo
 
         Returns:
             bool: Whether or not the project file was found
@@ -171,7 +171,7 @@ class ProgramContext:
                     return self.create_graph(the_input)
 
     def direct_cli(self, path: Path) -> bool:
-        """Direct CLI implementation for gtnh_velo
+        """Direct CLI implementation for gtnhvelo
 
         Args:
             path (Path): The path inputted from the command line
@@ -186,12 +186,16 @@ class ProgramContext:
         """
         def run_typer(path: Optional[Path] = typer.Argument(None)):
             rprint(Panel('[bright_blue]gtnh-velo', expand=False))
-            if path is None:
-                result = self.interactive_cli()
-            else:
-                result = self.direct_cli(path)
-            if not result:
-                rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+            while True:
+                if path is None:
+                    result = self.interactive_cli()
+                    if not result:
+                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                else:
+                    result = self.direct_cli(path)
+                    if not result:
+                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                    exit()
 
         typer.run(run_typer)
 
