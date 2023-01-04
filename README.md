@@ -10,10 +10,10 @@ This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtn
 
 ## 📖 Samples
 Samples of the graphs in the repository.
-<details>
+<details open>
     <summary><strong>Samples</strong></summary>
-    <img src="samples/rutile-titanium.png" alt="Rutile -> Titanium">
-    <img src="samples/epoxid.png" alt="Epoxid">
+    <img src="samples/rutile-titanium.svg" alt="Rutile -> Titanium">
+    <img src="samples/epoxid.svg" alt="Epoxid">
 </details>
 
 ## ⏲️ Installation

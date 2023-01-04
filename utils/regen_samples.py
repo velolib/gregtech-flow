@@ -19,7 +19,7 @@ sample_paths = [
 ]
 
 for project in sample_paths:
-    with subprocess.Popen([sys.executable, 'factory_graph.py', str(project), 'png']):
+    with subprocess.Popen(['flow', str(project)]):
         pass
-    graph_path = Path('output/') / f'{project}.png'
+    graph_path = Path('output/') / f'{project}.svg'
     shutil.copy(graph_path, sample_dir)
