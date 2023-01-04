@@ -5,6 +5,7 @@ import sys
 import argparse
 from pathlib import Path
 from typing import Optional
+import pkgutil
 
 # Pypi libraries
 import yaml
@@ -30,6 +31,9 @@ except Exception:  # Windows
 class ProgramContext:
 
     def __init__(self) -> None:
+
+        # Load the data
+        self.data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/data.yaml'))
 
         # Logger setup
         LOG_LEVEL = logging.INFO

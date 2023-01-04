@@ -22,7 +22,7 @@ def _addPowerLineNodes(self):
         5: 'large naquadah reactor',
     }
 
-    power_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/power_data.yaml'))
+    power_data = self.parent_context.data['power_data']
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']
@@ -134,8 +134,8 @@ def _addPowerLineNodes(self):
 def _addSummaryNode(self):
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
-    misc_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/misc.yaml'))
-    overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
+    misc_data = self.parent_context.data['overclock_data']
+    overclock_data = self.parent_context.data['overclock_data']
 
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']

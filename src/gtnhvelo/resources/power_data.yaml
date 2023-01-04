@@ -94,7 +94,7 @@ naqline_fuels:
 
 simple_generator_efficiencies:
   gas turbine:
-    lv: 0.95 # This might be a 2.2.3 thing? seems high
+    lv: 0.95
     mv: 0.9
     hv: 0.85
   combustion gen:
@@ -115,4 +115,3 @@ simple_generator_efficiencies:
     ev: 0.8
     iv: 0.7
     luv: 0.6
-  

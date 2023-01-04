@@ -623,7 +623,7 @@ def createMachineLabels(self):
     # Amoritized: 1.46K EU/t
     # Per Machine: 256EU/t
 
-    overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
+    overclock_data = self.parent_context.data['overclock_data']
 
     for node_id in self.nodes:
         if self._checkIfMachine(node_id):
@@ -703,8 +703,8 @@ def addPowerLineNodesV2(self):
         5: 'large naquadah reactor',
     }
 
-    power_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/power_data.yaml'))
-    overclock_data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/overclock_data.yaml'))
+    power_data = self.parent_context.data['power_data']
+    overclock_data = self.parent_context.data['overclock_data']
 
     turbineables = power_data['turbine_fuels']
     combustables = power_data['combustion_fuels']
