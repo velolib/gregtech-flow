@@ -882,7 +882,7 @@ def graphPostProcessing(self, progress_cb):
 
 
 def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, title=None):
-    with Progress() as progress:
+    with Progress(disable=False if not self.quiet else True) as progress:
         task = progress.add_task(f'[cyan]{project_name}', total=100)
         def update_progress(advance: float): return progress.update(task, advance=advance)
 

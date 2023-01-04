@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from gtnhvelo.module.flow import flow
 import pkgutil
 
 # TODO: Store config somewhere else

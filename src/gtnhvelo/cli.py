@@ -30,7 +30,15 @@ except Exception:  # Windows
 
 class ProgramContext:
 
-    def __init__(self) -> None:
+    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True) -> None:
+        """Program context class for gtnh-velo
+
+        Args:
+            output_path (Path | str, optional): Output path. Defaults to 'output'.
+            projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
+            create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
+        """
+        self.quiet = False
 
         # Load the data
         self.data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/data.yaml'))
@@ -39,16 +47,17 @@ class ProgramContext:
         LOG_LEVEL = logging.INFO
         if self.graph_config['DEBUG_LOGGING']:
             LOG_LEVEL = logging.DEBUG
+
         logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
 
         # Other stuff
-        output_path = Path('output')
-        if not output_path.exists():
+        output_path = Path(output_path)
+        if not output_path.exists() and create_dirs:
             output_path.mkdir()
         self.output_path = output_path
 
-        projects_path = Path('projects')
-        if not projects_path.exists():
+        projects_path = Path(projects_path)
+        if not projects_path.exists() and create_dirs:
             projects_path.mkdir()
         self.projects_path = projects_path
 
@@ -93,15 +102,16 @@ class ProgramContext:
     #     g.balanceGraph()
     #     g.outputGraphviz()
 
-    def create_graph(self, project_name) -> bool:
+    def create_graph(self, project_name: Path | str) -> bool:
         """Centralized graph creation function to check if the project exists or not
 
         Args:
-            project_name (str): The project's path
+            project_name (Path | str): The project's path
 
         Returns:
             bool: Whether or not the project exists
         """
+        project_name = str(project_name)
         if not project_name.endswith('.yaml'):
             # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
             # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
@@ -117,7 +127,7 @@ class ProgramContext:
                     metadata = doc_load[0]
                     title = metadata['title']
 
-            recipes = recipesFromConfig(project_name, self.graph_config)
+            recipes = recipesFromConfig(project_name, self.graph_config, self.projects_path)
 
             if project_name.endswith('.yaml'):
                 project_name = project_name[:-5]
@@ -196,8 +206,14 @@ class ProgramContext:
     def run(self) -> None:
         """Runs the program
         """
-        def run_typer(path: Optional[Path] = typer.Argument(None)):
-            rprint(Panel('[bright_blue]gtnh-velo', expand=False))
+        def run_typer(path: Optional[Path] = typer.Argument(None), quiet: bool = typer.Option(False, '--quiet', '-q')):
+            if quiet:
+                logger = logging.getLogger('rich')
+                logger.setLevel(logging.CRITICAL + 1)
+            if self.quiet:
+                rprint(Panel('[bright_blue]gtnh-velo', expand=False))
+            self.quiet = quiet
+
             while True:
                 if path is None:
                     result = self.interactive_cli()

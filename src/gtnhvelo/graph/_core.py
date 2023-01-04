@@ -460,7 +460,7 @@ def outputGraphviz(self):
     # Output final graph
     g.render(
         self.graph_name,
-        'output/',
+        directory=str(self.parent_context.output_path),
         view=self.graph_config['VIEW_ON_COMPLETION'],
         format=self.graph_config['OUTPUT_FORMAT'],
     )
