@@ -19,7 +19,6 @@ sympy = "^1.11.1"
 typer = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
-pipdeptree = "^2.3.3"
 pytest = "^7.2.0"
 autopep8 = "^2.0.1"
 

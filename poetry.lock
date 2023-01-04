@@ -134,22 +134,6 @@ files = [
 ]
 
 [[package]]
-name = "pipdeptree"
-version = "2.3.3"
-description = "Command line utility to show dependency tree of packages."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pipdeptree-2.3.3-py3-none-any.whl", hash = "sha256:8c012fd8ee79083806db9d1410a44648f71dba11364719aa40ed718f4762e964"},
-    {file = "pipdeptree-2.3.3.tar.gz", hash = "sha256:9d666f77ff1b9528d01b3d98594096484f56de70d752abe22f13e681be239bd8"},
-]
-
-[package.extras]
-graphviz = ["graphviz (>=0.20.1)"]
-test = ["covdefaults (>=2.2)", "diff-cover (>=7.0.1)", "pip (>=22.3)", "pytest (>=7.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "virtualenv (>=20.16.6,<21)"]
-
-[[package]]
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
@@ -334,4 +318,4 @@ test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "58f44f7c9f1735fa986f1b81a69a527994db22d0cec42e6fafee8051ae3312dc"
+content-hash = "f8bcd117fff74cbbdec807bff7eaf3362b0ee809f3bd457c9a0adb49170b66b5"
