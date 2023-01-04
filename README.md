@@ -1,5 +1,5 @@
 <h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1>
-
+<!-- TODO: Shorten the readme to move some of it into the wiki -->
 ## ❓ What is it?
 
 This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtnh-flow). In addition to the functionalities of the original tool, this fork has:
