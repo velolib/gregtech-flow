@@ -3,6 +3,7 @@
 import pytest
 from gtnhvelo.graph._utils import swapIO, userRound
 import yaml
+import pkgutil
 
 from gtnhvelo.data.loadMachines import recipesFromConfig
 from gtnhvelo.graph import Graph
@@ -44,8 +45,7 @@ def test_tierToVoltage():
     # Create graph
     g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
 
-    with open('src/gtnhvelo/resources/overclock_data.yaml', 'r') as f:
-        tiers = yaml.safe_load(f)['voltage_data']['tiers']
+    tiers = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/data.yaml'))['overclock_data']['voltage_data']['tiers']
     tiers_dict = {
         'lv': 32, 'mv': 128, 'hv': 512, 'ev': 2048,
         'iv': 8192, 'luv': 32768, 'zpm': 131072,

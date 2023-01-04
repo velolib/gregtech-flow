@@ -8,7 +8,7 @@ from gtnhvelo.gtnh.overclocks import OverclockHandler
 from gtnhvelo.cli import ProgramContext
 
 pc = ProgramContext()
-oh = OverclockHandler(ProgramContext)
+oh = OverclockHandler(pc)
 
 import json
 
