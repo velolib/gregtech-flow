@@ -17,7 +17,7 @@ Samples of the graphs in the repository.
 </details>
 
 ## ⏲️ Installation
-### Install as Python Module
+### Install as Python package
 This is the easiest installation method. In the terminal run:
 ```
 pip install gtnhvelo -U
@@ -42,8 +42,7 @@ pip install gtnhvelo -U
 
 
 ## ⏲️ Usage
-This is the usage guide for the first time installing.
-
+### CLI
 1. Create a project under `projects/`. You can look at existing projects to see the structure.
 2. The project name is system file path relative to `projects/`, for example `plastics/epoxid`. You can run the graph creator in 2 ways:
     - `flow [project name]`
@@ -51,7 +50,13 @@ This is the usage guide for the first time installing.
 3. The output graph will pop up and be available in `output/`
 
 When running `flow` the directories `projects/` and `output/` will be created in the working directory if they do not exist already.
-
+### In code
+You can use gtnh-velo in Python code like this:
+```python
+from gtnhvelo import flow
+flow('project_name', 'output_path', 'projects_path')
+```
+Using gtnh-velo in Python also automatically turns on quiet mode.
 
 ## ⁉ Answers
 ### How to configure
