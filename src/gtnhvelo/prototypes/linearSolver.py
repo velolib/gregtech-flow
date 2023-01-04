@@ -882,21 +882,18 @@ def graphPostProcessing(self, progress_cb):
 
 
 def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, title=None):
-
     with Progress() as progress:
-
         task = progress.add_task(f'[cyan]{project_name}', total=100)
-
-        def progress_fun(advance): return progress.update(task, advance=advance)
+        def update_progress(advance: float): return progress.update(task, advance=advance)
 
         g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
-        graphPreProcessing(g, progress_cb=progress_fun)
+        graphPreProcessing(g, progress_cb=update_progress)
 
         g.parent_context.cLog('Running linear solver...', level=logging.INFO)
         solver = SympySolver(g)
-        solver.run(progress_cb=progress_fun)
+        solver.run(progress_cb=update_progress)
 
-        graphPostProcessing(g, progress_cb=progress_fun)
+        graphPostProcessing(g, progress_cb=update_progress)
         g.outputGraphviz()
-        progress_fun(100)
+        update_progress(100)
         progress.stop()
