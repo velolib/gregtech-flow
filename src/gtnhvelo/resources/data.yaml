@@ -471,3 +471,11 @@ overclock_data:
       - uiv
       - umv
       - uxv
+special_machine_weights:
+  distillation tower: 10
+  pyrolyse oven: 5
+  electric blast furnace: 5
+  ebf: 5
+  multi smelter: 3
+  zhuhai: 3
+  vacuum freezer: 3

@@ -134,7 +134,7 @@ def _addPowerLineNodes(self):
 def _addSummaryNode(self):
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
-    misc_data = self.parent_context.data['overclock_data']
+    misc_data = self.parent_context.data['special_machine_weights']
     overclock_data = self.parent_context.data['overclock_data']
 
     color_positive = self.graph_config['POSITIVE_COLOR']
@@ -230,7 +230,7 @@ def _addSummaryNode(self):
         io_label_lines.append('<hr/>')
 
     # Add total machine multiplier count for renewables spreadsheet numbers
-    special_machine_weights = misc_data['special_machine_weights']
+    special_machine_weights = misc_data
     sumval = 0
     for rec_id in self.nodes:
         if rec_id in ['source', 'sink']:
