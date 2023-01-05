@@ -7,6 +7,5 @@ import pkgutil
 config = Path(os.getcwd(), 'config_factory_graph.yaml')
 if not config.exists():
     template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
-
     with open(config, mode='wb') as cfg:
         cfg.write(template)

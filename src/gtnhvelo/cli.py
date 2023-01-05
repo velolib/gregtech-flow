@@ -38,17 +38,33 @@ class ProgramContext:
             projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
         """
+        config = Path(os.getcwd(), 'config_factory_graph.yaml')
+        template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
+
+        if not config.exists():
+            self.cLog(f'Configuration file not found, generating new one at {Path(os.getcwd(), "config_factory_graph.yaml")}', logging.INFO)
+            with open(config, mode='wb') as cfg:
+                cfg.write(template)
+
+        with config.open() as cfg:
+            load = yaml.safe_load(cfg)
+            if not load['CONFIG_VER'] == yaml.safe_load(template)['CONFIG_VER']:
+                raise RuntimeError(f'Config version mismatch!')
+
+
         self.quiet = False
 
         # Load the data
         self.data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/data.yaml'))
 
         # Logger setup
-        LOG_LEVEL = logging.INFO
         if self.graph_config['DEBUG_LOGGING']:
             LOG_LEVEL = logging.DEBUG
+        else:
+            LOG_LEVEL = logging.INFO
 
         logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+        self.logger = logging.getLogger('rich')
 
         # Other stuff
         output_path = Path(output_path)
@@ -78,15 +94,14 @@ class ProgramContext:
                 raise RuntimeError('Graphviz path does not exist')
         return graph_config
 
-    @staticmethod
-    def cLog(msg, level=logging.DEBUG):
+    def cLog(self, msg, level=logging.DEBUG):
         """Logging for gtnhvelo
 
         Args:
             msg (str): The message
             level (logging.DEBUG, logging.INFO, etc., optional): Logging level. Defaults to logging.DEBUG.
         """
-        log = logging.getLogger('rich')
+        log = self.logger
         if level == logging.DEBUG:
             log.debug(f'{msg}')
         elif level == logging.INFO:
@@ -208,9 +223,9 @@ class ProgramContext:
         """
         def run_typer(path: Optional[Path] = typer.Argument(None), quiet: bool = typer.Option(False, '--quiet', '-q')):
             if quiet:
-                logger = logging.getLogger('rich')
+                logger = self.logger
                 logger.setLevel(logging.CRITICAL + 1)
-            if self.quiet:
+            else:
                 rprint(Panel('[bright_blue]gtnh-velo', expand=False))
             self.quiet = quiet
 

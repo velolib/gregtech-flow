@@ -44,7 +44,7 @@ pip install gtnhvelo -U
 ## ⏲️ Usage
 ### CLI
 1. Create a project under `projects/`. You can look at existing projects to see the structure.
-2. The project name is system file path relative to `projects/`, for example `plastics/epoxid`. You can run the graph creator in 2 ways:
+2. The project name is a system file path relative to `projects/`, for example `plastics/epoxid`. You can run the graph creator in 2 ways:
     - `flow [project name]`
     - `flow` then inputting your project name in the dialog
 3. The output graph will pop up and be available in `output/`
@@ -62,11 +62,6 @@ Using gtnh-velo in Python also automatically turns on quiet mode.
 ### How to configure
 The configuration file `config_factory_graph.yaml` will be created on startup in the working directory if not created already.
 You can configure a variety of layout and functional options using it. Make sure to not delete any keys.
-<!-- <details>
-    <summary><strong>Verbose Configuration List</strong></summary>
-    coming soon...
-</details> -->
-
 
 ### Automatic overclocking
 All of the names in the following image are recognized and will be overclocked automatically to 1A of the tier you select. This includes the EBF, which will default to 1 hatch of the selected tier.
