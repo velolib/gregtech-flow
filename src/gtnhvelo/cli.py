@@ -14,6 +14,7 @@ from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.console import group
 from rich.text import Text
+from rich.traceback import install
 import typer
 
 # Internal libraries
@@ -27,6 +28,7 @@ try:  # Linux
 except Exception:  # Windows
     import pyreadline3 as readline
 
+install(show_locals=True)
 
 class ProgramContext:
 
@@ -49,7 +51,7 @@ class ProgramContext:
         with config.open() as cfg:
             load = yaml.safe_load(cfg)
             if not load['CONFIG_VER'] == yaml.safe_load(template)['CONFIG_VER']:
-                raise RuntimeError(f'Config version mismatch!')
+                raise RuntimeError(f'Config version mismatch! Delete the old configuration file to regenerate')
 
 
         self.quiet = False

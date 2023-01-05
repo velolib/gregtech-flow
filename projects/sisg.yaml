@@ -8,7 +8,6 @@ metadata:
   output handling: Full
   recycling: Full
 ---
-
 - m: large chemical reactor
   tier: HV
   I:
@@ -35,6 +34,7 @@ metadata:
     '[recycle] hydrochloric acid': 3000
   eut: 30
   dur: 15
+  number: 10
 - m: electrolyzer
   tier: MV
   I:
