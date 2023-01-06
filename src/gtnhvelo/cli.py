@@ -184,22 +184,12 @@ class ProgramContext:
             else:
                 return None
 
-        @group()
-        def get_elements():
-            line_1 = Text()
-            line_1.append('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', style='bright_green')
-
-            line_2 = Text()
-            line_2.append('Type ', style='grey100')
-            line_2.append('\'end\' ', style='bright_green')
-            line_2.append('to stop this session', style='grey100')
-
-            yield line_1
-            yield line_2
+        panel_text = '''[bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)[/bright_green]
+[grey100]Type[/grey100][bright_green] \'end\' [/bright_green][grey100]to stop this session'''
 
         while True:
             readline.set_completer(filepath_completer)
-            rprint(Panel(get_elements(), expand=False, title='gtnh-velo'))
+            rprint(Panel(panel_text, expand=False, title='[bold bright_blue]gtnh-velo', style='white'))
             rprint('[grey100]> ', end='')
             the_input = str(input())
 
