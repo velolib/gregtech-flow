@@ -190,17 +190,17 @@ class ProgramContext:
             line_1.append('Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)', style='bright_green')
 
             line_2 = Text()
-            line_2.append('Type ', style='bright_white')
+            line_2.append('Type ', style='grey100')
             line_2.append('\'end\' ', style='bright_green')
-            line_2.append('to stop this session', style='bright_white')
+            line_2.append('to stop this session', style='grey100')
 
             yield line_1
             yield line_2
 
         while True:
             readline.set_completer(filepath_completer)
-            rprint(Panel(get_elements(), expand=False))
-            rprint('[bright_white]> ', end='')
+            rprint(Panel(get_elements(), expand=False, title='gtnh-velo'))
+            rprint('[grey100]> ', end='')
             the_input = str(input())
 
             match the_input:
@@ -227,19 +227,19 @@ class ProgramContext:
             if quiet:
                 logger = self.logger
                 logger.setLevel(logging.CRITICAL + 1)
-            else:
-                rprint(Panel('[bright_blue]gtnh-velo', expand=False))
             self.quiet = quiet
 
             while True:
                 if path is None:
                     result = self.interactive_cli()
                     if not result:
-                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                        rprint(Panel('[grey100]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
                 else:
+                    if not quiet:
+                        rprint(Panel('[bright_blue]gtnh-velo', expand=False))
                     result = self.direct_cli(path)
                     if not result:
-                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                        rprint(Panel('[grey100]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
                     exit()
 
         typer.run(run_typer)

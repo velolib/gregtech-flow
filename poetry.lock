@@ -77,6 +77,17 @@ files = [
 test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
 
 [[package]]
+name = "getchlib"
+version = "1.0.12"
+description = "Library for reading key presses"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "getchlib-1.0.12.tar.gz", hash = "sha256:a8c8dcdf513c67f51b752b821422115f1f8c649613aa3a6feeddfa9cad7a3150"},
+]
+
+[[package]]
 name = "graphviz"
 version = "0.20.1"
 description = "Simple Python interface for Graphviz"
@@ -318,4 +329,4 @@ test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "f8bcd117fff74cbbdec807bff7eaf3362b0ee809f3bd457c9a0adb49170b66b5"
+content-hash = "892d2e85b1464622fef95f6251d640c675d24e7b922d4955877214b1f736fd95"
