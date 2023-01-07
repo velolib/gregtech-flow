@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 from typing import Optional
 import pkgutil
+import textwrap
 
 # Pypi libraries
 import yaml
@@ -34,6 +35,7 @@ except Exception:  # Windows
 
 install(show_locals=True)
 
+
 class ProgramContext:
 
     def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True) -> None:
@@ -48,15 +50,16 @@ class ProgramContext:
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
 
         if not config.exists():
-            self.cLog(f'Configuration file not found, generating new one at {Path(os.getcwd(), "config_factory_graph.yaml")}', logging.INFO)
+            self.cLog(
+                f'Configuration file not found, generating new one at {Path(os.getcwd(), "config_factory_graph.yaml")}', logging.INFO)
             with open(config, mode='wb') as cfg:
                 cfg.write(template)
 
         with config.open() as cfg:
             load = yaml.safe_load(cfg)
             if not load['CONFIG_VER'] == yaml.safe_load(template)['CONFIG_VER']:
-                raise RuntimeError(f'Config version mismatch! Delete the old configuration file to regenerate')
-
+                raise RuntimeError(
+                    f'Config version mismatch! Delete the old configuration file to regenerate')
 
         self.quiet = False
 
@@ -69,7 +72,8 @@ class ProgramContext:
         else:
             LOG_LEVEL = logging.INFO
 
-        logging.basicConfig(handlers=[RichHandler(level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+        logging.basicConfig(handlers=[RichHandler(
+            level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
         self.logger = logging.getLogger('rich')
 
         # Other stuff
@@ -148,12 +152,14 @@ class ProgramContext:
                     metadata = doc_load[0]
                     title = metadata['title']
 
-            recipes = recipesFromConfig(project_name, self.graph_config, self.projects_path)
+            recipes = recipesFromConfig(
+                project_name, self.graph_config, self.projects_path)
 
             if project_name.endswith('.yaml'):
                 project_name = project_name[:-5]
 
-            systemOfEquationsSolverGraphGen(self, project_name, recipes, self.graph_config, title)
+            systemOfEquationsSolverGraphGen(
+                self, project_name, recipes, self.graph_config, title)
             return True
         else:
             return False
@@ -189,27 +195,34 @@ class ProgramContext:
                 return None
 
         # TODO: Clean this up
-        guide_text = '''[bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)[/bright_green]
-[bright_white]Valid commands:[/bright_white]
-[bright_white]• [/bright_white][bright_green]end[/bright_green][bright_white] / [/bright_white][bright_green]stop[/bright_green][bright_white] / [/bright_white][bright_green]exit[/bright_green][bright_white]: Stop the program[/bright_white]'''
+        guide_text = textwrap.dedent('''\
+        [bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)[/]
+        [bright_white]Valid commands:[/]
+        [bright_white]- [/][bright_green]end[/][bright_white] / [/][bright_green]stop[/][bright_white] / [/][bright_green]exit[/][bright_white]: Stop the program[/]
+        ''')
 
-        credits_text = '''[underline bright_cyan link=https://github.com/velolib/gtnh-velo]gtnh-velo[/underline bright_cyan link][bright_white] is a fork of [bright_white][underline bright_green link=https://github.com/velolib/gtnh-velo]gtnh-flow[/underline bright_green link][bright_white] by [/bright_white][bright_green underline link=https://github.com/OrderedSet86]OrderedSet86[/bright_green underline link]
-'''
+        links_text = textwrap.dedent('''\
+        [bright_green link=https://github.com/velolib/gtnh-velo]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gtnh-velo]https://github.com/velolib/gtnh-velo[/]
+        [bright_green link=https://github.com/velolib/gtnh-velo/wiki]Wiki[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gtnh-velo/wiki]https://github.com/velolib/gtnh-velo/wiki[/]
+        ''')
 
+        # TODO: Add more commands
         main_ly = Layout()
         main_ly.size = 4
-        main_ly.split_column(
-            Layout(Panel(Align('[bold bright_cyan]gtnh-velo', align='center', vertical='middle'), border_style='bold bright_cyan'), name='header', size=3),
-            Layout(name='content', size=8)
-        )
+        main_ly.split_column(Layout(Panel(Align('[bold bright_cyan]gtnh-velo', align='center', vertical='middle'),
+                             border_style='bold bright_cyan'), name='header', size=3), Layout(name='content', size=8))
         main_ly['content'].split_row(
-            Layout(Panel(guide_text, border_style='bold bright_magenta', title='guide.txt', title_align='left'), name='left'),
+            Layout(Panel(guide_text, border_style='bold bright_magenta',
+                   title='guide.txt', title_align='left'), name='left'),
             Layout(name='right')
         )
 
+        # TODO: Increase functionality of the errors panel
         main_ly['content']['right'].split_column(
-            Layout(Panel(credits_text, border_style='bold bright_white', title='credits.txt', title_align='left'), name='credits'),
-            Layout(Panel('[bright_white]No errors found.' if not current_error else '[bright_yellow]' + current_error, border_style='bold bright_yellow', title='errors.log', title_align='left'), name='errors')
+            Layout(Panel(links_text, border_style='bold bright_white',
+                   title='links.txt', title_align='left'), name='credits'),
+            Layout(Panel('[bright_white]No errors found.' if not current_error else '[bright_red]' + current_error,
+                   border_style='bold bright_yellow', title='errors.log', title_align='left'), name='errors')
         )
 
         console = Console(height=11)
@@ -225,8 +238,11 @@ class ProgramContext:
                     exit()
                 case _:
                     console.print('')
-                    console.print(Rule(style='bright_white', title='[bold bright_white]latest.log', align='center'))
+                    console.print(Rule(style='bright_white',
+                                  title='[bold bright_white]latest.log', align='center'))
                     create_graph = self.create_graph(the_input)
+                    if not create_graph:
+                        print('')
                     console.print(Rule(style='bright_white'))
                     console.print('')
                     return create_graph
@@ -263,7 +279,8 @@ class ProgramContext:
                         rprint(Panel('[bright_blue]gtnh-velo', expand=False))
                     result = self.direct_cli(path)
                     if not result:
-                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                        rprint(Panel('[bright_white]Project could not be found!',
+                               expand=False, title='[bright_red]Error', style='bright_red'))
                     exit()
 
         typer.run(run_typer)

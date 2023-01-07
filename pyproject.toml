@@ -22,6 +22,10 @@ typer = "^0.7.0"
 pytest = "^7.2.0"
 autopep8 = "^2.0.1"
 
+[tool.autopep8]
+ignore = "E402"
+max_line_length = 90
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
