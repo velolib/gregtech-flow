@@ -116,13 +116,15 @@ class SympySolver:
             for rec_id in targeted_nodes:
                 rec = self.graph.recipes[rec_id]
                 if len(rec.target) > 1:
-                    raise NotImplementedError('Currently only one targeted ingredient per machine - feel free to open Github ticket')
+                    raise NotImplementedError(
+                        'Currently only one targeted ingredient per machine - feel free to open Github ticket')
                 target_ingredient = list(rec.target)[0]
                 target_quant = rec.target[target_ingredient]
 
                 # Look up the exact ingredient and add the constant to the system of equations
                 for ing_direction in ['I', 'O']:
-                    directional_matches = [x.name for x in getattr(rec, ing_direction)._ings if x.name == target_ingredient]
+                    directional_matches = [x.name for x in getattr(
+                        rec, ing_direction)._ings if x.name == target_ingredient]
 
                     if directional_matches:
                         ing_name = directional_matches[0]
@@ -315,13 +317,16 @@ class SympySolver:
                 continue
 
             self.edge_from_perspective_to_index[(edge, multi_machine)] = variable_index
-            self.arrayIndex(multi_machine, product, direction, multi_idx=variable_index)  # Sanity check that variable counts match
+            # Sanity check that variable counts match
+            self.arrayIndex(multi_machine, product, direction, multi_idx=variable_index)
             variable_index += 1
 
         if direction == 'O':
-            self.graph.parent_context.cLog(f'Solving multi-output scenario involving {multi_product}!', level=logging.INFO)
+            self.graph.parent_context.cLog(
+                f'Solving multi-output scenario involving {multi_product}!', level=logging.INFO)
         elif direction == 'I':
-            self.graph.parent_context.cLog(f'Solving multi-input scenario involving {multi_product}!', level=logging.INFO)
+            self.graph.parent_context.cLog(
+                f'Solving multi-input scenario involving {multi_product}!', level=logging.INFO)
 
         # Add new equations for multi-IO
         # print(self.variables)
@@ -330,7 +335,8 @@ class SympySolver:
 
         base = self.variables[self.arrayIndex(multi_machine, multi_product, direction, multi_idx=0)]
         for i, dst in enumerate(destinations):
-            base -= self.variables[self.arrayIndex(multi_machine, multi_product, direction, multi_idx=self.num_variables + i)]
+            base -= self.variables[self.arrayIndex(multi_machine, multi_product,
+                                                   direction, multi_idx=self.num_variables + i)]
         self.system.append(base)
 
         self.num_variables += len(destinations)
@@ -411,7 +417,8 @@ class SympySolver:
             iterations += 1
 
         if inconsistent_variables == []:
-            raise NotImplementedError('Both linear and nonlinear solver found empty set, so system of equations has no solutions -- report to dev.')
+            raise NotImplementedError(
+                'Both linear and nonlinear solver found empty set, so system of equations has no solutions -- report to dev.')
 
         # Check inconsistent equations to see if products on both sides are the same - these are the core issues
         def var_to_idx(var):
@@ -438,8 +445,10 @@ class SympySolver:
             if len(products) == 1:
                 self.graph.parent_context.cLog(f'Major inconsistency: {group}', level=logging.WARNING)
 
-                self.graph.parent_context.cLog(f'Between output={self.graph.recipes[mpdm_cache[0][0]].O}', level=logging.WARNING)
-                self.graph.parent_context.cLog(f'and input={self.graph.recipes[mpdm_cache[1][0]].I}', level=logging.WARNING)
+                self.graph.parent_context.cLog(
+                    f'Between output={self.graph.recipes[mpdm_cache[0][0]].O}', level=logging.WARNING)
+                self.graph.parent_context.cLog(
+                    f'and input={self.graph.recipes[mpdm_cache[1][0]].I}', level=logging.WARNING)
 
                 # TODO: Fix this
                 # Probably will take a while

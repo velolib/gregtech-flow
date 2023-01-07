@@ -21,10 +21,13 @@ typer = "^0.7.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"
 autopep8 = "^2.0.1"
+pre-commit = "^2.21.0"
 
 [tool.autopep8]
 ignore = "E402"
-max_line_length = 90
+max_line_length = 120
+recursive = true
+in-place = true
 
 [build-system]
 requires = ["poetry-core"]

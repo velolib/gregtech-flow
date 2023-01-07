@@ -17,7 +17,8 @@ def _lockMachine(self, rec_id, rec, determined=False):
     self.parent_context.cLog(all_relevant_edges)
 
     if all(len(y) == 0 for x, y in all_relevant_edges.items()):
-        self.parent_context.cLog(f'No locked machine edges adjacent to {rec.machine.title()}. Cannot balance.', level=logging.WARNING)
+        self.parent_context.cLog(
+            f'No locked machine edges adjacent to {rec.machine.title()}. Cannot balance.', level=logging.WARNING)
         self.outputGraphviz()
         exit(1)
 
@@ -275,7 +276,8 @@ def _lockMachineEdges(self, rec_id, rec):
                             self.edges[unlocked_edge]['quant'] = -excess
                             self.edges[unlocked_edge]['locked'] = True
                     else:
-                        self.parent_context.cLog('Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
+                        self.parent_context.cLog(
+                            'Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
                         self.parent_context.cLog(
                             f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', logging.WARNING)
                         self.parent_context.cLog(f'Inputs for: {rec}', logging.WARNING)
@@ -403,7 +405,8 @@ def _lockMachineEdges(self, rec_id, rec):
                             self.edges[unlocked_edge]['quant'] = excess
                             self.edges[unlocked_edge]['locked'] = True
                     else:
-                        self.parent_context.cLog('Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
+                        self.parent_context.cLog(
+                            'Too many undetermined edges! Please define more numbered nodes (or different ones).', logging.WARNING)
                         self.parent_context.cLog(
                             f'Problem: {len(edges) - sum(locked_bools)} edges are undetermined. Can only handle 1 at most.', logging.WARNING)
                         self.parent_context.cLog(f'Outputs for: {rec}', logging.WARNING)
