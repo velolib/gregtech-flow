@@ -12,9 +12,13 @@ import yaml
 from rich import print as rprint
 from rich.logging import RichHandler
 from rich.panel import Panel
-from rich.console import group
+from rich.console import group, Console
 from rich.text import Text
 from rich.traceback import install
+from rich.layout import Layout
+from rich.align import Align
+from rich.rule import Rule
+from rich.markdown import Markdown
 import typer
 
 # Internal libraries
@@ -154,7 +158,7 @@ class ProgramContext:
         else:
             return False
 
-    def interactive_cli(self) -> bool:
+    def interactive_cli(self, current_error) -> bool:
         """The interactive CLI for gtnhvelo
 
         Returns:
@@ -184,20 +188,48 @@ class ProgramContext:
             else:
                 return None
 
-        panel_text = '''[bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)[/bright_green]
-[grey100]Type[/grey100][bright_green] \'end\' [/bright_green][grey100]to stop this session'''
+        # TODO: Clean this up
+        guide_text = '''[bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)[/bright_green]
+[bright_white]Valid commands:[/bright_white]
+[bright_white]• [/bright_white][bright_green]end[/bright_green][bright_white] / [/bright_white][bright_green]stop[/bright_green][bright_white] / [/bright_white][bright_green]exit[/bright_green][bright_white]: Stop the program[/bright_white]'''
+
+        credits_text = '''[underline bright_cyan link=https://github.com/velolib/gtnh-velo]gtnh-velo[/underline bright_cyan link][bright_white] is a fork of [bright_white][underline bright_green link=https://github.com/velolib/gtnh-velo]gtnh-flow[/underline bright_green link][bright_white] by [/bright_white][bright_green underline link=https://github.com/OrderedSet86]OrderedSet86[/bright_green underline link]
+'''
+
+        main_ly = Layout()
+        main_ly.size = 4
+        main_ly.split_column(
+            Layout(Panel(Align('[bold bright_cyan]gtnh-velo', align='center', vertical='middle'), border_style='bold bright_cyan'), name='header', size=3),
+            Layout(name='content', size=8)
+        )
+        main_ly['content'].split_row(
+            Layout(Panel(guide_text, border_style='bold bright_magenta', title='guide.txt', title_align='left'), name='left'),
+            Layout(name='right')
+        )
+
+        main_ly['content']['right'].split_column(
+            Layout(Panel(credits_text, border_style='bold bright_white', title='credits.txt', title_align='left'), name='credits'),
+            Layout(Panel('[bright_white]No errors found.' if not current_error else '[bright_yellow]' + current_error, border_style='bold bright_yellow', title='errors.log', title_align='left'), name='errors')
+        )
+
+        console = Console(height=11)
 
         while True:
             readline.set_completer(filepath_completer)
-            rprint(Panel(panel_text, expand=False, title='[bold bright_blue]gtnh-velo', style='white'))
-            rprint('[grey100]> ', end='')
+            console.print(main_ly)
+            console.print('[bright_white]> ', end='')
             the_input = str(input())
 
             match the_input:
-                case 'end':
+                case 'end' | 'stop' | 'exit':
                     exit()
                 case _:
-                    return self.create_graph(the_input)
+                    console.print('')
+                    console.print(Rule(style='bright_white', title='[bold bright_white]latest.log', align='center'))
+                    create_graph = self.create_graph(the_input)
+                    console.print(Rule(style='bright_white'))
+                    console.print('')
+                    return create_graph
 
     def direct_cli(self, path: Path) -> bool:
         """Direct CLI implementation for gtnhvelo
@@ -219,17 +251,19 @@ class ProgramContext:
                 logger.setLevel(logging.CRITICAL + 1)
             self.quiet = quiet
 
+            icli_error = None
             while True:
                 if path is None:
-                    result = self.interactive_cli()
+                    result = self.interactive_cli(icli_error)
+                    icli_error = None
                     if not result:
-                        rprint(Panel('[grey100]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                        icli_error = 'Project could not be found!'
                 else:
                     if not quiet:
                         rprint(Panel('[bright_blue]gtnh-velo', expand=False))
                     result = self.direct_cli(path)
                     if not result:
-                        rprint(Panel('[grey100]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
+                        rprint(Panel('[bright_white]Project could not be found!', expand=False, title='[bright_red]Error', style='bright_red'))
                     exit()
 
         typer.run(run_typer)
