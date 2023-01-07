@@ -1,8 +1,6 @@
 # Standard libraries
 import logging
 import os
-import sys
-import argparse
 from pathlib import Path
 from typing import Optional
 import pkgutil
@@ -13,18 +11,15 @@ import yaml
 from rich import print as rprint
 from rich.logging import RichHandler
 from rich.panel import Panel
-from rich.console import group, Console
-from rich.text import Text
+from rich.console import Console
 from rich.traceback import install
 from rich.layout import Layout
 from rich.align import Align
 from rich.rule import Rule
-from rich.markdown import Markdown
 import typer
 
 # Internal libraries
 from gtnhvelo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
-from gtnhvelo.graph import Graph
 from gtnhvelo.data.loadMachines import recipesFromConfig
 
 # Conditional imports based on OS
@@ -119,14 +114,6 @@ class ProgramContext:
         elif level == logging.WARNING:
             log.warning(f'{msg}')
 
-    # @staticmethod
-    # def standardGraphGen(self, project_name, recipes, graph_config, title=None):
-    #     # Create graph and render, this is unused
-    #     g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
-    #     g.connectGraph()
-    #     g.balanceGraph()
-    #     g.outputGraphviz()
-
     def create_graph(self, project_name: Path | str) -> bool:
         """Centralized graph creation function to check if the project exists or not
 
@@ -196,7 +183,8 @@ class ProgramContext:
 
         # TODO: Clean this up
         guide_text = textwrap.dedent('''\
-        [bright_green]Please enter project path (example: "power/oil/light_fuel.yaml", tab autocomplete allowed)[/]
+        [bright_green]Please enter project path (example: "[underline]power/oil/light_fuel.yaml[/]")[/]
+        [bright_green]Tab completion is [underline]enabled[/][/]
         [bright_white]Valid commands:[/]
         [bright_white]- [/][bright_green]end[/][bright_white] / [/][bright_green]stop[/][bright_white] / [/][bright_green]exit[/][bright_white]: Stop the program[/]
         ''')
