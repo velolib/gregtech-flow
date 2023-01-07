@@ -115,7 +115,8 @@ def _addPowerLineNodes(self):
             burn_value_table = rocket_fuels
             coefficient = 0.005
         else:
-            raise RuntimeError(f'Unrecognized input fuel to UCFE: {fuel_name}. Can only burn gas, combustables, or rocket fuel.')
+            raise RuntimeError(
+                f'Unrecognized input fuel to UCFE: {fuel_name}. Can only burn gas, combustables, or rocket fuel.')
 
         # 3. Compute UCFE ratio and output EU/s
         combustion_promoter_quant = input_ingredient_collection['combustion promoter'][0]
@@ -175,7 +176,8 @@ def _addSummaryNode(self):
 
     # Create I/O lines
     io_label_lines = []
-    io_label_lines.append(f'<tr><td align="left"><font color="white" face="{self.graph_config["SUMMARY_FONT"]}"><b>Summary</b></font></td></tr><hr/>')
+    io_label_lines.append(
+        f'<tr><td align="left"><font color="white" face="{self.graph_config["SUMMARY_FONT"]}"><b>Summary</b></font></td></tr><hr/>')
 
     for id, quant in sorted(total_io.items(), key=lambda x: x[1]):
         if id == 'eu':

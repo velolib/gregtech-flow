@@ -31,7 +31,8 @@ def balanceGraph(self):
     # If not all machine-involved sides are locked, do some complicated logic/guessing/ask user (TODO:)
     targeted_nodes = [i for i, x in self.recipes.items() if getattr(x, 'target', False) != False]
     numbered_nodes = [i for i, x in self.recipes.items() if getattr(x, 'number', False) != False]
-    need_locking = {i for i in self.recipes.keys() if i not in numbered_nodes and i not in targeted_nodes and i not in {'sink', 'source'}}
+    need_locking = {i for i in self.recipes.keys() if i not in numbered_nodes and i not in targeted_nodes and i not in {
+        'sink', 'source'}}
 
     ln = len(numbered_nodes)
     lt = len(targeted_nodes)
@@ -173,7 +174,8 @@ def balanceGraph(self):
             }
         except ZeroDivisionError as e:
             self.outputGraphviz()
-            raise RuntimeError('A machine is disconnected from all the others. Please check for typos. A graph will be output.')
+            raise RuntimeError(
+                'A machine is disconnected from all the others. Please check for typos. A graph will be output.')
 
         edge_priority = sorted([
             [stats, rec_id]
@@ -193,7 +195,8 @@ def balanceGraph(self):
             if self.graph_config.get('DEBUG_SHOW_EVERY_STEP', False):
                 self.outputGraphviz()
         else:
-            self.parent_context.cLog('Unable to compute some of the tree due to missing information; refer to output graph.', level=logging.WARNING)
+            self.parent_context.cLog(
+                'Unable to compute some of the tree due to missing information; refer to output graph.', level=logging.WARNING)
             break
 
         self.createAdjacencyList()
@@ -471,4 +474,5 @@ def outputGraphviz(self):
     if self.graph_config.get('PRINT_BOTTLENECKS'):
         self.bottleneckPrint()
 
-    self.parent_context.cLog(f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)
+    self.parent_context.cLog(
+        f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)
