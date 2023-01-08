@@ -4,9 +4,6 @@ import re
 from collections import defaultdict
 from copy import deepcopy
 
-import pkgutil
-import yaml
-
 from gtnhvelo.graph._utils import _iterateOverMachines
 from gtnhvelo.gtnh.overclocks import OverclockHandler
 

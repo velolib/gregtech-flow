@@ -8,7 +8,6 @@ import graphviz  # type: ignore
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.data.basicTypes import Recipe
     from gtnhvelo.graph import Graph
 
 

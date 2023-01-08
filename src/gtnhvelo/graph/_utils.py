@@ -2,8 +2,6 @@ from collections import defaultdict
 
 from gtnhvelo.data.basicTypes import Recipe
 
-import math
-
 
 def swapIO(io_type):
     if io_type == 'I':

@@ -13,10 +13,8 @@ from sympy.sets.sets import EmptySet
 
 from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection, Recipe
 from gtnhvelo.graph import Graph
-from gtnhvelo.graph._utils import swapIO
 
 from rich.progress import Progress
-from typing import Iterable
 
 
 class SympySolver:

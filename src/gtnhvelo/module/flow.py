@@ -1,6 +1,5 @@
 from gtnhvelo.cli import ProgramContext
 from pathlib import Path
-import os
 import logging
 
 
