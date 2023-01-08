@@ -1,26 +1,30 @@
 import itertools
 
 from gtnhvelo.gtnh.overclocks import OverclockHandler
+from ._utils import userRound
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.cli import ProgramContext
+    from gtnhvelo.data.basicTypes import Recipe
 
 
 class Graph:
 
-    def __init__(self, graph_name, recipes, parent_context, graph_config=None, title=None):
+    def __init__(self, graph_name: str, recipes: list, parent_context: 'ProgramContext', graph_config: dict = {}, title=None):
         self.graph_name = graph_name
-        self.recipes = {str(i): x for i, x in enumerate(recipes)}
-        self.nodes = {}
-        self.edges = {}  # uniquely defined by (machine from, machine to, ing name)
+        self.recipes: dict[str, 'Recipe'] = {str(i): x for i, x in enumerate(recipes)}
+        self.nodes: dict = {}
+        self.edges: dict = {}  # uniquely defined by (machine from, machine to, ing name)
         self.parent_context = parent_context
         self.graph_config = graph_config
         self.title = title
-        if self.graph_config == None:
-            self.graph_config = {}
 
         # Populated later on
-        self.adj = None
-        self.adj_machine = None
+        self.adj: dict = {}
+        self.adj_machine: dict = {}
 
-        self._color_dict = dict()
+        self._color_dict: dict = dict()
         if self.graph_config.get('USE_RAINBOW_EDGES', None):
             self._color_cycler = itertools.cycle(self.graph_config['EDGECOLOR_CYCLE'])
         else:
@@ -37,9 +41,12 @@ class Graph:
             self.parent_context.cLog(rec)
         self.parent_context.cLog('')
 
+    @staticmethod
+    def userRound(number: int | float) -> str:
+        return userRound(number)
+
     # Graph utility functions
-    from ._utils import (
-        userRound,
+    from ._utils import (  # type: ignore
         addNode,
         addEdge,
         tierToVoltage,
@@ -47,29 +54,28 @@ class Graph:
         _iterateOverMachines,
         _checkIfMachine,
     )
-    userRound = staticmethod(userRound)
 
     # Setup of graph - connect edges and remove cycles
-    from ._preProcessing import (
+    from ._preProcessing import (  # type: ignore
         connectGraph,
         removeBackEdges,
     )
 
     # Main runtime - describes primary behavior
-    from ._core import (
+    from ._core import (  # type: ignore
         balanceGraph,
         outputGraphviz
     )
 
     # Machine locking - core autobalancing functionality
-    from ._machineLocking import (
+    from ._machineLocking import (  # type: ignore
         _lockMachine,
         _lockMachineEdges,
         _simpleLockMachineEdges,
     )
 
     # Utilities for "port node" style graphviz nodes
-    from ._portNodes import (
+    from ._portNodes import (  # type: ignore
         stripBrackets,
         nodeHasPort,
         getOutputPortSide,
@@ -84,7 +90,7 @@ class Graph:
     )
 
     # Add summary and power burning machines
-    from ._postProcessing import (
+    from ._postProcessing import (  # type: ignore
         _addSummaryNode,
         _addPowerLineNodes,
         bottleneckPrint,

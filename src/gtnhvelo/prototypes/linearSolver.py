@@ -7,8 +7,6 @@ from copy import deepcopy
 from math import isclose
 from string import ascii_uppercase
 
-import yaml
-import pkgutil
 from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
@@ -18,6 +16,7 @@ from gtnhvelo.graph import Graph
 from gtnhvelo.graph._utils import swapIO
 
 from rich.progress import Progress
+from typing import Iterable
 
 
 class SympySolver:
@@ -28,7 +27,7 @@ class SympySolver:
         self.variable_idx_counter = 0  # Autogen current "head" index for variable number
         self.num_variables = 0  # Expected number of variables - if this diverges from vic, something broke
         self.system = []
-        self.solved_vars = None  # Result from linear solver
+        self.solved_vars = []  # Result from linear solver
 
         # TODO: Look into merging lookup and edge_from_perspective_to_index - they describe mostly the same thing
         self.lookup = {}  # (machine, product, direction, multi_idx) -> variable index
@@ -295,6 +294,8 @@ class SympySolver:
             direction = 'O'
         elif multi_machine == multi_b:
             direction = 'I'
+        else:
+            raise NotImplementedError('How did this happen?')
 
         # Add new variables vX, vY, ...
         new_symbols = ', '.join(['v' + str(x + self.num_variables) for x in range(len(destinations))])
@@ -570,6 +571,8 @@ class SympySolver:
                     solution_index = self.edge_from_perspective_to_index[(edge, a)]
                 elif b_machine:
                     solution_index = self.edge_from_perspective_to_index[(edge, b)]
+                else:
+                    raise NotImplementedError('How did this happen?')
 
                 quant = self.solved_vars[solution_index]
                 relevant_edge = self.graph.edges[edge]

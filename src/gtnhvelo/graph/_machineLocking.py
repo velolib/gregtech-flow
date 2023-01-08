@@ -6,8 +6,13 @@ from collections import defaultdict
 
 from gtnhvelo.graph._utils import swapIO
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.data.basicTypes import Recipe
+    from gtnhvelo.graph import Graph
 
-def _lockMachine(self, rec_id, rec, determined=False):
+
+def _lockMachine(self: 'Graph', rec_id: str, rec: 'Recipe', determined: bool = False):
     # Compute multipliers based on all locked edges (other I/O stream as well if available)
     all_relevant_edges = {
         'I': [x for x in self.adj_machine[rec_id]['I'] if self.edges[x].get('locked', False)],
@@ -25,13 +30,13 @@ def _lockMachine(self, rec_id, rec, determined=False):
     multipliers = []
     for io_type in ['I', 'O']:
         io_side_edges = all_relevant_edges[io_type]
-        total_sided_request = defaultdict(float)  # Want to handle multiple ingredient inputs properly
+        total_sided_request: dict = defaultdict(float)  # Want to handle multiple ingredient inputs properly
 
         for edge in io_side_edges:
             node_from, node_to, ing_name = edge
             if io_type == 'I':
                 other_rec = self.recipes[node_from]
-            elif io_type == 'O':
+            else:  # 'O'
                 other_rec = self.recipes[node_to]
 
             wanted_quant = sum(getattr(other_rec, swapIO(io_type))[ing_name])
@@ -74,7 +79,7 @@ def _lockMachine(self, rec_id, rec, determined=False):
     self._lockMachineEdges(rec_id, rec)
 
 
-def _lockMachineEdges(self, rec_id, rec):
+def _lockMachineEdges(self: 'Graph', rec_id: str, rec: 'Recipe'):
     # Lock all adjacent edges to a particular recipe
     # Do this process per-ingredient - there can be multiple input or output edges for a particular ingredient
     # By the time this function is called, self.adj and self.adj_machine should already exist
@@ -143,7 +148,7 @@ def _lockMachineEdges(self, rec_id, rec):
 
     adj_edges = self.adj[rec_id]
     # Create mapping of {io_dir: {ing_name: edges}}
-    ing_edges = {
+    ing_edges: dict[str, dict] = {
         'I': defaultdict(list),
         'O': defaultdict(list),
     }
@@ -190,8 +195,8 @@ def _lockMachineEdges(self, rec_id, rec):
                             )
                 else:  # Multiple input
                     if all(locked_bools):  # All inputs determined
-                        edge_quants = [self.edges[x]['quant'] for x in edges]
-                        locked_quant = sum(edge_quants)
+                        edge_quants_list = [self.edges[x]['quant'] for x in edges]
+                        locked_quant = sum(edge_quants_list)
                         excess = locked_quant - machine_ing_io  # Excess ingredient available
 
                         if math.isclose(excess, 0, abs_tol=1e-9):
@@ -209,7 +214,7 @@ def _lockMachineEdges(self, rec_id, rec):
                             # If math doesn't work out without remainder, adjust relevant edge down
                             # and make a new sink
 
-                            for idx, quant in enumerate(edge_quants):
+                            for idx, quant in enumerate(edge_quants_list):
                                 relevant_edge = edges[idx]
                                 node_from, node_to, _ = relevant_edge
                                 excess -= quant
@@ -234,8 +239,9 @@ def _lockMachineEdges(self, rec_id, rec):
                                         quant - excess
                                     )
                     elif sum(locked_bools) == len(edges) - 1:  # 1 input undetermined
-                        edge_quants = {x: self.edges[x]['quant'] for x in edges if self.edges[x].get('locked', False)}
-                        locked_quant = sum(edge_quants.values())
+                        edge_quants_dict = {x: self.edges[x]['quant']
+                                            for x in edges if self.edges[x].get('locked', False)}
+                        locked_quant = sum(edge_quants_dict.values())
                         excess = locked_quant - machine_ing_io  # Excess ingredient available
                         unlocked_edge = edges[locked_bools.index(False)]
 
@@ -246,7 +252,7 @@ def _lockMachineEdges(self, rec_id, rec):
                             if math.isclose(excess, 0, abs_tol=1e-9):
                                 continue
 
-                            for edge, quant in edge_quants.items():
+                            for edge, quant in edge_quants_dict.items():
                                 node_from, node_to, _ = edge
                                 excess -= quant
                                 if excess > 0 or math.isclose(excess, 0, abs_tol=1e-9):
@@ -318,8 +324,8 @@ def _lockMachineEdges(self, rec_id, rec):
                             )
                 else:
                     if all(locked_bools):  # All inputs determined
-                        edge_quants = [self.edges[x]['quant'] for x in edges]
-                        locked_quant = sum(edge_quants)
+                        edge_quants_list = [self.edges[x]['quant'] for x in edges]
+                        locked_quant = sum(edge_quants_list)
                         excess = machine_ing_io - locked_quant  # Excess rec ingredient available
 
                         if math.isclose(excess, 0, abs_tol=1e-9):
@@ -338,7 +344,7 @@ def _lockMachineEdges(self, rec_id, rec):
                             # If math doesn't work out without remainder, adjust relevant edge down
                             # and make a new sink
 
-                            for idx, quant in enumerate(edge_quants):
+                            for idx, quant in enumerate(edge_quants_list):
                                 relevant_edge = edges[idx]
                                 node_from, node_to, _ = relevant_edge
                                 excess -= quant
@@ -364,8 +370,9 @@ def _lockMachineEdges(self, rec_id, rec):
                                         locked=True,
                                     )
                     elif sum(locked_bools) == len(edges) - 1:  # 1 input undetermined
-                        edge_quants = {x: self.edges[x]['quant'] for x in edges if self.edges[x].get('locked', False)}
-                        locked_quant = sum(edge_quants.values())
+                        edge_quants_dict = {x: self.edges[x]['quant']
+                                            for x in edges if self.edges[x].get('locked', False)}
+                        locked_quant = sum(edge_quants_dict.values())
                         excess = machine_ing_io - locked_quant  # Excess rec ingredient available
                         unlocked_edge = edges[locked_bools.index(False)]
 
@@ -376,7 +383,7 @@ def _lockMachineEdges(self, rec_id, rec):
                             if math.isclose(excess, 0, abs_tol=1e-9):
                                 continue
 
-                            for edge, quant in edge_quants.items():
+                            for edge, quant in edge_quants_dict.items():
                                 node_from, node_to, _ = edge
                                 excess += quant
                                 if excess < 0 or math.isclose(excess, 0, abs_tol=1e-9):
@@ -417,7 +424,7 @@ def _lockMachineEdges(self, rec_id, rec):
                         exit(1)
 
 
-def _simpleLockMachineEdges(self, rec_id, rec):
+def _simpleLockMachineEdges(self: 'Graph', rec_id: str, rec: 'Recipe'):
     # _lockMachineEdges, but no information requirements - just force lock the edges
     for io_dir in ['I', 'O']:
         for edge in self.adj[rec_id][io_dir]:

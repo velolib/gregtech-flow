@@ -17,16 +17,13 @@ from rich.layout import Layout
 from rich.align import Align
 from rich.rule import Rule
 import typer
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.styles import Style
 
 # Internal libraries
 from gtnhvelo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
 from gtnhvelo.data.loadMachines import recipesFromConfig
-
-# Conditional imports based on OS
-try:  # Linux
-    import readline
-except Exception:  # Windows
-    import pyreadline3 as readline
 
 install(show_locals=True)
 
@@ -43,6 +40,7 @@ class ProgramContext:
         """
         config = Path(os.getcwd(), 'config_factory_graph.yaml')
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
+        assert template is not None
 
         if not config.exists():
             self.cLog(
@@ -59,7 +57,9 @@ class ProgramContext:
         self.quiet = False
 
         # Load the data
-        self.data = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/data.yaml'))
+        data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
+        assert data_yaml is not None
+        self.data = yaml.safe_load(data_yaml)
 
         # Logger setup
         if self.graph_config['DEBUG_LOGGING']:
@@ -157,29 +157,6 @@ class ProgramContext:
         Returns:
             bool: Whether or not the project file was found
         """
-        readline.parse_and_bind('tab: complete')
-        readline.set_completer_delims('')
-
-        def filepath_completer(text, state):
-            prefix = ''
-            suffix = text
-            if '/' in text:
-                parts = text.split('/')
-                prefix = '/'.join(parts[:-1])
-                suffix = parts[-1]
-
-            target_path = self.projects_path / prefix
-            valid_tabcompletes = os.listdir(target_path)
-            valid_completions = [x for x in valid_tabcompletes if x.startswith(suffix)]
-            if state < len(valid_completions):  # Only 1 match
-                completion = valid_completions[state]
-                if prefix != '':
-                    completion = ''.join([prefix, '/', completion])
-                if not completion.endswith('.yaml'):
-                    completion += '/'
-                return completion
-            else:
-                return None
 
         # TODO: Clean this up
         guide_text = textwrap.dedent('''\
@@ -215,20 +192,26 @@ class ProgramContext:
 
         console = Console(height=11)
 
+        prompt_style = Style.from_dict({'bigger_than': '#ffffff'})
+        prompt_message = [('class:bigger_than', '> ')]
+
         while True:
-            readline.set_completer(filepath_completer)
             console.print(main_ly)
             console.print('[bright_white]> ', end='')
-            the_input = str(input())
 
-            match the_input:
+            projects = list(map(lambda p: str(p.relative_to(self.projects_path)), self.projects_path.glob('**/*.yaml')))
+            path_completer = WordCompleter(projects)
+
+            selected_path = prompt(prompt_message, completer=path_completer, style=prompt_style)  # type: ignore
+
+            match selected_path:
                 case 'end' | 'stop' | 'exit':
                     exit()
                 case _:
                     console.print('')
                     console.print(Rule(style='bright_white',
                                   title='[bold bright_white]latest.log', align='center'))
-                    create_graph = self.create_graph(the_input)
+                    create_graph = self.create_graph(selected_path)
                     if not create_graph:
                         print('')
                     console.print(Rule(style='bright_white'))
