@@ -62,8 +62,11 @@ jobs:
       # -------------------------------
       # Run tests
       # -------------------------------
-      - name: Test with pytest
+      - name: Run pytest
         run: |
           source $VENV
           pytest -svv -k "not flow"
+      - name: Run mypy
+        run: |
+          source $VENV
           mypy src
