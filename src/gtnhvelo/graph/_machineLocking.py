@@ -1,7 +1,5 @@
 import logging
 import math
-import pkgutil
-import yaml
 from collections import defaultdict
 
 from gtnhvelo.graph._utils import swapIO

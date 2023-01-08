@@ -1,10 +1,6 @@
 # Standard libraries
 import math
 from bisect import bisect_right
-import pkgutil
-
-# Pypi libraries
-import yaml
 
 # Internal libraries
 from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection
