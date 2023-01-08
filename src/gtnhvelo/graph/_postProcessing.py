@@ -99,6 +99,7 @@ def _addPowerLineNodes(self):
         if 'combustion promoter' not in input_ingredient_collection._ingdict:
             raise RuntimeError('UCFE detected, but "combustion promoter" is not one of its inputs. Cannot autobalance.')
 
+        fuel_name = ''
         for ing in input_ingredient_collection._ings:
             if ing.name != 'combustion promoter':
                 fuel_name = ing.name
@@ -163,6 +164,8 @@ def _addSummaryNode(self):
         elif direction == 1:
             # Outputs
             edges = self.adj['sink']['I']
+        else:
+            raise NotImplementedError(f'How did this happen? Invalid direction: {direction}')
 
         for edge in edges:
             _, _, ing_name = edge

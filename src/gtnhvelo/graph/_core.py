@@ -4,12 +4,15 @@ from io import StringIO
 from collections import defaultdict
 from pathlib import Path
 
-import yaml
-import graphviz
-import pkgutil
+import graphviz  # type: ignore
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.data.basicTypes import Recipe
+    from gtnhvelo.graph import Graph
 
 
-def balanceGraph(self):
+def balanceGraph(self: 'Graph'):
     # Applies locking info to existing graph
     self.removeBackEdges()
 
@@ -133,7 +136,7 @@ def balanceGraph(self):
         # Now propagate updates throughout the tree
         # Prefer sides with maximum information (highest ratio of determined edges to total edges)
         # Compute determined edges for all machines
-        determined_edge_count = defaultdict(dict)
+        determined_edge_count: dict = defaultdict(dict)
         for rec_id in need_locking:
             rec = self.recipes[rec_id]
             determined_edge_count[rec_id]['I'] = [
@@ -177,8 +180,8 @@ def balanceGraph(self):
             raise RuntimeError(
                 'A machine is disconnected from all the others. Please check for typos. A graph will be output.')
 
-        edge_priority = sorted([
-            [stats, rec_id]
+        edge_priority: list[tuple] = sorted([
+            (stats, rec_id)
             for rec_id, stats
             in determination_score.items()
         ],
@@ -211,7 +214,7 @@ def balanceGraph(self):
         self._combineOutputs()
 
 
-def outputGraphviz(self):
+def outputGraphviz(self: 'Graph'):
     # Outputs a graphviz png using the graph info
     node_style = {
         'style': 'filled',
@@ -244,7 +247,7 @@ def outputGraphviz(self):
     )
 
     # Collect nodes by subgraph grouping
-    groups = defaultdict(list)
+    groups: dict = defaultdict(list)
     groups['no-group'] = []
     for rec_id, kwargs in self.nodes.items():
         repackaged = (rec_id, kwargs)

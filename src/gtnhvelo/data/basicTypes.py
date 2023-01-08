@@ -68,13 +68,16 @@ class Recipe:
         self.multiplier = -1
         self.base_eut = eut  # Used for final graph output
         for key, value in kwargs.items():
-            setattr(self, key, value)
+            match key:  # for type checking
+                case 'target':
+                    self.target = value
+                case _:
+                    setattr(self, key, value)
 
     def __repr__(self):
         return str([f'{x}={getattr(self, x)}' for x in vars(self)])
 
-    def __mul__(self, mul_num):
-        assert isinstance(mul_num, (int, float))
+    def __mul__(self, mul_num: int | float):
         assert self.multiplier == -1  # Undefined behavior with multiple multiplications
 
         self.I *= mul_num
