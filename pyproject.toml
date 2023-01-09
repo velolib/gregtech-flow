@@ -3,7 +3,7 @@ flow = 'gtnhvelo.cli:main'
 
 [tool.poetry]
 name = "gtnhvelo"
-version = "0.1.2"
+version = "0.2.0"
 description = "Factory Optimization Flowcharts for Gregtech: New Horizons"
 authors = ["velolib <vlocitize@gmail.com>"]
 license = "MIT"
