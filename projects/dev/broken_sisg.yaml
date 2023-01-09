@@ -34,6 +34,7 @@ metadata:
     '[recycle] hydrochloric acid': 3000
   eut: 30
   dur: 15
+  number: 2
 - m: electrolyzer
   tier: MV
   I:

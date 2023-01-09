@@ -2,8 +2,6 @@ from collections import defaultdict
 
 from gtnhvelo.data.basicTypes import Recipe
 
-import math
-
 
 def swapIO(io_type):
     if io_type == 'I':
@@ -25,10 +23,10 @@ def addEdge(self, node_from, node_to, ing_name, quantity, **kwargs):
     }
 
 
-def userRound(number):
+def userRound(number: int | float) -> str:
     # Display numbers nicely for end user (eg. 814.3k)
     # input int/float, return string
-    cutoffs = {
+    cutoffs: dict = {
         1_000_000_000: lambda x: f'{round(x/1_000_000_000, 2)}B',
         1_000_000: lambda x: f'{round(x/1_000_000, 2)}M',
         1_000: lambda x: f'{round(x/1_000, 2)}K',
@@ -37,8 +35,9 @@ def userRound(number):
 
     for n, roundfxn in cutoffs.items():
         if abs(number) >= n:
-            rounded = roundfxn(number)
+            rounded: str = roundfxn(number)
             return rounded
+    raise NotImplementedError('Negative number not allowed')
 
 
 def createAdjacencyList(self):

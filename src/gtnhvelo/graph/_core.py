@@ -4,12 +4,14 @@ from io import StringIO
 from collections import defaultdict
 from pathlib import Path
 
-import yaml
-import graphviz
-import pkgutil
+import graphviz  # type: ignore
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.graph import Graph
 
 
-def balanceGraph(self):
+def balanceGraph(self: 'Graph'):
     # Applies locking info to existing graph
     self.removeBackEdges()
 
@@ -31,7 +33,8 @@ def balanceGraph(self):
     # If not all machine-involved sides are locked, do some complicated logic/guessing/ask user (TODO:)
     targeted_nodes = [i for i, x in self.recipes.items() if getattr(x, 'target', False) != False]
     numbered_nodes = [i for i, x in self.recipes.items() if getattr(x, 'number', False) != False]
-    need_locking = {i for i in self.recipes.keys() if i not in numbered_nodes and i not in targeted_nodes and i not in {'sink', 'source'}}
+    need_locking = {i for i in self.recipes.keys() if i not in numbered_nodes and i not in targeted_nodes and i not in {
+        'sink', 'source'}}
 
     ln = len(numbered_nodes)
     lt = len(targeted_nodes)
@@ -132,7 +135,7 @@ def balanceGraph(self):
         # Now propagate updates throughout the tree
         # Prefer sides with maximum information (highest ratio of determined edges to total edges)
         # Compute determined edges for all machines
-        determined_edge_count = defaultdict(dict)
+        determined_edge_count: dict = defaultdict(dict)
         for rec_id in need_locking:
             rec = self.recipes[rec_id]
             determined_edge_count[rec_id]['I'] = [
@@ -173,10 +176,11 @@ def balanceGraph(self):
             }
         except ZeroDivisionError as e:
             self.outputGraphviz()
-            raise RuntimeError('A machine is disconnected from all the others. Please check for typos. A graph will be output.')
+            raise RuntimeError(
+                'A machine is disconnected from all the others. Please check for typos. A graph will be output.')
 
-        edge_priority = sorted([
-            [stats, rec_id]
+        edge_priority: list[tuple] = sorted([
+            (stats, rec_id)
             for rec_id, stats
             in determination_score.items()
         ],
@@ -193,7 +197,8 @@ def balanceGraph(self):
             if self.graph_config.get('DEBUG_SHOW_EVERY_STEP', False):
                 self.outputGraphviz()
         else:
-            self.parent_context.cLog('Unable to compute some of the tree due to missing information; refer to output graph.', level=logging.WARNING)
+            self.parent_context.cLog(
+                'Unable to compute some of the tree due to missing information; refer to output graph.', level=logging.WARNING)
             break
 
         self.createAdjacencyList()
@@ -208,7 +213,7 @@ def balanceGraph(self):
         self._combineOutputs()
 
 
-def outputGraphviz(self):
+def outputGraphviz(self: 'Graph'):
     # Outputs a graphviz png using the graph info
     node_style = {
         'style': 'filled',
@@ -241,7 +246,7 @@ def outputGraphviz(self):
     )
 
     # Collect nodes by subgraph grouping
-    groups = defaultdict(list)
+    groups: dict = defaultdict(list)
     groups['no-group'] = []
     for rec_id, kwargs in self.nodes.items():
         repackaged = (rec_id, kwargs)
@@ -460,7 +465,7 @@ def outputGraphviz(self):
     # Output final graph
     g.render(
         self.graph_name,
-        'output/',
+        directory=str(self.parent_context.output_path),
         view=self.graph_config['VIEW_ON_COMPLETION'],
         format=self.graph_config['OUTPUT_FORMAT'],
     )
@@ -471,4 +476,5 @@ def outputGraphviz(self):
     if self.graph_config.get('PRINT_BOTTLENECKS'):
         self.bottleneckPrint()
 
-    self.parent_context.cLog(f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)
+    self.parent_context.cLog(
+        f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)

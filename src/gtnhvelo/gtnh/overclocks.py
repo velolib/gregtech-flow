@@ -1,10 +1,6 @@
 # Standard libraries
 import math
 from bisect import bisect_right
-import pkgutil
-
-# Pypi libraries
-import yaml
 
 # Internal libraries
 from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection
@@ -248,7 +244,8 @@ class OverclockHandler:
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
 
-        actual_heat = self.overclock_data['coil_heat'][recipe.coils]  # + 100 * min(0, user_voltage - 1) # I assume there's no bonus heat on UT
+        # + 100 * min(0, user_voltage - 1) # I assume there's no bonus heat on UT
+        actual_heat = self.overclock_data['coil_heat'][recipe.coils]
         excess_heat = actual_heat - recipe.heat
         eut_discount = 0.95 ** (excess_heat // 900)
         perfect_ocs = (excess_heat // 1800)
@@ -354,7 +351,8 @@ class OverclockHandler:
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
         if oc_count < 0:
-            raise RuntimeError(f'Recipe has negative overclock! Min voltage is {base_voltage}, given OC voltage is {user_voltage}.\n{recipe}')
+            raise RuntimeError(
+                f'Recipe has negative overclock! Min voltage is {base_voltage}, given OC voltage is {user_voltage}.\n{recipe}')
         return oc_count
 
     def modifyStandard(self, recipe):

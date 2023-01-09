@@ -4,9 +4,6 @@ import re
 from collections import defaultdict
 from copy import deepcopy
 
-import pkgutil
-import yaml
-
 from gtnhvelo.graph._utils import _iterateOverMachines
 from gtnhvelo.gtnh.overclocks import OverclockHandler
 
@@ -99,6 +96,7 @@ def _addPowerLineNodes(self):
         if 'combustion promoter' not in input_ingredient_collection._ingdict:
             raise RuntimeError('UCFE detected, but "combustion promoter" is not one of its inputs. Cannot autobalance.')
 
+        fuel_name = ''
         for ing in input_ingredient_collection._ings:
             if ing.name != 'combustion promoter':
                 fuel_name = ing.name
@@ -115,7 +113,8 @@ def _addPowerLineNodes(self):
             burn_value_table = rocket_fuels
             coefficient = 0.005
         else:
-            raise RuntimeError(f'Unrecognized input fuel to UCFE: {fuel_name}. Can only burn gas, combustables, or rocket fuel.')
+            raise RuntimeError(
+                f'Unrecognized input fuel to UCFE: {fuel_name}. Can only burn gas, combustables, or rocket fuel.')
 
         # 3. Compute UCFE ratio and output EU/s
         combustion_promoter_quant = input_ingredient_collection['combustion promoter'][0]
@@ -162,6 +161,8 @@ def _addSummaryNode(self):
         elif direction == 1:
             # Outputs
             edges = self.adj['sink']['I']
+        else:
+            raise NotImplementedError(f'How did this happen? Invalid direction: {direction}')
 
         for edge in edges:
             _, _, ing_name = edge
@@ -175,7 +176,8 @@ def _addSummaryNode(self):
 
     # Create I/O lines
     io_label_lines = []
-    io_label_lines.append(f'<tr><td align="left"><font color="white" face="{self.graph_config["SUMMARY_FONT"]}"><b>Summary</b></font></td></tr><hr/>')
+    io_label_lines.append(
+        f'<tr><td align="left"><font color="white" face="{self.graph_config["SUMMARY_FONT"]}"><b>Summary</b></font></td></tr><hr/>')
 
     for id, quant in sorted(total_io.items(), key=lambda x: x[1]):
         if id == 'eu':

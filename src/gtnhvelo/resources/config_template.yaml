@@ -27,8 +27,6 @@ USE_BOTTLENECK_EXACT_VOLTAGE: false
 BOTTLENECK_MIN_VOLTAGE: IV
 MAX_BOTTLENECKS: 5
 
-USE_NEW_SOLVER: true
-
 # === VISUALS ===
 ## === FONTS ===
 GENERAL_FONT: noto sans # nodes and edges

@@ -1,5 +1,6 @@
 <h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1>
 <!-- TODO: Shorten the readme to move some of it into the wiki -->
+
 ## ❓ What is it?
 
 This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtnh-flow). In addition to the functionalities of the original tool, this fork has:
@@ -17,7 +18,7 @@ Samples of the graphs in the repository.
 </details>
 
 ## ⏲️ Installation
-### Install as Python Module
+### Install as Python package
 This is the easiest installation method. In the terminal run:
 ```
 pip install gtnhvelo -U
@@ -42,26 +43,26 @@ pip install gtnhvelo -U
 
 
 ## ⏲️ Usage
-This is the usage guide for the first time installing.
-
+### CLI
 1. Create a project under `projects/`. You can look at existing projects to see the structure.
-2. The project name is system file path relative to `projects/`, for example `plastics/epoxid`. You can run the graph creator in 2 ways:
+2. The project name is a system file path relative to `projects/`, for example `plastics/epoxid`. You can run the graph creator in 2 ways:
     - `flow [project name]`
     - `flow` then inputting your project name in the dialog
 3. The output graph will pop up and be available in `output/`
 
 When running `flow` the directories `projects/` and `output/` will be created in the working directory if they do not exist already.
-
+### In code
+You can use gtnh-velo in Python code like this:
+```python
+from gtnhvelo import flow
+flow('project_name', 'output_path', 'projects_path')
+```
+Using gtnh-velo in Python also automatically turns on quiet mode.
 
 ## ⁉ Answers
 ### How to configure
 The configuration file `config_factory_graph.yaml` will be created on startup in the working directory if not created already.
 You can configure a variety of layout and functional options using it. Make sure to not delete any keys.
-<!-- <details>
-    <summary><strong>Verbose Configuration List</strong></summary>
-    coming soon...
-</details> -->
-
 
 ### Automatic overclocking
 All of the names in the following image are recognized and will be overclocked automatically to 1A of the tier you select. This includes the EBF, which will default to 1 hatch of the selected tier.
