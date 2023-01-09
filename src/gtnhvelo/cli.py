@@ -38,40 +38,43 @@ class ProgramContext:
             projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
         """
-        config = Path(os.getcwd(), 'config_factory_graph.yaml')
+        self.quiet = False
+
+        # TODO: Stop using an actual file in the cwd for the config
+        # Get config and config template
+        config = Path('config_factory_graph.yaml')
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
         assert template is not None
 
+        # Create config if not already created
         if not config.exists():
             self.cLog(
                 f'Configuration file not found, generating new one at {Path(os.getcwd(), "config_factory_graph.yaml")}', logging.INFO)
             with open(config, mode='wb') as cfg:
                 cfg.write(template)
 
+        # Check CONFIG_VER key
         with config.open() as cfg:
             load = yaml.safe_load(cfg)
             if not load['CONFIG_VER'] == yaml.safe_load(template)['CONFIG_VER']:
                 raise RuntimeError(
                     f'Config version mismatch! Delete the old configuration file to regenerate')
 
-        self.quiet = False
-
-        # Load the data
+        # Load the game data
         data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
         assert data_yaml is not None
         self.data = yaml.safe_load(data_yaml)
 
-        # Logger setup
+        # Setup logger
         if self.graph_config['DEBUG_LOGGING']:
             LOG_LEVEL = logging.DEBUG
         else:
             LOG_LEVEL = logging.INFO
-
         logging.basicConfig(handlers=[RichHandler(
             level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
         self.logger = logging.getLogger('rich')
 
-        # Other stuff
+        # Create paths if selected option
         output_path = Path(output_path)
         if not output_path.exists() and create_dirs:
             output_path.mkdir()
@@ -247,7 +250,8 @@ class ProgramContext:
                         icli_error = 'Project could not be found!'
                 else:
                     if not quiet:
-                        rprint(Panel('[bright_blue]gtnh-velo', expand=False))
+                        rprint(Panel(Align('[bold bright_cyan]gtnh-velo', align='center',
+                               vertical='middle'), border_style='bold bright_cyan'))
                     result = self.direct_cli(path)
                     if not result:
                         rprint(Panel('[bright_white]Project could not be found!',
