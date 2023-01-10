@@ -28,7 +28,7 @@ class Graph:
         if self.graph_config.get('USE_RAINBOW_EDGES', None):
             self._color_cycler = itertools.cycle(self.graph_config['EDGECOLOR_CYCLE'])
         else:
-            self._color_cycler = itertools.cycle(['white'])
+            self._color_cycler = itertools.cycle(['#ffffff'])
 
         # Overclock all recipes to the provided user voltage
         oh = OverclockHandler(self.parent_context)
