@@ -44,6 +44,7 @@ BACKGROUND_COLOR: '#140e52'
 TITLE_COLOR: '#ffffff'
 SUMMARY_COLOR: '#ffffff'
 EDGECOLOR_CYCLE:
+  # Legacy colors
   # - '#b58900' # 'yellow'
   # - '#cb4b16' # 'orange'
   # - '#dc322f' # 'red'
