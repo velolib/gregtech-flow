@@ -28,6 +28,7 @@ types-pyyaml = "^6.0.12.2"
 types-pygments = "^2.14.0.0"
 types-colorama = "^0.4.15.4"
 types-commonmark = "^0.9.2"
+coverage = "^7.0.4"
 
 [tool.autopep8]
 ignore = "E402"
