@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import lru_cache
 
 from gtnhvelo.data.basicTypes import Recipe
 
@@ -74,8 +75,8 @@ def tierToVoltage(self, tier_idx):
     return 32 * pow(4, tier_idx)
 
 
+@lru_cache()
 def _checkIfMachine(self, rec_id):
-    # TODO: Memoize calls
     if rec_id in {'source', 'sink', 'total_io_node'}:
         return False
     elif rec_id.startswith(('power_', 'joint_')):

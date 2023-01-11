@@ -40,6 +40,7 @@ class Graph:
         for rec in recipes:
             self.parent_context.cLog(rec)
         self.parent_context.cLog('')
+        self._checkIfMachine.cache_clear()
 
     @staticmethod
     def userRound(number: int | float) -> str:
