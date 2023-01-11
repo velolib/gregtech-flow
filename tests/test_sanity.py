@@ -29,6 +29,10 @@ def test_lazyGenerateGraphs(project_name):
     """
     Run locally
     """
+    path_vars = (os.environ.get('path')).split(os.pathsep)
+    if not [x for x in path_vars if 'Graphviz' in x if 'bin' in x]:
+        pytest.skip()
+
     pc = ProgramContext(config_path='tests/test_config.yaml')
     recipes = recipesFromConfig(project_name, pc.graph_config, project_folder='')
 

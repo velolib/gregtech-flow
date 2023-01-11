@@ -65,7 +65,7 @@ jobs:
       - name: Run pytest
         run: |
           source $VENV
-          pytest -svv -k "not flow"
+          pytest -svv
       - name: Run mypy
         run: |
           source $VENV
