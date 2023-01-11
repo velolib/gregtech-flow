@@ -7,15 +7,13 @@ from copy import deepcopy
 from math import isclose
 from string import ascii_uppercase
 
+from rich.progress import Progress
+
 from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
 
 from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection, Recipe
-
-from rich.progress import Progress
-
-
 from gtnhvelo.graph import Graph
 from gtnhvelo.graph._preProcessing import (
     connectGraph,
@@ -31,6 +29,11 @@ from gtnhvelo.graph._postProcessing import (
 from gtnhvelo.graph._output import (
     outputGraphviz
 )
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.cli import ProgramContext
+    from gtnhvelo.graph import Graph
 
 
 class SympySolver:
@@ -590,7 +593,7 @@ class SympySolver:
                 relevant_edge['locked'] = True  # TODO: Legacy - check if can be removed
 
 
-def graphPreProcessing(self, progress_cb):
+def graphPreProcessing(self: 'Graph', progress_cb):
     connectGraph(self)
     progress_cb(6.6)
     removeBackEdges(self)
@@ -599,7 +602,7 @@ def graphPreProcessing(self, progress_cb):
     progress_cb(6.6)
 
 
-def graphPostProcessing(self, progress_cb):
+def graphPostProcessing(self: 'Graph', progress_cb):
     if self.graph_config.get('POWER_LINE', False):
         addPowerLineNodesV2(self)
 
@@ -619,12 +622,11 @@ def graphPostProcessing(self, progress_cb):
     progress_cb(6.6)
 
 
-def systemOfEquationsSolverGraphGen(self, project_name, recipes, graph_config, title=None):
+def systemOfEquationsSolverGraphGen(self: 'ProgramContext', project_name, recipes, graph_config, title=None):
     with Progress(disable=False if not self.quiet else True, transient=True) as progress:
         task = progress.add_task(f'[cyan]{project_name}', total=100)
         def update_progress(advance: float): return progress.update(task, advance=advance)
         g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
-        self._graph = g  # For test access
 
         graphPreProcessing(g, update_progress)
 

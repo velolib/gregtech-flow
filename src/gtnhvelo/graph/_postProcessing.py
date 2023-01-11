@@ -30,7 +30,7 @@ def capitalizeMachine(machine):
         return machine.title()
 
 
-def createMachineLabels(self):
+def createMachineLabels(self: 'Graph'):
     # Distillation Tower
     # ->
     # 5.71x HV Distillation Tower
@@ -108,7 +108,7 @@ def createMachineLabels(self):
         self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
 
-def addUserNodeColor(self):
+def addUserNodeColor(self: 'Graph'):
     targeted_nodes = [i for i, x in self.recipes.items() if getattr(x, 'target', False) != False]
     numbered_nodes = [i for i, x in self.recipes.items() if getattr(x, 'number', False) != False]
     all_user_nodes = set(targeted_nodes) | set(numbered_nodes)
@@ -117,7 +117,7 @@ def addUserNodeColor(self):
         self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
 
 
-def addMachineMultipliers(self):
+def addMachineMultipliers(self: 'Graph'):
     # Compute machine multiplier based on solved ingredient quantities
     # FIXME: If multipliers disagree, sympy solver might have failed on an earlier step
 
@@ -298,7 +298,7 @@ def addPowerLineNodesV2(self: 'Graph'):
             highest_node_index += 1
 
 
-def addSummaryNode(self):
+def addSummaryNode(self: 'Graph'):
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
     misc_data = self.parent_context.data['special_machine_weights']
@@ -320,7 +320,7 @@ def addSummaryNode(self):
     self.createAdjacencyList()
 
     # Compute I/O
-    total_io = defaultdict(float)
+    total_io: dict = defaultdict(float)
     ing_names = defaultdict(str)
     for direction in [-1, 1]:
         if direction == -1:
@@ -384,7 +384,7 @@ def addSummaryNode(self):
             def fun(z): return self.userRound(z / voltage_at_tier)
             unit = f' {tiers[max_tier].upper()}'
         case 'eut':
-            unit = None
+            unit = ''
             fun = self.userRound
         case _:
             def fun(z): return self.userRound(z / self.tierToVoltage(tiers.index(self.graph_config['POWER_UNITS'])))
@@ -445,7 +445,7 @@ def addSummaryNode(self):
     )
 
 
-def bottleneckPrint(self):
+def bottleneckPrint(self: 'Graph'):
     # Prints bottlenecks normalized to an input voltage.
     machine_recipes = [x for x in _iterateOverMachines(self)]
     machine_recipes.sort(
@@ -453,7 +453,7 @@ def bottleneckPrint(self):
         reverse=True,
     )
 
-    max_print = self.graph_config.get('MAX_BOTTLENECKS')
+    max_print: int = self.graph_config['MAX_BOTTLENECKS']
     number_to_print = max(len(machine_recipes) // 10, max_print)
 
     if self.graph_config.get('USE_BOTTLENECK_EXACT_VOLTAGE'):

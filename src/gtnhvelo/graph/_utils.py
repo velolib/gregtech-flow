@@ -75,7 +75,7 @@ def tierToVoltage(self, tier_idx):
     return 32 * pow(4, tier_idx)
 
 
-@lru_cache()
+@lru_cache(maxsize=256)  # Arbitrary amount
 def _checkIfMachine(self, rec_id):
     if rec_id in {'source', 'sink', 'total_io_node'}:
         return False
