@@ -65,8 +65,14 @@ jobs:
       - name: Run pytest
         run: |
           source $VENV
-          pytest -svv
+          py.test ./ --cov-report xml:coverage.xml --cov ./
       - name: Run mypy
         run: |
           source $VENV
           mypy src
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true
