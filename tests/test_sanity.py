@@ -9,16 +9,12 @@ from gtnhvelo.data.loadMachines import recipesFromConfig
 from gtnhvelo.graph._solver import systemOfEquationsSolverGraphGen
 from gtnhvelo.cli import ProgramContext
 
-# Just compile and generate graph for every project
-# (Minus a few whitelisted long exceptions like nanocircuits)
-
 
 def generateProjectPaths():
-    skip_names = [
-        # Too big
+    path_blacklist = [
         Path('circuits/nanocircuits.yaml'),
     ]
-    project_paths = (str(pth) for pth in Path('projects/').glob('**/*.yaml') if pth not in skip_names
+    project_paths = (str(pth) for pth in Path('projects/').glob('**/*.yaml') if pth not in path_blacklist
                      if 'dev' not in str(pth))
 
     return project_paths
@@ -30,7 +26,10 @@ def generateProjectPaths():
 
 @pytest.mark.parametrize("project_name", generateProjectPaths())
 def test_lazyGenerateGraphs(project_name):
-    pc = ProgramContext(config_path='tests/sanity_config.yaml')
+    """
+    Run locally
+    """
+    pc = ProgramContext(config_path='tests/test_config.yaml')
     recipes = recipesFromConfig(project_name, pc.graph_config, project_folder='')
 
     if project_name.endswith('.yaml'):
