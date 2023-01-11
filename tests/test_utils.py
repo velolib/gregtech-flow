@@ -13,7 +13,7 @@ pc = ProgramContext()
 
 import json
 def loadTestConfig():
-    with open('config_factory_graph.yaml', 'r') as f:
+    with open('flow_config.yaml', 'r') as f:
         graph_config = yaml.safe_load(f)
     return graph_config
 

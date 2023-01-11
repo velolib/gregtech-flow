@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 
 
-def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', config_path: Path | str = 'config_factory_graph.yaml'):
+def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', config_path: Path | str = 'flow_config.yaml'):
     """
     gtnh-velo flow wrapper
 
@@ -11,7 +11,7 @@ def flow(project_name: Path | str, output_path: Path | str = 'output/', projects
         project_name (Path | str): Project path relative to projects_path
         output_path (Path | str, optional): Output path. Defaults to 'output/'.
         projects_path (Path | str, optional): Path to projects directory. Defaults to 'projects/'.
-        config_path (Path | str): Configuration file path. Will create one if nonexistent. Defaults to 'config_factory_graph.yaml'
+        config_path (Path | str): Configuration file path. Will create one if nonexistent. Defaults to 'flow_config.yaml'
     """
 
     project_name = Path(project_name)

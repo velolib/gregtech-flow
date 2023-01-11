@@ -61,7 +61,7 @@ Using gtnh-velo in Python also automatically turns on quiet mode.
 
 ## ⁉ Answers
 ### How to configure
-The configuration file `config_factory_graph.yaml` will be created on startup in the working directory if not created already.
+The configuration file `flow_config.yaml` will be created on startup in the working directory if not created already.
 You can configure a variety of layout and functional options using it. Make sure to not delete any keys.
 
 ### Automatic overclocking

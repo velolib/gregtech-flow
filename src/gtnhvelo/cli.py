@@ -30,7 +30,7 @@ install(show_locals=True)
 
 class ProgramContext:
 
-    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('config_factory_graph.yaml')) -> None:
+    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('flow_config.yaml')) -> None:
         """Program context class for gtnh-velo
 
         Args:
@@ -49,7 +49,7 @@ class ProgramContext:
         # Create config if not already created
         if not config.exists():
             self.cLog(
-                f'Configuration file not found, generating new one at {Path(os.getcwd(), "config_factory_graph.yaml")}', logging.INFO)
+                f'Configuration file not found, generating new one at {Path(os.getcwd(), "flow_config.yaml")}', logging.INFO)
             with open(config, mode='wb') as cfg:
                 cfg.write(template)
 
@@ -87,7 +87,7 @@ class ProgramContext:
 
     @property
     def graph_config(self):
-        with open('config_factory_graph.yaml' if not self.config_path else self.config_path, 'r') as f:
+        with open('flow_config.yaml' if not self.config_path else self.config_path, 'r') as f:
             graph_config = yaml.safe_load(f)
 
         # Checks for graph_config
