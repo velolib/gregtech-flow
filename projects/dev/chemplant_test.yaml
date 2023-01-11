@@ -1,0 +1,13 @@
+- m: chemical plant
+  tier: MV
+  I:
+    salt water: 1000
+  O:
+    sodium hydroxide: 3
+    chlorine: 1000
+    hydrogen: 1000
+  eut: 120
+  dur: 300
+  coils: tungstensteel
+  pipe_casings: tungstensteel
+  number: 1
