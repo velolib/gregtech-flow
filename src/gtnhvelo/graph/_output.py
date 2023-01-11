@@ -1,14 +1,19 @@
+import logging
 import re
 from io import StringIO
 from collections import defaultdict
+from pathlib import Path
 
-import graphviz
+import graphviz  # type: ignore
 
-from src.graph._postProcessing import bottleneckPrint
+from gtnhvelo.graph._postProcessing import bottleneckPrint
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.graph import Graph
 
 
-
-def outputGraphviz(self):
+def outputGraphviz(self: 'Graph'):
     # Outputs a graphviz png using the graph info
     node_style = {
         'style': 'filled',
@@ -25,18 +30,23 @@ def outputGraphviz(self):
     }
     g = graphviz.Digraph(
         engine='dot',
-        strict=False, # Prevents edge grouping
+        strict=False,  # Prevents edge grouping
         graph_attr={
             'bgcolor': self.graph_config['BACKGROUND_COLOR'],
             'splines': self.graph_config['LINE_STYLE'],
             'rankdir': self.graph_config['ORIENTATION'],
             'ranksep': self.graph_config['RANKSEP'],
             'nodesep': self.graph_config['NODESEP'],
+            'label': self.title,
+            'labelloc': 't',
+            'fontsize': str(self.graph_config["TITLE_FONTSIZE"]),
+            'fontname': self.graph_config["TITLE_FONT"],
+            'fontcolor': self.graph_config["TITLE_COLOR"]
         }
     )
 
     # Collect nodes by subgraph grouping
-    groups = defaultdict(list)
+    groups: dict = defaultdict(list)
     groups['no-group'] = []
     for rec_id, kwargs in self.nodes.items():
         repackaged = (rec_id, kwargs)
@@ -62,20 +72,19 @@ def outputGraphviz(self):
 
         machine_cell = ['<br />'.join(lab.split('\n'))]
         lines = [
-            ('i',inputs),
-            (None,machine_cell),
-            ('o',outputs)
+            ('i', inputs),
+            (None, machine_cell),
+            ('o', outputs)
         ]
         if is_inverted:
             lines.reverse()
-        lines = [(x,y) for x,y in lines if y]
-
+        lines = [(x, y) for x, y in lines if y]
 
         io = StringIO()
         if is_vertical:
             # Each Row is a table
             io.write('<<table border="0" cellspacing="0">')
-            for port_type,line in lines:
+            for port_type, line in lines:
                 io.write('<tr>')
                 io.write('<td>')
                 io.write('<table border="0" cellspacing="0">')
@@ -96,7 +105,7 @@ def outputGraphviz(self):
             # Each columns is a table
             io.write('<<table border="0" cellspacing="0">')
             io.write('<tr>')
-            for port_type,line in lines:
+            for port_type, line in lines:
                 io.write('<td>')
                 io.write('<table border="0" cellspacing="0">')
                 for cell in line:
@@ -124,10 +133,10 @@ def outputGraphviz(self):
             return [x for x in sequence if not (x in seen or seen.add(x))]
 
         if node_name == 'source':
-            names = unique([name for src,_,name in self.edges.keys() if src == 'source'])
+            names = unique([name for src, _, name in self.edges.keys() if src == 'source'])
             isTable, newLabel = make_table(label, None, names)
         elif node_name == 'sink':
-            names = unique([name for _,dst,name in self.edges.keys() if dst == 'sink'])
+            names = unique([name for _, dst, name in self.edges.keys() if dst == 'sink'])
             isTable, newLabel = make_table(label, names, None)
         elif re.match(r'^\d+$', node_name):
             rec = self.recipes[node_name]
@@ -227,23 +236,22 @@ def outputGraphviz(self):
         src_is_joint_o = re.match('^joint_o', src_node)
         dst_is_joint_o = re.match('^joint_o', dst_node)
 
-        #if src_is_joint_o:
+        # if src_is_joint_o:
         #    port_style.update(taillabel=f'{lab}')
         if src_has_port and dst_is_joint_o:
             port_style.update(headlabel=f'{lab}')
         if src_is_joint_i and dst_has_port:
             port_style.update(taillabel=f'{lab}')
-        #if dst_is_joint_i:
+        # if dst_is_joint_i:
         #    port_style.update(headlabel=f'{lab}')
 
         def mulcolor(h, f):
             h = h.lstrip('#')
-            r,g,b = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-            r = max(0,min(255,int(r * f)))
-            g = max(0,min(255,int(g * f)))
-            b = max(0,min(255,int(b * f)))
-            return '#' + ''.join(hex(x)[2:].zfill(2) for x in [r,g,b])
-
+            r, g, b = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+            r = max(0, min(255, int(r * f)))
+            g = max(0, min(255, int(g * f)))
+            b = max(0, min(255, int(b * f)))
+            return '#' + ''.join(hex(x)[2:].zfill(2) for x in [r, g, b])
 
         g.edge(
             src_port,
@@ -257,7 +265,7 @@ def outputGraphviz(self):
     # Output final graph
     g.render(
         filename=self.graph_name,
-        directory='output/',
+        directory=str(self.parent_context.output_path),
         view=self.graph_config['VIEW_ON_COMPLETION'],
         format=self.graph_config['OUTPUT_FORMAT'],
     )
@@ -267,3 +275,6 @@ def outputGraphviz(self):
 
     if self.graph_config.get('PRINT_BOTTLENECKS'):
         bottleneckPrint(self)
+
+    self.parent_context.cLog(
+        f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)

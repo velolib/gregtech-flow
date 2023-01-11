@@ -2,7 +2,7 @@
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
 CONFIG_VER: 0
 
-GRAPHVIZ: path
+GRAPHVIZ: 'C:\Program Files\Graphviz\bin'
 # Input your graphviz /Graphivz/bin directory path in quotes
 # Type 'path' if you want to use the PATH environment variable
 

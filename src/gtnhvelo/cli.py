@@ -22,7 +22,7 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 
 # Internal libraries
-from gtnhvelo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
+from gtnhvelo.graph._solver import systemOfEquationsSolverGraphGen
 from gtnhvelo.data.loadMachines import recipesFromConfig
 
 install(show_locals=True)
@@ -30,7 +30,7 @@ install(show_locals=True)
 
 class ProgramContext:
 
-    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True) -> None:
+    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path=None) -> None:
         """Program context class for gtnh-velo
 
         Args:
@@ -38,6 +38,7 @@ class ProgramContext:
             projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
         """
+        self.config_path = config_path
         self.quiet = False
 
         # TODO: Stop using an actual file in the cwd for the config
@@ -87,7 +88,7 @@ class ProgramContext:
 
     @property
     def graph_config(self):
-        with open('config_factory_graph.yaml', 'r') as f:
+        with open('config_factory_graph.yaml' if not self.config_path else self.config_path, 'r') as f:
             graph_config = yaml.safe_load(f)
 
         # Checks for graph_config
