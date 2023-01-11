@@ -30,20 +30,19 @@ install(show_locals=True)
 
 class ProgramContext:
 
-    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path=None) -> None:
+    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('config_factory_graph.yaml')) -> None:
         """Program context class for gtnh-velo
 
         Args:
             output_path (Path | str, optional): Output path. Defaults to 'output'.
             projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
+            config_path (Path | str, optional): Configuration file location. Will create one if nonexistent
         """
-        self.config_path = config_path
+        self.config_path = Path(config_path)
         self.quiet = False
 
-        # TODO: Stop using an actual file in the cwd for the config
-        # Get config and config template
-        config = Path('config_factory_graph.yaml')
+        config = self.config_path
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
         assert template is not None
 
