@@ -1,4 +1,10 @@
-<h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1>
+<h1>
+    gtnh-velo
+    <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/>
+    <a href="https://codecov.io/github/velolib/gtnh-velo" >
+        <img src="https://codecov.io/github/velolib/gtnh-velo/branch/master/graph/badge.svg?token=Y59FTD1UC1"/>
+    </a>
+</h1>
 <!-- TODO: Shorten the readme to move some of it into the wiki -->
 
 ## ❓ What is it?
