@@ -1,9 +1,11 @@
-# Tests for _utils.py that are probably not neede
-
-import pytest
+# Tests for _utils.py that are probably not needed
 from gtnhvelo.graph._utils import swapIO, userRound
 import yaml
+import sys
 import pkgutil
+from functools import lru_cache
+
+import pytest
 
 from gtnhvelo.data.loadMachines import recipesFromConfig
 from gtnhvelo.graph import Graph
@@ -11,9 +13,18 @@ from gtnhvelo.cli import ProgramContext
 
 pc = ProgramContext()
 
-import json
+@lru_cache(1)
+def get_os_config():
+    match sys.platform:
+        case 'linux':
+            return 'tests/test_config_linux.yaml'
+        case 'win32':
+            return 'tests/test_config_windows.yaml'
+        case _:
+            raise NotImplementedError(f'Invalid OS for testing: "{sys.platform}", contact dev for implementation!')
+
 def loadTestConfig():
-    with open('flow_config.yaml', 'r') as f:
+    with open(get_os_config(), 'r') as f:
         graph_config = yaml.safe_load(f)
     return graph_config
 

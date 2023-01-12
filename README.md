@@ -1,9 +1,10 @@
 <h1>
     gtnh-velo
-    <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/>
+    <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=for-the-badge" alt="License MIT"/>
     <a href="https://codecov.io/github/velolib/gtnh-velo" >
-        <img src="https://codecov.io/github/velolib/gtnh-velo/branch/master/graph/badge.svg?token=Y59FTD1UC1"/>
+        <img src="https://img.shields.io/codecov/c/github/velolib/gtnh-velo?style=for-the-badge&token=Y59FTD1UC1" alt="Code Coverage"/>
     </a>
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/gtnhvelo?style=for-the-badge">
 </h1>
 <!-- TODO: Shorten the readme to move some of it into the wiki -->
 

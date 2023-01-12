@@ -43,23 +43,12 @@ class ProgramContext:
         self.config_path = Path(config_path)
         self.quiet = False
 
-        # Setup logger
-        if self.graph_config['DEBUG_LOGGING']:
-            LOG_LEVEL = logging.DEBUG
-        else:
-            LOG_LEVEL = logging.INFO
-        logging.basicConfig(handlers=[RichHandler(
-            level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
-        self.logger = logging.getLogger('rich')
-
         config = self.config_path
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
         assert template is not None, 'Data file resources/config_template.yaml nonexistent, try reinstalling!'
 
         # Create config if not already created
         if not config.exists():
-            self.cLog(
-                f'Configuration file not found, generating new one at {Path(os.getcwd(), "flow_config.yaml")}', logging.INFO)
             with open(config, mode='wb') as cfg:
                 cfg.write(template)
 
@@ -69,6 +58,15 @@ class ProgramContext:
             if not load['CONFIG_VER'] == yaml.safe_load(template)['CONFIG_VER']:
                 raise RuntimeError(
                     f'Config version mismatch! Delete the old configuration file to regenerate')
+
+        # Setup logger
+        if self.graph_config['DEBUG_LOGGING']:
+            LOG_LEVEL = logging.DEBUG
+        else:
+            LOG_LEVEL = logging.INFO
+        logging.basicConfig(handlers=[RichHandler(
+            level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+        self.logger = logging.getLogger('rich')
 
         # Load the game data
         data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')

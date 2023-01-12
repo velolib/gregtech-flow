@@ -1,5 +1,5 @@
 import re
-from schema import Schema, And, Or
+from schema import Schema, And, Or  # type: ignore
 from gtnhvelo.config.enums import OutputFormat, Orientation, LineStyle
 from pathlib import Path
 import pkgutil

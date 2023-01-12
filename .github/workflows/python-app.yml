@@ -19,17 +19,21 @@ defaults:
 # TODO: Test on ubuntu and macos
 jobs:
   build:
-    runs-on: windows-latest
-
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ 'windows-latest', 'ubuntu-latest' ]
+    runs-on: ${{ matrix.os }}
     steps:
       # -------------------------------
       # Check out repo and setup Python
       # -------------------------------
-      - uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
-          python-version: '3.11'
+          python-version: 3.11
       # -------------------------------
       # Setup Graphviz
       # -------------------------------
@@ -60,16 +64,16 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       # -------------------------------
-      # Install project
+      # Install gtnhvelo
       # -------------------------------
-      - name: Install project
+      - name: Install gtnhvelo
         run: poetry install --no-interaction
       # -------------------------------
       # Run tests
       # -------------------------------
       - name: Run pytest
         run: |
-          poetry run pytest --cov=./ --cov-report=xml
+          poetry run pytest --cov=./ --cov-report=xml -sv
       - name: Run mypy
         run: |
           source $VENV
