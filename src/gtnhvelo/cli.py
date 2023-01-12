@@ -44,7 +44,7 @@ class ProgramContext:
 
         config = self.config_path
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
-        assert template is not None
+        assert template is not None, 'Data file resources/config_template.yaml nonexistent, try reinstalling!'
 
         # Create config if not already created
         if not config.exists():
@@ -62,7 +62,7 @@ class ProgramContext:
 
         # Load the game data
         data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
-        assert data_yaml is not None
+        assert data_yaml is not None, 'Data file resources/data.yaml nonexistent, try reinstalling!'
         self.data = yaml.safe_load(data_yaml)
 
         # Setup logger
