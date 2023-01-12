@@ -3,7 +3,7 @@ from pathlib import Path
 import logging
 
 
-def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', config_path: Path | str = 'flow_config.yaml'):
+def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = False, config_path: Path | str = 'flow_config.yaml'):
     """
     gtnh-velo flow wrapper
 
@@ -11,7 +11,8 @@ def flow(project_name: Path | str, output_path: Path | str = 'output/', projects
         project_name (Path | str): Project path relative to projects_path
         output_path (Path | str, optional): Output path. Defaults to 'output/'.
         projects_path (Path | str, optional): Path to projects directory. Defaults to 'projects/'.
-        config_path (Path | str): Configuration file path. Will create one if nonexistent. Defaults to 'flow_config.yaml'
+        create_dirs (bool, optional): Whether or not to create output_path and projects_path
+        config_path (Path | str, optional): Configuration file path. Will create one if nonexistent. Defaults to 'flow_config.yaml'
     """
 
     project_name = Path(project_name)
@@ -19,7 +20,7 @@ def flow(project_name: Path | str, output_path: Path | str = 'output/', projects
     output_path = Path(output_path)
     config_path = Path(config_path)
 
-    pc = ProgramContext(output_path, projects_path, False, config_path)
+    pc = ProgramContext(output_path, projects_path, create_dirs, config_path)
 
     if not output_path.exists() or not output_path.is_dir():
         raise RuntimeError(f'Invalid output_path: {output_path}')
