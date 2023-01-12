@@ -24,6 +24,7 @@ from prompt_toolkit.styles import Style
 # Internal libraries
 from gtnhvelo.graph._solver import systemOfEquationsSolverGraphGen
 from gtnhvelo.data.loadMachines import recipesFromConfig
+from gtnhvelo.config.config_schema import config_schema
 
 install(show_locals=True)
 
@@ -86,9 +87,10 @@ class ProgramContext:
         self.projects_path = projects_path
 
     @property
-    def graph_config(self):
+    def graph_config(self):  # TODO: Stop opening every time
         with open('flow_config.yaml' if not self.config_path else self.config_path, 'r') as f:
             graph_config = yaml.safe_load(f)
+            config_schema.validate(graph_config)
 
         # Checks for graph_config
         if not graph_config['GRAPHVIZ']:
