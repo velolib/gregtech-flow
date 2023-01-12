@@ -43,6 +43,15 @@ class ProgramContext:
         self.config_path = Path(config_path)
         self.quiet = False
 
+        # Setup logger
+        if self.graph_config['DEBUG_LOGGING']:
+            LOG_LEVEL = logging.DEBUG
+        else:
+            LOG_LEVEL = logging.INFO
+        logging.basicConfig(handlers=[RichHandler(
+            level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+        self.logger = logging.getLogger('rich')
+
         config = self.config_path
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
         assert template is not None, 'Data file resources/config_template.yaml nonexistent, try reinstalling!'
@@ -65,15 +74,6 @@ class ProgramContext:
         data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
         assert data_yaml is not None, 'Data file resources/data.yaml nonexistent, try reinstalling!'
         self.data = yaml.safe_load(data_yaml)
-
-        # Setup logger
-        if self.graph_config['DEBUG_LOGGING']:
-            LOG_LEVEL = logging.DEBUG
-        else:
-            LOG_LEVEL = logging.INFO
-        logging.basicConfig(handlers=[RichHandler(
-            level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
-        self.logger = logging.getLogger('rich')
 
         # Create paths if selected option
         output_path = Path(output_path)
