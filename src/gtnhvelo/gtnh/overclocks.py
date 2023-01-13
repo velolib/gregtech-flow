@@ -293,7 +293,7 @@ class OverclockHandler:
         size = recipe.size.lower()
 
         turbine_data = self.parent_context.data['turbine_data']
-        assert fuel in turbine_data[fuel_type], f'Unsupported fuel "{fuel}"'
+        assert fuel in turbine_data['fuels'][fuel_type], f'Unsupported fuel "{fuel}"'
         assert material in turbine_data['materials'], f'Unsupported material "{material}"'
         assert size in turbine_data['rotor_size'], f'Unsupported size "{size}"'
 
@@ -313,7 +313,7 @@ class OverclockHandler:
                 + turbine_data['rotor_size'][size]['efficiency']
             )
 
-            burn_value = turbine_data[fuel_type][fuel]
+            burn_value = turbine_data['fuels'][fuel_type][fuel]
             optimal_flow_L_t = math.floor(optimal_eut / burn_value)
             output_eut = math.floor(optimal_flow_L_t * burn_value * efficiency / 100)
         else:
