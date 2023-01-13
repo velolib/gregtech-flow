@@ -11,8 +11,6 @@ from gtnhvelo.data.loadMachines import recipesFromConfig
 from gtnhvelo.graph import Graph
 from gtnhvelo.cli import ProgramContext
 
-pc = ProgramContext()
-
 @lru_cache(1)
 def get_os_config():
     match sys.platform:
@@ -22,6 +20,8 @@ def get_os_config():
             return 'tests/test_config_windows.yaml'
         case _:
             raise NotImplementedError(f'Invalid OS for testing: "{sys.platform}", contact dev for implementation!')
+
+pc = ProgramContext(get_os_config())
 
 def loadTestConfig():
     with open(get_os_config(), 'r') as f:
