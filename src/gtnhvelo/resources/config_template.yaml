@@ -29,10 +29,10 @@ MAX_BOTTLENECKS: 5
 
 # === VISUALS ===
 ## === FONTS ===
-GENERAL_FONT: noto sans # nodes and edges
-SUMMARY_FONT: noto sans
-GROUP_FONT: renogare
-TITLE_FONT: renogare
+GENERAL_FONT: arial # nodes and edges
+SUMMARY_FONT: arial
+GROUP_FONT: verdana
+TITLE_FONT: verdana
 
 NODE_FONTSIZE: 14
 EDGE_FONTSIZE: 13
