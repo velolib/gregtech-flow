@@ -19,17 +19,26 @@ defaults:
 # TODO: Test on ubuntu and macos
 jobs:
   build:
-    runs-on: windows-latest
-
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ 'windows-latest', 'ubuntu-latest' ]
+    runs-on: ${{ matrix.os }}
     steps:
       # -------------------------------
       # Check out repo and setup Python
       # -------------------------------
-      - uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3
       - name: Set up Python 3.11
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+      # -------------------------------
+      # Setup Graphviz
+      # -------------------------------
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v1
       # -------------------------------
       # Install Poetry
       # -------------------------------
@@ -55,18 +64,23 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       # -------------------------------
-      # Install project
+      # Install gtnhvelo
       # -------------------------------
-      - name: Install project
+      - name: Install gtnhvelo
         run: poetry install --no-interaction
       # -------------------------------
       # Run tests
       # -------------------------------
       - name: Run pytest
         run: |
-          source $VENV
-          pytest -svv -k "not flow"
+          poetry run pytest --cov=./ --cov-report=xml -svv
       - name: Run mypy
         run: |
           source $VENV
           mypy src
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: true

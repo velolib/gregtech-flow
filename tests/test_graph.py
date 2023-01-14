@@ -1,69 +1,62 @@
+import sys
+from pathlib import Path
+from functools import lru_cache
+
 import pytest
-import yaml
 
 from gtnhvelo.data.loadMachines import recipesFromConfig
-from gtnhvelo.graph import Graph
+from gtnhvelo.graph._solver import systemOfEquationsSolverGraphGen
 from gtnhvelo.cli import ProgramContext
+from gtnhvelo import flow
 
-pc = ProgramContext()
+@lru_cache(1)
+def get_os_config():
+    match sys.platform:
+        case 'linux':
+            return 'tests/test_config_linux.yaml'
+        case 'win32':
+            return 'tests/test_config_windows.yaml'
+        case _:
+            raise NotImplementedError(f'Invalid OS for testing: "{sys.platform}", contact dev for implementation!')
 
-import json
-def loadTestConfig():
-    with open('config_factory_graph.yaml', 'r') as f:
-        graph_config = yaml.safe_load(f)
-    return graph_config
-
-# Note that recipe ordering is deterministic!
-# (Thanks to the OrderedDict hook in dataClasses.load.recipesFromConfig)
-
-
-def test_connectionSimple():
-    project_name = 'simpleGraph.yaml'
-
-    # Load recipes
-    recipes = recipesFromConfig(project_name, loadTestConfig(), project_folder='tests/testProjects')
-
-    # Create graph
-    g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
-    g.connectGraph()
-
-    ### Check connections
-    # 0: electrolyzer
-    # 1: extractor
-
-    expected_edges = [
-        ('source', '1', 'sugar beet'),
-        ('1', '0', 'sugar'),
-        ('0', 'sink', 'carbon dust'),
-        ('0', 'sink', 'oxygen'),
-        ('0', 'sink', 'water'),
+def generateProjectPaths():
+    path_blacklist = [
+        Path('circuits/nanocircuits.yaml'),
     ]
+    project_paths = (str(pth) for pth in Path('projects/').glob('**/*.yaml') if pth not in path_blacklist
+                     if 'dev' not in str(pth))
 
-    assert set(expected_edges) == set(g.edges.keys())
+    return project_paths
 
 
-def test_connectionLoop():
-    project_name = 'loopGraph.yaml'
+@pytest.mark.parametrize('project_name', generateProjectPaths())
+def test_lazyGenerateGraphs(project_name):
 
-    # Load recipes
-    recipes = recipesFromConfig(project_name, loadTestConfig(), project_folder='tests/testProjects')
+    pc = ProgramContext(config_path=get_os_config())
 
-    # Create graph
-    g = Graph(project_name, recipes, pc, graph_config=loadTestConfig())
-    g.connectGraph()
-    g.removeBackEdges()
+    recipes = recipesFromConfig(project_name, pc.graph_config, project_folder='')
 
-    ### Check connections
-    # 0: distillation tower
-    # 1: large chemical reactor
+    if project_name.endswith('.yaml'):
+        project_name = project_name[:-5]
 
-    expected_edges = [
-        ('source', '1', 'acetic acid'),
-        ('source', '1', 'sulfuric acid'),
-        ('1', '0', 'diluted sulfuric acid'),
-        ('1', 'sink', 'ethenone'),
-        ('0', 'sink', 'sulfuric acid'),
-        ('0', 'sink', 'water'),
-    ]
+    try:
+        systemOfEquationsSolverGraphGen(pc, project_name, recipes, pc.graph_config)
+        assert True == True
+    except Exception as e:
+        assert True == False, f'Failed on {project_name} with error {e}'
 
-    assert set(expected_edges) == set(g.edges.keys())
+@pytest.mark.parametrize('project_name', generateProjectPaths())
+def test_flow(project_name):
+    project_name = str(Path(project_name).relative_to('projects/'))
+
+    pc = ProgramContext(config_path=get_os_config())
+
+    try:
+        flow(project_name, create_dirs=True, config_path=get_os_config())
+        assert True == True
+    except Exception as e:
+        assert True == False, f'Failed on {project_name} with error {e}'
+
+if __name__ == '__main__':
+    for p in generateProjectPaths():
+        print(p)

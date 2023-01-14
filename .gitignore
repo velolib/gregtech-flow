@@ -4,7 +4,9 @@ output/
 .vscode/
 
 testing.py
-config_factory_graph.yaml
+flow_config.yaml
+.flow_config.yaml
+cov.xml
 
 # === STANDARD PYTHON IGNORES ===
 # from https://github.com/github/gitignore/blob/main/Python.gitignore

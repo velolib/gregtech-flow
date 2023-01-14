@@ -78,7 +78,7 @@ class Recipe:
         return str([f'{x}={getattr(self, x)}' for x in vars(self)])
 
     def __mul__(self, mul_num: int | float):
-        assert self.multiplier == -1  # Undefined behavior with multiple multiplications
+        assert self.multiplier == -1, 'Cannot multiply recipe multiple times'
 
         self.I *= mul_num
         self.O *= mul_num

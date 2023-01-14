@@ -1,4 +1,11 @@
-<h1>gtnh-velo <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=flat-square"/> </h1>
+<h1>
+    gtnh-velo
+    <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=for-the-badge" alt="License MIT"/>
+    <a href="https://codecov.io/github/velolib/gtnh-velo" >
+        <img src="https://img.shields.io/codecov/c/github/velolib/gtnh-velo?style=for-the-badge&token=Y59FTD1UC1" alt="Code Coverage"/>
+    </a>
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/gtnhvelo?style=for-the-badge">
+</h1>
 <!-- TODO: Shorten the readme to move some of it into the wiki -->
 
 ## ❓ What is it?
@@ -61,7 +68,7 @@ Using gtnh-velo in Python also automatically turns on quiet mode.
 
 ## ⁉ Answers
 ### How to configure
-The configuration file `config_factory_graph.yaml` will be created on startup in the working directory if not created already.
+The configuration file `flow_config.yaml` will be created on startup in the working directory if not created already.
 You can configure a variety of layout and functional options using it. Make sure to not delete any keys.
 
 ### Automatic overclocking

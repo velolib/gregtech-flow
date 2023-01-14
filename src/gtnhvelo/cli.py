@@ -22,34 +22,34 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 
 # Internal libraries
-from gtnhvelo.prototypes.linearSolver import systemOfEquationsSolverGraphGen
+from gtnhvelo.graph._solver import systemOfEquationsSolverGraphGen
 from gtnhvelo.data.loadMachines import recipesFromConfig
+from gtnhvelo.config.config_schema import config_schema
 
 install(show_locals=True)
 
 
 class ProgramContext:
 
-    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True) -> None:
+    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('flow_config.yaml')) -> None:
         """Program context class for gtnh-velo
 
         Args:
             output_path (Path | str, optional): Output path. Defaults to 'output'.
             projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
+            config_path (Path | str, optional): Configuration file location. Will create one if nonexistent
         """
+        self.config_cache: dict = {}
+        self.config_path = Path(config_path)
         self.quiet = False
 
-        # TODO: Stop using an actual file in the cwd for the config
-        # Get config and config template
-        config = Path('config_factory_graph.yaml')
+        config = self.config_path
         template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
-        assert template is not None
+        assert template is not None, 'Data file "resources/config_template.yaml" nonexistent, try reinstalling!'
 
         # Create config if not already created
         if not config.exists():
-            self.cLog(
-                f'Configuration file not found, generating new one at {Path(os.getcwd(), "config_factory_graph.yaml")}', logging.INFO)
             with open(config, mode='wb') as cfg:
                 cfg.write(template)
 
@@ -60,11 +60,6 @@ class ProgramContext:
                 raise RuntimeError(
                     f'Config version mismatch! Delete the old configuration file to regenerate')
 
-        # Load the game data
-        data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
-        assert data_yaml is not None
-        self.data = yaml.safe_load(data_yaml)
-
         # Setup logger
         if self.graph_config['DEBUG_LOGGING']:
             LOG_LEVEL = logging.DEBUG
@@ -73,6 +68,11 @@ class ProgramContext:
         logging.basicConfig(handlers=[RichHandler(
             level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
         self.logger = logging.getLogger('rich')
+
+        # Load the game data
+        data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
+        assert data_yaml is not None, 'Data file "resources/data.yaml" nonexistent, try reinstalling!'
+        self.data = yaml.safe_load(data_yaml)
 
         # Create paths if selected option
         output_path = Path(output_path)
@@ -87,8 +87,17 @@ class ProgramContext:
 
     @property
     def graph_config(self):
-        with open('config_factory_graph.yaml', 'r') as f:
+        with open('flow_config.yaml' if not self.config_path else self.config_path, 'r') as f:
             graph_config = yaml.safe_load(f)
+
+            # Check for inequality between cache and loaded config
+            # Used to skip expensive config schema validation
+            if len(graph_config.keys()) != len(self.config_cache.keys()):  # trivial check
+                config_schema.validate(graph_config)
+                self.config_cache = graph_config
+            elif graph_config != config_schema:  # order does not matter, only k:v pairs
+                config_schema.validate(graph_config)
+                self.config_cache = graph_config
 
         # Checks for graph_config
         if not graph_config['GRAPHVIZ']:
@@ -139,8 +148,11 @@ class ProgramContext:
             with project_relpath.open(mode='r') as f:
                 doc_load = list(yaml.safe_load_all(f))
                 if len(doc_load) >= 2:
-                    metadata = doc_load[0]
-                    title = metadata['title']
+                    header = doc_load[0]
+                    title = header['title']
+                    self.cLog(f'Current project: "{title}" by [bright_green]{header["creator"]}', logging.INFO)
+                else:
+                    self.cLog(f'Current project: "{project_name}"', logging.INFO)
 
             recipes = recipesFromConfig(
                 project_name, self.graph_config, self.projects_path)
@@ -161,37 +173,36 @@ class ProgramContext:
             bool: Whether or not the project file was found
         """
 
-        # TODO: Clean this up
+        header = Layout(Panel(Align('[bold bright_cyan]gtnh-velo', align='center',
+                        vertical='middle'), border_style='bold bright_cyan'), name='header', size=3)
+
         guide_text = textwrap.dedent('''\
         [bright_green]Please enter project path (example: "[underline]power/oil/light_fuel.yaml[/]")[/]
         [bright_green]Tab completion is [underline]enabled[/][/]
         [bright_white]Valid commands:[/]
         [bright_white]- [/][bright_green]end[/][bright_white] / [/][bright_green]stop[/][bright_white] / [/][bright_green]exit[/][bright_white]: Stop the program[/]
+        [bright_white]- [/][bright_green]all[/][bright_white]: Select all files for graph creation[/]
         ''')
+        guide = Layout(Panel(guide_text, border_style='bold bright_magenta',
+                       title='guide.txt', title_align='left'), name='guide')
 
         links_text = textwrap.dedent('''\
         [bright_green link=https://github.com/velolib/gtnh-velo]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gtnh-velo]https://github.com/velolib/gtnh-velo[/]
         [bright_green link=https://github.com/velolib/gtnh-velo/wiki]Wiki[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gtnh-velo/wiki]https://github.com/velolib/gtnh-velo/wiki[/]
         ''')
+        links = Layout(Panel(links_text, border_style='bold bright_white',
+                       title='links.txt', title_align='left'), name='links')
 
-        # TODO: Add more commands
-        main_ly = Layout()
-        main_ly.size = 4
-        main_ly.split_column(Layout(Panel(Align('[bold bright_cyan]gtnh-velo', align='center', vertical='middle'),
-                             border_style='bold bright_cyan'), name='header', size=3), Layout(name='content', size=8))
-        main_ly['content'].split_row(
-            Layout(Panel(guide_text, border_style='bold bright_magenta',
-                   title='guide.txt', title_align='left'), name='left'),
-            Layout(name='right')
-        )
+        errors = Layout(Panel('[bright_white]No errors found.' if not current_error else '[bright_red]' +
+                        current_error, border_style='bold bright_yellow', title='errors.log', title_align='left'), name='errors')
+
+        root_layout = Layout()
+        root_layout.size = 4
+        root_layout.split_column(header, Layout(name='content', size=8))
+        root_layout['content'].split_row(guide, Layout(name='right_sect'))
 
         # TODO: Increase functionality of the errors panel
-        main_ly['content']['right'].split_column(
-            Layout(Panel(links_text, border_style='bold bright_white',
-                   title='links.txt', title_align='left'), name='credits'),
-            Layout(Panel('[bright_white]No errors found.' if not current_error else '[bright_red]' + current_error,
-                   border_style='bold bright_yellow', title='errors.log', title_align='left'), name='errors')
-        )
+        root_layout['content']['right_sect'].split_column(links, errors)
 
         console = Console(height=11)
 
@@ -199,22 +210,32 @@ class ProgramContext:
         prompt_message = [('class:bigger_than', '> ')]
 
         while True:
-            console.print(main_ly)
+            console.print(root_layout)
             console.print('[bright_white]> ', end='')
 
             projects = list(map(lambda p: str(p.relative_to(self.projects_path)), self.projects_path.glob('**/*.yaml')))
             path_completer = WordCompleter(projects)
 
-            selected_path = prompt(prompt_message, completer=path_completer, style=prompt_style)  # type: ignore
-
-            match selected_path:
+            sel_option = prompt(prompt_message, completer=path_completer, style=prompt_style)  # type: ignore
+            match sel_option:
                 case 'end' | 'stop' | 'exit':
                     exit()
+                case 'all':
+                    console.print('')
+                    console.print(Rule(style='bright_white',
+                                  title='[bold bright_white]latest.log', align='center'))
+
+                    valid_paths = [self.create_graph(v.relative_to(self.projects_path)) for v in Path(
+                        self.projects_path).glob('**/*.yaml') if 'dev' not in str(v)]
+
+                    console.print(Rule(style='bright_white'))
+                    console.print('')
+                    return all(valid_paths)
                 case _:
                     console.print('')
                     console.print(Rule(style='bright_white',
                                   title='[bold bright_white]latest.log', align='center'))
-                    create_graph = self.create_graph(selected_path)
+                    create_graph = self.create_graph(sel_option)
                     if not create_graph:
                         print('')
                     console.print(Rule(style='bright_white'))

@@ -3,9 +3,14 @@ from collections import defaultdict
 
 from gtnhvelo.graph._backEdges import BasicGraph, dfs
 from gtnhvelo.graph._utils import swapIO
+from gtnhvelo.graph._output import outputGraphviz
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gtnhvelo.graph import Graph
 
 
-def connectGraph(self):
+def connectGraph(self: 'Graph'):
     '''
     Connects recipes without locking the quantities
     '''
@@ -15,7 +20,7 @@ def connectGraph(self):
     self.addNode('sink', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='sink')
 
     # Compute {[ingredient name][IO direction] -> involved recipes} table
-    involved_recipes = defaultdict(lambda: defaultdict(list))
+    involved_recipes: dict = defaultdict(lambda: defaultdict(list))
     for rec_id, rec in self.recipes.items():
         for io_type in ['I', 'O']:
             for ing in getattr(rec, io_type):
@@ -43,11 +48,11 @@ def connectGraph(self):
             if hasattr(rec, lookup):
                 machine_label.append(line_generator(rec))
 
-        machine_label = '\n'.join(machine_label)
+        label_string = '\n'.join(machine_label)
         self.addNode(
             rec_id,
             fillcolor=self.graph_config['NONLOCKEDNODE_COLOR'],
-            label=machine_label
+            label=label_string
         )
 
     # Add I/O connections
@@ -89,10 +94,10 @@ def connectGraph(self):
                         added_edges.add(unique_edge_identifiers[1])
 
     if self.graph_config.get('DEBUG_SHOW_EVERY_STEP', False):
-        self.outputGraphviz()
+        outputGraphviz(self)
 
 
-def removeBackEdges(self):
+def removeBackEdges(self: 'Graph'):
     # Loops are possible in machine processing, but very difficult / NP-hard to solve properly
     # Want to make algorithm simple, so just break all back edges and send them to sink instead
     # The final I/O information will have these balanced, so this is ok

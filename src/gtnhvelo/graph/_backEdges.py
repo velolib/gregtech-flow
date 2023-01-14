@@ -4,10 +4,10 @@ import collections
 
 
 class BasicGraph(object):
-    def __init__(self, edges: list[tuple]):
+    def __init__(self, edges):
         self.edges = edges
-        self.adj: dict = BasicGraph._build_adjacency_list(edges)
-        self.back_edges: list = []
+        self.adj = BasicGraph._build_adjacency_list(edges)
+        self.back_edges = []
 
     @staticmethod
     def _build_adjacency_list(edges):

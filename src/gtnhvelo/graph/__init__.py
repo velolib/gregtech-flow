@@ -40,6 +40,7 @@ class Graph:
         for rec in recipes:
             self.parent_context.cLog(rec)
         self.parent_context.cLog('')
+        self._checkIfMachine.cache_clear()
 
     @staticmethod
     def userRound(number: int | float) -> str:
@@ -55,25 +56,6 @@ class Graph:
         _checkIfMachine,
     )
 
-    # Setup of graph - connect edges and remove cycles
-    from ._preProcessing import (  # type: ignore
-        connectGraph,
-        removeBackEdges,
-    )
-
-    # Main runtime - describes primary behavior
-    from ._core import (  # type: ignore
-        balanceGraph,
-        outputGraphviz
-    )
-
-    # Machine locking - core autobalancing functionality
-    from ._machineLocking import (  # type: ignore
-        _lockMachine,
-        _lockMachineEdges,
-        _simpleLockMachineEdges,
-    )
-
     # Utilities for "port node" style graphviz nodes
     from ._portNodes import (  # type: ignore
         stripBrackets,
@@ -87,11 +69,4 @@ class Graph:
         getQuantLabel,
         _combineInputs,
         _combineOutputs,
-    )
-
-    # Add summary and power burning machines
-    from ._postProcessing import (  # type: ignore
-        _addSummaryNode,
-        _addPowerLineNodes,
-        bottleneckPrint,
     )

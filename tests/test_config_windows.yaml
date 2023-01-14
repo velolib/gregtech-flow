@@ -2,7 +2,7 @@
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
 CONFIG_VER: 0
 
-GRAPHVIZ: path
+GRAPHVIZ: 'C:\Program Files\Graphviz\bin'
 # Input your graphviz /Graphivz/bin directory path in quotes
 # Type 'path' if you want to use the PATH environment variable
 
@@ -20,7 +20,7 @@ DO_NOT_BURN: # If POWER_LINE is true, don't burn these
 OUTPUT_FORMAT: svg # png or pdf (pdf is searchable)
 USE_RAINBOW_EDGES: true # feature to help distinguish between overlapping edges
 DUR_FORMAT: sec # choose either "ticks" or "sec"
-VIEW_ON_COMPLETION: true
+VIEW_ON_COMPLETION: false
 
 PRINT_BOTTLENECKS: false
 USE_BOTTLENECK_EXACT_VOLTAGE: false
@@ -29,10 +29,10 @@ MAX_BOTTLENECKS: 5
 
 # === VISUALS ===
 ## === FONTS ===
-GENERAL_FONT: arial # nodes and edges
-SUMMARY_FONT: arial
-GROUP_FONT: verdana
-TITLE_FONT: verdana
+GENERAL_FONT: noto sans # nodes and edges
+SUMMARY_FONT: noto sans
+GROUP_FONT: renogare
+TITLE_FONT: renogare
 
 NODE_FONTSIZE: 14
 EDGE_FONTSIZE: 13
