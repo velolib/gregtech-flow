@@ -1,0 +1,10 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 70
+        threshold: 10%
+        branches:
+          - master
+          - development
+        if_ci_failed: error #success, failure, error, ignore
