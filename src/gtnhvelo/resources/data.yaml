@@ -399,6 +399,16 @@ power_data:
       ev: 0.8
       iv: 0.7
       luv: 0.6
+    large naquadah reactor:
+      lv: 1
+      mv: 1
+      hv: 1
+      ev: 1
+      iv: 1
+      luv: 1
+      zpm: 1
+      uv: 1
+      uhv: 1
 overclock_data:
   coil_multipliers:
     cupronickel: 0.5
