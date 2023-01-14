@@ -41,6 +41,7 @@ class ProgramContext:
             config_path (Path | str, optional): Configuration file location. Will create one if nonexistent
         """
         self.config_cache: dict = {}
+        self.project_cache: str = ''
         self.config_path = Path(config_path)
         self.quiet = False
 
@@ -182,6 +183,7 @@ class ProgramContext:
         [bright_white]Valid commands:[/]
         [bright_white]- [/][bright_green]end[/][bright_white] / [/][bright_green]stop[/][bright_white] / [/][bright_green]exit[/][bright_white]: Stop the program[/]
         [bright_white]- [/][bright_green]all[/][bright_white]: Select all files for graph creation[/]
+        [bright_white]- [/][bright_green]last[/][bright_white]: The last project inputted[/]
         ''')
         guide = Layout(Panel(guide_text, border_style='bold bright_magenta',
                        title='guide.txt', title_align='left'), name='guide')
@@ -231,6 +233,16 @@ class ProgramContext:
                     console.print(Rule(style='bright_white'))
                     console.print('')
                     return all(valid_paths)
+                case 'last':
+                    console.print('')
+                    console.print(Rule(style='bright_white',
+                                  title='[bold bright_white]latest.log', align='center'))
+                    create_graph = self.create_graph(self.project_cache)
+                    if not create_graph:
+                        print('')
+                    console.print(Rule(style='bright_white'))
+                    console.print('')
+                    return create_graph
                 case _:
                     console.print('')
                     console.print(Rule(style='bright_white',
@@ -240,6 +252,7 @@ class ProgramContext:
                         print('')
                     console.print(Rule(style='bright_white'))
                     console.print('')
+                    self.project_cache = sel_option
                     return create_graph
 
     def direct_cli(self, path: Path) -> bool:
