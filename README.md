@@ -1,11 +1,12 @@
-<h1>
-    gtnh-velo
+<h1 align="center">gtnh-velo</h1>
+<p align="center">
+    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/gtnhvelo?style=for-the-badge">
     <img src="https://img.shields.io/github/license/velolib/gtnh-velo?style=for-the-badge" alt="License MIT"/>
     <a href="https://codecov.io/github/velolib/gtnh-velo" >
         <img src="https://img.shields.io/codecov/c/github/velolib/gtnh-velo?style=for-the-badge&token=Y59FTD1UC1" alt="Code Coverage"/>
     </a>
-    <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/gtnhvelo?style=for-the-badge">
-</h1>
+</p>
+<br>
 <!-- TODO: Shorten the readme to move some of it into the wiki -->
 
 ## ❓ What is it?
@@ -27,7 +28,7 @@ Samples of the graphs in the repository.
 ## ⏲️ Installation
 ### Install as Python package
 This is the easiest installation method. In the terminal run:
-```
+```console
 pip install gtnhvelo -U
 ```
 
@@ -46,7 +47,8 @@ pip install gtnhvelo -U
 4. Install Graphviz, for Windows there is a guide [here](https://forum.graphviz.org/t/new-simplified-installation-procedure-on-windows/224). Graphviz must be added to the system PATH for all users or the current user which may or may not need a system restart.
     - If Graphviz is not added to the system path, you can add the path to the `/bin` folder in the configuration file.
 
->It's recommended to create a virtual environment before installing to isolate the development environment from the global scope.
+> **Note**  
+> It's recommended to create a virtual environment before installing to isolate the development environment from the global scope.
 
 
 ## ⏲️ Usage
