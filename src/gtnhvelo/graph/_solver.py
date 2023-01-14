@@ -3,9 +3,7 @@
 
 import logging
 from collections import Counter, deque
-from copy import deepcopy
 from math import isclose
-from string import ascii_uppercase
 
 from rich.progress import Progress
 
@@ -13,7 +11,6 @@ from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
 
-from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection, Recipe
 from gtnhvelo.graph import Graph
 from gtnhvelo.graph._preProcessing import (
     connectGraph,

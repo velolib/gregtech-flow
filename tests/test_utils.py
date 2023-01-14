@@ -2,14 +2,11 @@
 from gtnhvelo.graph._utils import swapIO, userRound
 import yaml
 import sys
-import pkgutil
 from functools import lru_cache
 
 import pytest
 
 from gtnhvelo.data.loadMachines import recipesFromConfig
-from gtnhvelo.graph import Graph
-from gtnhvelo.cli import ProgramContext
 
 @lru_cache(1)
 def get_os_config():
