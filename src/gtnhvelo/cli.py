@@ -233,7 +233,7 @@ class ProgramContext:
                     console.print(Rule(style='bright_white'))
                     console.print('')
                     return all(valid_paths)
-                case 'last':
+                case 'last' | '':
                     console.print('')
                     console.print(Rule(style='bright_white',
                                   title='[bold bright_white]latest.log', align='center'))
