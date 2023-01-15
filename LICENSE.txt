@@ -1,7 +1,7 @@
 MIT License
 
 Copyright (c) 2022 OrderedSet86
-Copyright (c) 2022 velolib
+Copyright (c) 2023 velolib
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
