@@ -1,6 +1,6 @@
-# gtnhvelo CONFIGURATION FILE
+# gregtech.flow CONFIGURATION FILE
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
-CONFIG_VER: 0
+CONFIG_VER: 1
 
 GRAPHVIZ: path
 # Input your graphviz /Graphivz/bin directory path in quotes

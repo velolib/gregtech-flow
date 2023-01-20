@@ -2,7 +2,7 @@ from pathlib import Path
 
 import yaml
 
-from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gregtech.flow.data.basicTypes import Ingredient, IngredientCollection, Recipe
 
 
 def standardizeMachineName(name):
@@ -60,7 +60,7 @@ def standardizeMachineName(name):
         return name
 
 
-def recipesFromConfig(project_name, graph_config, project_folder='projects'):
+def recipesFromConfig(project_name, graph_config, project_folder: str | Path = 'projects'):
     # Load config file
     PROJECT_FILE_PATH = Path(project_folder) / f'{project_name}'
     project_name = PROJECT_FILE_PATH.name.split('.')[0]

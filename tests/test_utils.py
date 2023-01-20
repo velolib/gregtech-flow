@@ -1,12 +1,12 @@
 # Tests for _utils.py that are probably not needed
-from gtnhvelo.graph._utils import swapIO, userRound
+from gregtech.flow.graph._utils import swapIO, userRound
 import yaml
 import sys
 from functools import lru_cache
 
 import pytest
 
-from gtnhvelo.data.loadMachines import recipesFromConfig
+from gregtech.flow.data.loadMachines import recipesFromConfig
 
 @lru_cache(1)
 def get_os_config():

@@ -1,12 +1,12 @@
 import itertools
 
-from gtnhvelo.gtnh.overclocks import OverclockHandler
+from gregtech.flow.gtnh.overclocks import OverclockHandler
 from ._utils import userRound
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.cli import ProgramContext
-    from gtnhvelo.data.basicTypes import Recipe
+    from gregtech.flow.cli import ProgramContext
+    from gregtech.flow.data.basicTypes import Recipe
 
 
 class Graph:

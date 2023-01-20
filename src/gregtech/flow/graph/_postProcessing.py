@@ -4,13 +4,13 @@ from collections import defaultdict
 from copy import deepcopy
 from string import ascii_uppercase
 
-from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection, Recipe
-from gtnhvelo.graph._utils import _iterateOverMachines
-from gtnhvelo.gtnh.overclocks import OverclockHandler
+from gregtech.flow.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gregtech.flow.graph._utils import _iterateOverMachines
+from gregtech.flow.gtnh.overclocks import OverclockHandler
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.graph import Graph
+    from gregtech.flow.graph import Graph
 
 
 def capitalizeMachine(machine):

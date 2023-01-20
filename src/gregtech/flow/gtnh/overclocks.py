@@ -3,7 +3,7 @@ import math
 from bisect import bisect_right
 
 # Internal libraries
-from gtnhvelo.data.basicTypes import Ingredient, IngredientCollection
+from gregtech.flow.data.basicTypes import Ingredient, IngredientCollection
 
 
 def require(recipe, requirements):

@@ -1,11 +1,11 @@
-from gtnhvelo.cli import ProgramContext
+from gregtech.flow.cli import ProgramContext
 from pathlib import Path
 import logging
 
 
 def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = False, config_path: Path | str = 'flow_config.yaml'):
     """
-    gtnh-velo flow wrapper
+    GT: Flow flow wrapper
 
     Args:
         project_name (Path | str): Project path relative to projects_path

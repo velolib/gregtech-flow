@@ -1,11 +1,11 @@
 import re
 from schema import Schema, And, Or  # type: ignore
-from gtnhvelo.config.enums import OutputFormat, Orientation, LineStyle
+from gregtech.flow.config.enums import OutputFormat, Orientation, LineStyle
 from pathlib import Path
 import pkgutil
 import yaml
 
-voltages = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/data.yaml')  # type: ignore
+voltages = yaml.safe_load(pkgutil.get_data('gregtech.flow', 'resources/data.yaml')  # type: ignore
                           )['overclock_data']['voltage_data']
 
 
@@ -70,7 +70,7 @@ config_schema = Schema({
 if __name__ == '__main__':
     import time
     start = time.perf_counter()
-    load = yaml.safe_load(pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml'))  # type: ignore
+    load = yaml.safe_load(pkgutil.get_data('gregtech.flow', 'resources/config_template.yaml'))  # type: ignore
     print(load)
     config_schema.validate(load)
     print(f'Done in {time.perf_counter() - start}')

@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.graph import Graph
+    from gregtech.flow.graph import Graph
 
 # This file is for the "port" style nodes
 # as designed by Usagirei in https://github.com/OrderedSet86/gtnh-flow/pull/4

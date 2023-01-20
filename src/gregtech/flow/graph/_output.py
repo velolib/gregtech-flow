@@ -6,11 +6,11 @@ from pathlib import Path
 
 import graphviz  # type: ignore
 
-from gtnhvelo.graph._postProcessing import bottleneckPrint
+from gregtech.flow.graph._postProcessing import bottleneckPrint
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.graph import Graph
+    from gregtech.flow.graph import Graph
 
 
 def outputGraphviz(self: 'Graph'):

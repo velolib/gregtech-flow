@@ -1,13 +1,13 @@
 import logging
 from collections import defaultdict
 
-from gtnhvelo.graph._backEdges import BasicGraph, dfs
-from gtnhvelo.graph._utils import swapIO
-from gtnhvelo.graph._output import outputGraphviz
+from gregtech.flow.graph._backEdges import BasicGraph, dfs
+from gregtech.flow.graph._utils import swapIO
+from gregtech.flow.graph._output import outputGraphviz
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.graph import Graph
+    from gregtech.flow.graph import Graph
 
 
 def connectGraph(self: 'Graph'):

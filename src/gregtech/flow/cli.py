@@ -22,9 +22,9 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 
 # Internal libraries
-from gtnhvelo.graph._solver import systemOfEquationsSolverGraphGen
-from gtnhvelo.data.loadMachines import recipesFromConfig
-from gtnhvelo.config.config_schema import config_schema
+from gregtech.flow.graph._solver import systemOfEquationsSolverGraphGen
+from gregtech.flow.data.loadMachines import recipesFromConfig
+from gregtech.flow.config.config_schema import config_schema
 
 install(show_locals=True)
 
@@ -32,7 +32,7 @@ install(show_locals=True)
 class ProgramContext:
 
     def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('flow_config.yaml')) -> None:
-        """Program context class for gtnh-velo
+        """Program context class for GT: Flow
 
         Args:
             output_path (Path | str, optional): Output path. Defaults to 'output'.
@@ -46,7 +46,7 @@ class ProgramContext:
         self.quiet = False
 
         config = self.config_path
-        template = pkgutil.get_data('gtnhvelo', 'resources/config_template.yaml')
+        template = pkgutil.get_data('gregtech.flow', 'resources/config_template.yaml')
         assert template is not None, 'Data file "resources/config_template.yaml" nonexistent, try reinstalling!'
 
         # Create config if not already created
@@ -71,7 +71,7 @@ class ProgramContext:
         self.logger = logging.getLogger('rich')
 
         # Load the game data
-        data_yaml = pkgutil.get_data('gtnhvelo', 'resources/data.yaml')
+        data_yaml = pkgutil.get_data('gregtech.flow', 'resources/data.yaml')
         assert data_yaml is not None, 'Data file "resources/data.yaml" nonexistent, try reinstalling!'
         self.data = yaml.safe_load(data_yaml)
 
@@ -113,7 +113,7 @@ class ProgramContext:
         return graph_config
 
     def cLog(self, msg, level=logging.DEBUG):
-        """Logging for gtnhvelo
+        """Logging for gregtech.flow
 
         Args:
             msg (str): The message
@@ -168,13 +168,13 @@ class ProgramContext:
             return False
 
     def interactive_cli(self, current_error) -> bool:
-        """The interactive CLI for gtnhvelo
+        """The interactive CLI for gregtech.flow
 
         Returns:
             bool: Whether or not the project file was found
         """
 
-        header = Layout(Panel(Align('[bold bright_cyan]gtnh-velo', align='center',
+        header = Layout(Panel(Align('[bold bright_cyan]GT: Flow', align='center',
                         vertical='middle'), border_style='bold bright_cyan'), name='header', size=3)
 
         guide_text = textwrap.dedent('''\
@@ -189,8 +189,8 @@ class ProgramContext:
                        title='guide.txt', title_align='left'), name='guide')
 
         links_text = textwrap.dedent('''\
-        [bright_green link=https://github.com/velolib/gtnh-velo]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gtnh-velo]https://github.com/velolib/gtnh-velo[/]
-        [bright_green link=https://github.com/velolib/gtnh-velo/wiki]Wiki[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gtnh-velo/wiki]https://github.com/velolib/gtnh-velo/wiki[/]
+        [bright_green link=https://github.com/velolib/gregtech-flow]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow]https://github.com/velolib/gregtech-flow[/]
+        [bright_green link=https://github.com/velolib/gregtech-flow/wiki]Wiki[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow/wiki]https://github.com/velolib/gregtech-flow/wiki[/]
         ''')
         links = Layout(Panel(links_text, border_style='bold bright_white',
                        title='links.txt', title_align='left'), name='links')
@@ -256,7 +256,7 @@ class ProgramContext:
                     return create_graph
 
     def direct_cli(self, path: Path) -> bool:
-        """Direct CLI implementation for gtnhvelo
+        """Direct CLI implementation for gregtech.flow
 
         Args:
             path (Path): The path inputted from the command line
@@ -284,7 +284,7 @@ class ProgramContext:
                         icli_error = 'Project could not be found!'
                 else:
                     if not quiet:
-                        rprint(Panel(Align('[bold bright_cyan]gtnh-velo', align='center',
+                        rprint(Panel(Align('[bold bright_cyan]GT: Flow', align='center',
                                vertical='middle'), border_style='bold bright_cyan'))
                     result = self.direct_cli(path)
                     if not result:

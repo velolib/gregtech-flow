@@ -1,4 +1,4 @@
-from gtnhvelo.cli import main
+from gregtech.flow.cli import main
 
 if __name__ == '__main__':
     main()

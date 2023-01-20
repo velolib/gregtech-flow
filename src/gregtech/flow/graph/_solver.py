@@ -11,26 +11,26 @@ from sympy import linsolve, symbols
 from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
 
-from gtnhvelo.graph import Graph
-from gtnhvelo.graph._preProcessing import (
+from gregtech.flow.graph import Graph
+from gregtech.flow.graph._preProcessing import (
     connectGraph,
     removeBackEdges,
 )
-from gtnhvelo.graph._postProcessing import (
+from gregtech.flow.graph._postProcessing import (
     addMachineMultipliers,
     addPowerLineNodesV2,
     addSummaryNode,
     addUserNodeColor,
     createMachineLabels,
 )
-from gtnhvelo.graph._output import (
+from gregtech.flow.graph._output import (
     outputGraphviz
 )
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from gtnhvelo.cli import ProgramContext
-    from gtnhvelo.graph import Graph
+    from gregtech.flow.cli import ProgramContext
+    from gregtech.flow.graph import Graph
 
 
 class SympySolver:
