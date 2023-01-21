@@ -2,6 +2,7 @@ output/
 .idea/
 
 .vscode/
+.tokens
 
 testing.py
 flow_config.yaml

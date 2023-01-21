@@ -16,7 +16,6 @@ defaults:
   run:
     shell: bash
 
-# TODO: Test on ubuntu and macos
 jobs:
   build:
     strategy:
@@ -64,9 +63,9 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
       # -------------------------------
-      # Install gregtech.flow
+      # Install GT Flow
       # -------------------------------
-      - name: Install gregtech.flow
+      - name: Install GT Flow
         run: poetry install --no-interaction
       # -------------------------------
       # Run tests

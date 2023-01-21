@@ -1,0 +1,32 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - "master"
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # -------------------------------
+      # Check out repo
+      # -------------------------------
+      - name: Check out repository
+        uses: actions/checkout@v3
+      # -------------------------------
+      # Install, Build, and Publish
+      # -------------------------------
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.16
+        with:
+          pypi_token: ${{ secrets.PYPI_API_TOKEN }}
