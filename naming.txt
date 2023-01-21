@@ -1,4 +1,0 @@
-repo = gregtech-flow
-stylized = GT: Flow
-full-stylized = GregTech: Flow
-logo = GT Flow

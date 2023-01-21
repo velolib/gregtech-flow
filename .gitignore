@@ -5,8 +5,6 @@ output/
 .tokens
 
 testing.py
-flow_config.yaml
-.flow_config.yaml
 cov.xml
 
 # === STANDARD PYTHON IGNORES ===
