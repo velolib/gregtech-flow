@@ -6,7 +6,7 @@ name = "gregtech-flow"
 packages = [
     {include = "gregtech", from="./src"}
 ]
-version = "0.4.1"
+version = "0.4.2"
 description = "Factory Optimization Flowcharts for Gregtech: New Horizons"
 authors = ["velolib <vlocitize@gmail.com>"]
 license = "MIT"
