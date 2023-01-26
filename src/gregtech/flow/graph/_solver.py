@@ -499,7 +499,8 @@ class SympySolver:
 
                 # TODO: Automate solution process fully
 
-                selection = input()  # TODO: Verify input
+                # selection = input()  # TODO: Verify input
+                selection = 1
 
                 if selection == '1':
                     # Send excess to sink
