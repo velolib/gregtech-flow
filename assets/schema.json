@@ -64,7 +64,7 @@
             "xdot_json", "xlib"],
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#output-format"
         },
-        "RAINBOW_EDGES": {
+        "USE_RAINBOW_EDGES": {
             "type": "boolean",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#rainbow-edges"
         },
@@ -110,19 +110,19 @@
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#title-font"
         },
         "NODE_FONTSIZE": {
-            "type": "string",
+            "type": "integer",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#node-font-size"
         },
         "EDGE_FONTSIZE": {
-            "type": "string",
+            "type": "integer",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#edge-font-size"
         },
         "GROUP_FONTSIZE": {
-            "type": "string",
+            "type": "integer",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#group-font-size"
         },
         "TITLE_FONTSIZE": {
-            "type": "string",
+            "type": "integer",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#title-font-size"
         },
         "BACKGROUND_COLOR": {
@@ -148,7 +148,7 @@
             "$ref": "#/definitions/color",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#source-and-sink-color"
         },
-        "NONLOCKED_COLOR": {
+        "NONLOCKEDNODE_COLOR": {
             "$ref": "#/definitions/color",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#nonlocked-node-color"
         },
@@ -175,7 +175,7 @@
             ],
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#power-units"
         },
-        "GRAPH_ORIENTATION": {
+        "ORIENTATION": {
             "type": "string",
             "enum": ["TB", "LR", "BT", "RL"],
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html#graph-orientation"
