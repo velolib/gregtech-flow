@@ -28,6 +28,7 @@ This is a fork of OrderedSet86's [gtnh-flow](https://github.com/OrderedSet86/gtn
 2. Added stylization add formatting of graphs
 3. Standards to increase readability
 4. A custom command line interface
+5. Full documentation
 
 To view the full documentation see the official [GT: Flow website](https://velolib.github.io/gregtech-flow/).
 
