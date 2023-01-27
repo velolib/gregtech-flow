@@ -14,6 +14,9 @@
     <a href="https://codecov.io/github/velolib/gregtech-flow" >
         <img src="https://img.shields.io/codecov/c/github/velolib/gregtech-flow?style=for-the-badge&token=Y59FTD1UC1" alt="Code Coverage"/>
     </a>
+    <a href="https://velolib.github.io/gregtech-flow/">
+        <img alt="GitHub deployments" src="https://img.shields.io/github/deployments/velolib/gregtech-flow/github-pages?label=deployment&style=for-the-badge">
+    </a>
 </p>
 <p></p>
 
