@@ -24,7 +24,7 @@ from prompt_toolkit.styles import Style
 # Internal libraries
 from gregtech.flow.graph._solver import systemOfEquationsSolverGraphGen
 from gregtech.flow.data.loadMachines import recipesFromConfig
-from gregtech.flow.config.config_schema import config_schema
+from gregtech.flow.schema import validate_config
 
 install(show_locals=True)
 
@@ -57,9 +57,10 @@ class ProgramContext:
         # Check CONFIG_VER key
         with config.open() as cfg:
             load = yaml.safe_load(cfg)
-            if not load['CONFIG_VER'] == yaml.safe_load(template)['CONFIG_VER']:
+            template_load = yaml.safe_load(template)['CONFIG_VER']
+            if not load['CONFIG_VER'] == template_load:
                 raise RuntimeError(
-                    f'Config version mismatch! Delete the old configuration file to regenerate')
+                    f'Config version mismatch! Delete the old configuration file to regenerate {load["CONFIG_VER"]} {template_load}')
 
         # Setup logger
         if self.graph_config['DEBUG_LOGGING']:
@@ -94,10 +95,12 @@ class ProgramContext:
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
             if len(graph_config.keys()) != len(self.config_cache.keys()):  # trivial check
-                config_schema.validate(graph_config)
+                print('aaaaaaaaaa')
+                validate_config(graph_config)
                 self.config_cache = graph_config
-            elif graph_config != config_schema:  # order does not matter, only k:v pairs
-                config_schema.validate(graph_config)
+            elif graph_config != self.config_cache:  # order does not matter, only k:v pairs
+                print('bbbbbbbbbbbbbbbbbbbbbbb')
+                validate_config(graph_config)
                 self.config_cache = graph_config
 
         # Checks for graph_config

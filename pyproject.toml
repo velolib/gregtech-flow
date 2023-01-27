@@ -6,11 +6,23 @@ name = "gregtech-flow"
 packages = [
     {include = "gregtech", from="./src"}
 ]
-version = "0.4.2"
+version = "0.4.3"
 description = "Factory Optimization Flowcharts for Gregtech: New Horizons"
 authors = ["velolib <vlocitize@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://velolib.github.io/gregtech-flow"
+repository = "https://github.com/velolib/gregtech-flow"
+documentation = "https://velolib.github.io/gregtech-flow"
+keywords = ["gregtech", "minecraft", "graphviz", "graphs"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+    "Intended Audience :: End Users/Desktop"
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -20,7 +32,7 @@ rich = "^13.0.0"
 sympy = "^1.11.1"
 typer = "^0.7.0"
 prompt-toolkit = "^3.0.36"
-schema = "^0.7.5"
+jsonschema = "^4.17.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"

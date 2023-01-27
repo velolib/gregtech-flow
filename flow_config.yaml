@@ -1,6 +1,10 @@
-# gtnhvelo CONFIGURATION FILE
+# yaml-language-server: $schema=https://raw.githubusercontent.com/velolib/gregtech-flow/master/src/gregtech/flow/resources/config_schema.json
+# VSCode Users use this extension: https://github.com/redhat-developer/vscode-yaml 
+
+# GT: Flow CONFIGURATION FILE
 # DELETE THIS FILE TO REGENERATE UPON RUNNING
-CONFIG_VER: 1
+# Documentation: https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html
+CONFIG_VER: 2
 
 GRAPHVIZ: 'C:\Program Files\Graphviz\bin'
 # Input your graphviz /Graphivz/bin directory path in quotes
@@ -24,15 +28,15 @@ VIEW_ON_COMPLETION: true
 
 PRINT_BOTTLENECKS: false
 USE_BOTTLENECK_EXACT_VOLTAGE: false
-BOTTLENECK_MIN_VOLTAGE: IV
+BOTTLENECK_MIN_VOLTAGE: iv
 MAX_BOTTLENECKS: 5
 
 # === VISUALS ===
 ## === FONTS ===
-GENERAL_FONT: noto sans # nodes and edges
-SUMMARY_FONT: noto sans
-GROUP_FONT: renogare
-TITLE_FONT: renogare
+GENERAL_FONT: arial # nodes and edges
+SUMMARY_FONT: arial
+GROUP_FONT: verdana
+TITLE_FONT: verdana
 
 NODE_FONTSIZE: 14
 EDGE_FONTSIZE: 13
@@ -61,28 +65,28 @@ EDGECOLOR_CYCLE:
   - '#59adf6'
   - '#9d94ff'
   - '#c780e8'
-SOURCESINK_COLOR: 'white'
-NONLOCKEDNODE_COLOR: 'lightcyan'
-LOCKEDNODE_COLOR: 'chartreuse'
-POSITIVE_COLOR: 'chartreuse'
-NEGATIVE_COLOR: 'crimson'
+SOURCESINK_COLOR: white
+NONLOCKEDNODE_COLOR: lightcyan
+LOCKEDNODE_COLOR: chartreuse
+POSITIVE_COLOR: chartreuse
+NEGATIVE_COLOR: crimson
 
 ## === EXTRA ===
-POWER_UNITS: 'eut'
+POWER_UNITS: eut
 # Only affects nodes
 # eut: Use absolute eu/t numbers, example: 32 EU/t
 # auto: Use user-defined power tier
 # lv, mv, hv, ev, etc.: Use amps
 
-ORIENTATION: 'TB'
+ORIENTATION: TB
 # TB: Vertical, LR: Horizontal, BT: Vertical Inverted, RL: Horizontal Inverted
 # [TB, LR, BT, RL]
 
-LINE_STYLE: 'spline'
+LINE_STYLE: spline
 # [line, spline, polyline, curved]
 
-RANKSEP: '1.5'
-NODESEP: '0.5'
+RANKSEP: 1.5
+NODESEP: 0.5
 # Node separation size in X/Y.
 # This is a suggestion, the graphing algorithm will ignore numbers that are too small.
 

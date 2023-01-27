@@ -6,7 +6,7 @@
 # Documentation: https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html
 CONFIG_VER: 2
 
-GRAPHVIZ: 'C:\Program Files\Graphviz\bin'
+GRAPHVIZ: path
 # Input your graphviz /Graphivz/bin directory path in quotes
 # Type 'path' if you want to use the PATH environment variable
 
@@ -33,10 +33,10 @@ MAX_BOTTLENECKS: 5
 
 # === VISUALS ===
 ## === FONTS ===
-GENERAL_FONT: arial # nodes and edges
-SUMMARY_FONT: arial
-GROUP_FONT: verdana
-TITLE_FONT: verdana
+GENERAL_FONT: noto sans # nodes and edges
+SUMMARY_FONT: noto sans
+GROUP_FONT: noto sans
+TITLE_FONT: noto sans
 
 NODE_FONTSIZE: 14
 EDGE_FONTSIZE: 13
