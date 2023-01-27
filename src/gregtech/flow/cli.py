@@ -95,11 +95,9 @@ class ProgramContext:
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
             if len(graph_config.keys()) != len(self.config_cache.keys()):  # trivial check
-                print('aaaaaaaaaa')
                 validate_config(graph_config)
                 self.config_cache = graph_config
             elif graph_config != self.config_cache:  # order does not matter, only k:v pairs
-                print('bbbbbbbbbbbbbbbbbbbbbbb')
                 validate_config(graph_config)
                 self.config_cache = graph_config
 
