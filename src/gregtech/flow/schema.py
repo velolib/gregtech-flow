@@ -7,7 +7,7 @@ voltages = yaml.safe_load(pkgutil.get_data('gregtech.flow', 'resources/data.yaml
 
 
 def validate_config(config: dict):
-    schema_load = yaml.safe_load(pkgutil.get_data('gregtech.flow', 'resources/config_schema.json'))
+    schema_load = yaml.safe_load(pkgutil.get_data('gregtech.flow', 'resources/config_schema.json'))  # type: ignore
     jsonschema.validate(instance=config, schema=schema_load)
 
 

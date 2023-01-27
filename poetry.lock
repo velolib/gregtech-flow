@@ -679,6 +679,18 @@ files = [
 ]
 
 [[package]]
+name = "types-jsonschema"
+version = "4.17.0.3"
+description = "Typing stubs for jsonschema"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-jsonschema-4.17.0.3.tar.gz", hash = "sha256:746aa466ffed9a1acc7bdbd0ac0b5e068f00be2ee008c1d1e14b0944a8c8b24b"},
+    {file = "types_jsonschema-4.17.0.3-py3-none-any.whl", hash = "sha256:c8d5b26b7c8da6a48d7fb1ce029b97e0ff6e74db3727efb968c69f39ad013685"},
+]
+
+[[package]]
 name = "types-pillow"
 version = "9.4.0.0"
 description = "Typing stubs for Pillow"
@@ -781,4 +793,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fcfa2b00a087f8a63eb71c9db5dfb2eba749ac5306118ac2332598cad88841aa"
+content-hash = "0ce2e59840efd66fcb2ee975c811b286b4d308f40b1f2be18e22a34e2fd4cfcd"
