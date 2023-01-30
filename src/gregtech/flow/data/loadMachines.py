@@ -34,7 +34,7 @@ def standardizeMachineName(name):
         'utupu tanuri': 'industrial dehydrator',
         'utupu-tanuri': 'industrial dehydrator',
 
-        'floation cell': 'floation cell regulator',
+        'flotation cell': 'flotation cell regulator',
 
         'isamill': 'isamill grinding machine',
 
