@@ -77,7 +77,7 @@
     naquadria: 32
   O:
     acid naquadah emulsion: 8000
-    '[output] extremely unstable naquadah dust': 17
+    '(output) extremely unstable naquadah dust': 17
   eut: 4080
   dur: 180
 - m: compressor
@@ -174,7 +174,7 @@
     raw radox: 5000
   O:
     heavy oil: 600
-    '[output] oil': 300
+    '(output) oil': 300
     creosote oil: 1000
     water: 1400
     fermented bacterial sludge: 50

@@ -326,7 +326,7 @@ class OverclockHandler:
 
         additional = []
         if fuel_type == 'steam_fuels':
-            additional.append(Ingredient('[recycle] distilled water', optimal_flow_L_t // 160))
+            additional.append(Ingredient('(recycle) distilled water', optimal_flow_L_t // 160))
 
         recipe.eut = 0
         recipe.dur = 1

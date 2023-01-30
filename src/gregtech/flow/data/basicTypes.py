@@ -7,6 +7,10 @@ class Ingredient:
     name: str
     quant: float
 
+    # NOTE: Too lazy to implement, just replace () [].
+    def __post_init__(self) -> None:
+        self.name = self.name.replace('(', '[', 1).replace(']', ')', 1)
+
 
 class IngredientCollection:
     def __init__(self, *ingredient_list):
@@ -49,10 +53,10 @@ class IngredientCollection:
 class Recipe:
     def __init__(
         self,
-        machine_name,
-        user_voltage,
-        inputs,
-        outputs,
+        machine_name: str,
+        user_voltage: str,
+        inputs: IngredientCollection,
+        outputs: IngredientCollection,
         eut,
         dur,
         circuit=0,

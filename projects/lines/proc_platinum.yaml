@@ -13,7 +13,7 @@ metadata:
   tier: EV
   I:
     PMP: 9
-    '[100% recycle] aqua regia': 9000
+    (100% recycle) aqua regia: 9000
   O:
     platinum residue dust: 1
     platinum concentrate: 9000
@@ -24,17 +24,17 @@ metadata:
 - m: large chemical reactor
   tier: HV
   I:
-    '[irid 2] hydrochloric acid': 1000
+    (irid 2) hydrochloric acid: 1000
     ammonia: 1000
   O:
-    '[recycle] ammonium chloride': 1000
+    (recycle) ammonium chloride: 1000
   eut: 30
   dur: 0.75
   group: iridium
 - m: large chemical reactor
   tier: EV
   I:
-    '[plat conc] ammonium chloride': 3600
+    (plat conc) ammonium chloride: 3600
     platinum concentrate: 18000
   O:
     platinum salt dust: 16
@@ -59,8 +59,8 @@ metadata:
   I:
     refined platinum salt dust: 1
   O:
-    '[recycle] PMP': 1
-    '[recycle] chlorine': 87
+    (recycle) PMP: 1
+    (recycle) chlorine: 87
   eut: 120
   dur: 10
   heat: 900
@@ -70,7 +70,7 @@ metadata:
   tier: EV
   I:
     platinum residue dust: 1
-    '[100% recycle] molten potassium disulfate': 360
+    (100% recycle) molten potassium disulfate: 360
   O:
     leach residue dust: 1
     rhodium sulfate: 360
@@ -97,7 +97,7 @@ metadata:
   I:
     sulfur dust: 2
     potassium dust: 2
-    '[input] oxygen': 7000
+    (input) oxygen: 7000
   O:
     potassium disulfate dust: 11
   eut: 90
@@ -108,7 +108,7 @@ metadata:
   I:
     potassium disulfate dust: 1
   O:
-    '[100% recycle] molten potassium disulfate': 144
+    (100% recycle) molten potassium disulfate: 144
   eut: 30
   dur: 1.15
   group: K2S2O7 recycling
@@ -116,7 +116,7 @@ metadata:
   tier: HV
   I:
     rarest metal residue dust: 2
-    '[rep] hydrochloric acid': 500
+    (rep) hydrochloric acid: 500
   O:
     iridium metal residue dust: 1
     acidic osmium solution: 1000
@@ -141,7 +141,7 @@ metadata:
   tier: HV
   I:
     iridium dioxide dust: 1
-    '[irid 1] hydrochloric acid': 1000
+    (irid 1) hydrochloric acid: 1000
   O:
     acidic iridium solution: 1000
   eut: 30
@@ -184,8 +184,8 @@ metadata:
   I:
     calcium chloride dust: 3
   O:
-    '[recycle] calcium dust': 1
-    '[recycle] chlorine': 2000
+    (recycle) calcium dust: 1
+    (recycle) chlorine: 2000
   eut: 60
   dur: 1.35
   group: iridium
@@ -205,7 +205,7 @@ metadata:
     diluted sulfuric acid: 1000
     nitric acid: 1000
   O:
-    '[100% recycle] aqua regia': 2000
+    (100% recycle) aqua regia: 2000
   eut: 30
   dur: 1.5
   group: aqua regia recycling
@@ -213,7 +213,7 @@ metadata:
   tier: HV
   I:
     nitrogen dioxide: 2000
-    '[input] oxygen': 1000
+    (input) oxygen: 1000
   O:
     nitric acid: 2000
   eut: 30
@@ -247,7 +247,7 @@ metadata:
     zinc sulfate dust: 6
   O:
     zinc dust: 1
-    '[electrolyze] sulfuric acid': 1000
+    (electrolyze) sulfuric acid: 1000
   eut: 90
   dur: 1.3
   group: rhodium
@@ -281,11 +281,11 @@ metadata:
 - m: large chemical reactor
   tier: HV
   I:
-    '[os] hydrochloric acid': 6000
+    (os) hydrochloric acid: 6000
     osmium solution: 1000
   O:
     osmium dust: 1
-    '[recycle] chlorine': 7000
+    (recycle) chlorine: 7000
   eut: 30
   dur: 15
   group: osmium
@@ -329,7 +329,7 @@ metadata:
     sodium nitrate dust: 1
   O:
     rhodium nitrate: 1
-    '[recycle] salt': 1
+    (recycle) salt: 1
   eut: 30
   dur: 15
   group: rhodium
@@ -364,11 +364,11 @@ metadata:
   tier: HV
   I:
     reprecipitated rhodium dust: 1
-    '[rhod] hydrochloric acid': 1000
+    (rhod) hydrochloric acid: 1000
   O:
     rhodium dust: 1
-    '[recycle] ammonia': 1000
-    '[recycle] chlorine': 1000
+    (recycle) ammonia: 1000
+    (recycle) chlorine: 1000
   eut: 30
   dur: 15
   group: rhodium
@@ -397,7 +397,7 @@ metadata:
   I:
     hot ruthenium tetroxide solution: 9000
   O:
-    '[recycle] salt': 6
+    (recycle) salt: 6
     ruthenium tetroxide: 7200
   eut: 480
   dur: 75
@@ -414,11 +414,11 @@ metadata:
 - m: large chemical reactor
   tier: HV
   I:
-    '[ruth] hydrochloric acid': 6000
+    (ruth) hydrochloric acid: 6000
     ruthenium tetroxide dust: 1
   O:
     ruthenium dust: 1
-    '[recycle] chlorine': 6000
+    (recycle) chlorine: 6000
   eut: 30
   dur: 15
   group: ruthenium
@@ -426,7 +426,7 @@ metadata:
   tier: EV
   I:
     palladium enriched ammonia: 2800
-    '[palladium] ammonia': 6200
+    (palladium) ammonia: 6200
   O:
     reprecipitated palladium dust: 2
   eut: 30
@@ -439,7 +439,7 @@ metadata:
     reprecipitated palladium dust: 4
   O:
     palladium dust: 2
-    '[recycle] ammonia': 4000
+    (recycle) ammonia: 4000
     ethylene: 1000
   eut: 30
   dur: 12.5
@@ -468,11 +468,11 @@ metadata:
 - m: large chemical reactor
   tier: HV
   I:
-    '[plat] hydrochloric acid': 1000
-    '[platinum] ammonia': 278.51429
-    '[source] ammonia': 721.48571
+    (plat) hydrochloric acid: 1000
+    (platinum) ammonia: 278.51429
+    (source) ammonia: 721.48571
   O:
-    '[plat conc] ammonium chloride': 1000
+    (plat conc) ammonium chloride: 1000
   eut: 30
   dur: 0.75
   group: platinum
@@ -507,17 +507,17 @@ metadata:
   tier: HV
   I:
     sodium sulfate dust: 7
-    '[source] hydrogen': 2000
+    (source) hydrogen: 2000
   O:
-    '[recycle] sulfuric acid': 1000
-    '[recycle] sodium dust': 2
+    (recycle) sulfuric acid: 1000
+    (recycle) sodium dust: 2
   eut: 30
   dur: 1.5
   group: palladium
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] sodium dust': 1
+    (source) sodium dust: 1
   O:
     sodium hydroxide dust: 3
     hydrogen: 1000
@@ -528,9 +528,9 @@ metadata:
   tier: EV
   I:
     nitrogen: 1000
-    '[source] hydrogen': 3000
+    (source) hydrogen: 3000
   O:
-    '[palladium] ammonia': 1000
+    (palladium) ammonia: 1000
   eut: 384
   dur: 16
   group: palladium
@@ -538,26 +538,26 @@ metadata:
   tier: HV
   I:
     nitrogen: 1000
-    '[source] hydrogen': 3000
+    (source) hydrogen: 3000
   O:
-    '[platinum] ammonia': 1000
+    (platinum) ammonia: 1000
   eut: 384
   dur: 16
   group: platinum
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[ruth] hydrochloric acid': 1000
+    (ruth) hydrochloric acid: 1000
   eut: 7
   dur: 3
   group: ruthenium
 - m: mixer
   tier: HV
   I:
-    '[source] salt': 1
+    (source) salt: 1
   O:
     salt water: 250
   eut: 7
@@ -566,22 +566,22 @@ metadata:
 - m: large chemical reactor
   tier: HV
   I:
-    '[rhod] nitric acid': 1000
-    '[source] sodium dust': 1
+    (rhod) nitric acid: 1000
+    (source) sodium dust: 1
   O:
     sodium nitrate dust: 5
-    '[recycle] hydrogen': 1000
+    (recycle) hydrogen: 1000
   eut: 60
   dur: 0.4
   group: rhodium
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] potassium dust': 1
-    '[rep] nitric acid': 1000
+    (source) potassium dust: 1
+    (rep) nitric acid: 1000
   O:
     saltpeter: 5
-    '[recycle] hydrogen': 1000
+    (recycle) hydrogen: 1000
   eut: 30
   dur: 5
   group: rare element prep
@@ -589,10 +589,10 @@ metadata:
   tier: HV
   I:
     oxygen: 4000
-    '[source] nitrogen': 1000
-    '[source] hydrogen': 3000
+    (source) nitrogen: 1000
+    (source) hydrogen: 3000
   O:
-    '[rep] nitric acid': 1000
+    (rep) nitric acid: 1000
   eut: 30
   dur: 16
   group: rare element prep
@@ -600,78 +600,78 @@ metadata:
   tier: HV
   I:
     oxygen: 4000
-    '[source] nitrogen': 1000
-    '[source] hydrogen': 3000
+    (source) nitrogen: 1000
+    (source) hydrogen: 3000
   O:
-    '[rhod] nitric acid': 1000
+    (rhod) nitric acid: 1000
   eut: 30
   dur: 16
   group: rhodium
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[irid 2] hydrochloric acid': 1000
+    (irid 2) hydrochloric acid: 1000
   eut: 7
   dur: 3
   group: iridium
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[irid 1] hydrochloric acid': 1000
+    (irid 1) hydrochloric acid: 1000
   eut: 7
   dur: 3
   group: iridium
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[plat] hydrochloric acid': 1000
+    (plat) hydrochloric acid: 1000
   eut: 7
   dur: 3
   group: platinum
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[os] hydrochloric acid': 1000
+    (os) hydrochloric acid: 1000
   eut: 7
   dur: 3
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[rep] hydrochloric acid': 1000
+    (rep) hydrochloric acid: 1000
   eut: 7
   dur: 3
 - m: large chemical reactor
   tier: HV
   I:
-    '[source] hydrogen': 1000
-    '[source] chlorine': 1000
+    (source) hydrogen: 1000
+    (source) chlorine: 1000
   O:
-    '[rhod] hydrochloric acid': 1000
+    (rhod) hydrochloric acid: 1000
   eut: 7
   dur: 3
 - m: electrolyzer
   tier: HV
   I:
-    '[electrolyze] sulfuric acid': 1000
+    (electrolyze) sulfuric acid: 1000
   O:
-    '[recycle] hydrogen': 2000
-    '[recycle] sulfur dust': 1
-    '[recycle] oxygen': 4000
+    (recycle) hydrogen: 2000
+    (recycle) sulfur dust: 1
+    (recycle) oxygen: 4000
   eut: 90
   dur: 19.6
   group: rhodium

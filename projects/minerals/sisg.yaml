@@ -11,7 +11,7 @@ metadata:
 - m: large chemical reactor
   tier: HV
   I:
-    '[nonrecycle] hydrochloric acid': 3000
+    (nonrecycle) hydrochloric acid: 3000
     hydrochloric acid: 27000
     raw silicon dust: 10
   O:
@@ -19,7 +19,7 @@ metadata:
     silicon tetrachloride: 300
     hexachlorodisilane: 200
     dichlorosilane: 300
-    '[recycle] hydrogen': 20400
+    (recycle) hydrogen: 20400
   eut: 480
   dur: 7.5
   target:
@@ -31,7 +31,7 @@ metadata:
     hydrogen: 2000
   O:
     sisg: 1
-    '[recycle] hydrochloric acid': 3000
+    (recycle) hydrochloric acid: 3000
   eut: 30
   dur: 15
 - m: electrolyzer
@@ -39,9 +39,9 @@ metadata:
   I:
     dichlorosilane: 1000
   O:
-    '[recycle] raw silicon dust': 1
-    '[recycle] hydrogen': 2000
-    '[recycle] chlorine': 2000
+    (recycle) raw silicon dust: 1
+    (recycle) hydrogen: 2000
+    (recycle) chlorine: 2000
   eut: 90
   dur: 20
 - m: electrolyzer
@@ -49,8 +49,8 @@ metadata:
   I:
     hexachlorodisilane: 1000
   O:
-    '[recycle] raw silicon dust': 2
-    '[recycle] chlorine': 6000
+    (recycle) raw silicon dust: 2
+    (recycle) chlorine: 6000
   eut: 60
   dur: 51.2
 - m: large chemical reactor
@@ -69,7 +69,7 @@ metadata:
     zinc chloride dust: 3
   O:
     zinc dust: 1
-    '[recycle] chlorine': 2000
+    (recycle) chlorine: 2000
   eut: 60
   dur: 1.6
 - m: large chemical reactor
@@ -78,6 +78,6 @@ metadata:
     hydrogen: 1000
     chlorine: 1000
   O:
-    '[nonrecycle] hydrochloric acid': 1000
+    (nonrecycle) hydrochloric acid: 1000
   eut: 7
   dur: 3

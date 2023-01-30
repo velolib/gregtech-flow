@@ -34,8 +34,8 @@ metadata:
   I: 
     hydrochloric acid: 1000
   O:
-    '[recycle] chlorine': 1000
-    '[recycle] hydrogen': 1000
+    (recycle) chlorine: 1000
+    (recycle) hydrogen: 1000
   eut: 30
   dur: 36
 - m: chemical reactor

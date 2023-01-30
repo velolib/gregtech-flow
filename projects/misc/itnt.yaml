@@ -57,8 +57,8 @@ metadata:
   I:
     hydrogen x sulfide: 1000
   O:
-    '[recycle] hydrogen x': 2000
-    '[recycle] sulfur': 1
+    (recycle) hydrogen x: 2000
+    (recycle) sulfur: 1
 - m: distillery
   group: toluene
   tier: MV
@@ -115,14 +115,14 @@ metadata:
   I:
     diluted sulfuric acid: 75
   O:
-    '[recycle] sulfuric acid': 50
+    (recycle) sulfuric acid: 50
 - m: centrifuge
   group: nitration
   tier: LV
   I:
     air: 10000
   O:
-    '[recycle] nitrogen': 3900
+    (recycle) nitrogen: 3900
     oxygen: 1000
   eut: 7
   dur: 80

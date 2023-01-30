@@ -66,7 +66,7 @@
     naquadria: 32
   O:
     acid naquadah emulsion: 8000
-    '[output] extremely unstable naquadah dust': 17
+    '(output) extremely unstable naquadah dust': 17
   eut: 4080
   dur: 180
 - m: electric implosion compressor

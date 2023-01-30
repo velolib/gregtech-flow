@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 # as designed by Usagirei in https://github.com/OrderedSet86/gtnh-flow/pull/4
 
 
-def stripBrackets(self: 'Graph', ing):
+def stripBrackets(self: 'Graph', ing: str):
     if self.graph_config['STRIP_BRACKETS']:
         prefix = False
         if ing[:2] == '\u2588 ':

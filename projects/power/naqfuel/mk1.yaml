@@ -23,7 +23,7 @@ description: From gtnh-flow
   O:
     naquadah asphalt: 2
     heavy naquadah fuel: 5
-    '[output] light naquadah fuel': 10
+    (output) light naquadah fuel: 10
     water: 10
     naquadah gas: 60
   eut: 1920

@@ -26,7 +26,7 @@ description: From gtnh-flow
     naquadah asphalt: 2
     heavy naquadah fuel: 5
     light naquadah fuel: 6.25
-    '[output] light naquadah fuel': 2.75
+    (output) light naquadah fuel: 2.75
     water: 10
     naquadah gas: 60
   eut: 1920
@@ -59,7 +59,7 @@ description: From gtnh-flow
     naquadria: 32
   O:
     acid naquadah emulsion: 8000
-    '[output] extremely unstable naquadah dust': 17
+    (output) extremely unstable naquadah dust: 17
   eut: 4080
   dur: 180
 - m: compressor

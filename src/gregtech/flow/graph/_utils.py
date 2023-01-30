@@ -28,6 +28,7 @@ def userRound(number: int | float) -> str:
     # Display numbers nicely for end user (eg. 814.3k)
     # input int/float, return string
     cutoffs: dict = {
+        1_000_000_000_000: lambda x: f'{round(x/1_000_000_000_000, 2)}T',
         1_000_000_000: lambda x: f'{round(x/1_000_000_000, 2)}B',
         1_000_000: lambda x: f'{round(x/1_000_000, 2)}M',
         1_000: lambda x: f'{round(x/1_000, 2)}K',

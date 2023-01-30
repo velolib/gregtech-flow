@@ -14,13 +14,13 @@ metadata:
   group: epoxid
   I:
     epichlorohydrin: 2000
-    '[1] hydrochloric acid': 1000
+    (1) hydrochloric acid: 1000
     phenol: 2000
     acetone: 1000
-    '[1] sodium hydroxide': 6
+    (1) sodium hydroxide: 6
   O:
     epoxid: 1000
-    '[1] salt water': 2000
+    (1) salt water: 2000
   eut: 30
   dur: 24
 - m: lcr
@@ -29,44 +29,44 @@ metadata:
   I:
     propene: 1000
     water: 1000
-    '[2] chlorine': 4000
-    '[2] sodium hydroxide': 3
+    (2) chlorine: 4000
+    (2) sodium hydroxide: 3
   O:
     epichlorohydrin: 1000
-    '[2] hydrochloric acid': 2000
-    '[2] salt water': 1000
+    (2) hydrochloric acid: 2000
+    (2) salt water: 1000
   dur: 32
   eut: 30
 - m: electrolyzer
   group: epichlorohydrin
   tier: MV
   I:
-    '[2] salt water': 1000
+    (2) salt water: 1000
   O:
-    '[2] sodium hydroxide': 3
-    '[recycle] hydrogen': 1000
-    '[2] chlorine': 1000
+    (2) sodium hydroxide: 3
+    (recycle) hydrogen: 1000
+    (2) chlorine: 1000
   dur: 36
   eut: 30
 - m: electrolyzer
   group: epichlorohydrin
   tier: LV
   I:
-    '[2] hydrochloric acid': 1000
+    (2) hydrochloric acid: 1000
   O:
-    '[recycle] hydrogen': 1000
-    '[2] chlorine': 1000
+    (recycle) hydrogen: 1000
+    (2) chlorine: 1000
   eut: 30
   dur: 36
 - m: electrolyzer
   group: epoxid
   tier: MV
   I:
-    '[1] salt water': 1000
+    (1) salt water: 1000
   O:
-    '[1] sodium hydroxide': 3
-    '[recycle] hydrogen': 1000
-    '[2] chlorine': 1000
+    (1) sodium hydroxide: 3
+    (recycle) hydrogen: 1000
+    (2) chlorine: 1000
   dur: 36
   eut: 30
 - m: distillery # 1
@@ -105,9 +105,9 @@ metadata:
   tier: LV
   I:
     hydrogen: 1000
-    '[1] chlorine': 1000
+    (1) chlorine: 1000
   O:
-    '[1] hydrochloric acid': 1000
+    (1) hydrochloric acid: 1000
   eut: 7
   dur: 3
 # - m: lcr
