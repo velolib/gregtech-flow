@@ -81,7 +81,7 @@ class Recipe:
     def __repr__(self):
         return str([f'{x}={getattr(self, x)}' for x in vars(self)])
 
-    def __mul__(self, mul_num: int | float):
+    def __mul__(self, mul_num: int):
         assert self.multiplier == -1, 'Cannot multiply recipe multiple times'
 
         self.I *= mul_num
