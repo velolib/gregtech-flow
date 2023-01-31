@@ -1,14 +1,27 @@
+import logging
+import typing
+import textwrap
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Ingredient:
     name: str
     quant: float
+    # Used to track the deprecation warning.
+    found_bracket_warning: typing.ClassVar[bool] = field(init=False, default=0)
 
     # NOTE: Too lazy to implement, just replace () [].
     def __post_init__(self) -> None:
+        first_word = self.name.split(' ')[0]
+        if not self.__class__.found_bracket_warning and '[' in first_word and ']' in first_word:
+            logging.getLogger('rich').warning(textwrap.dedent('''\
+                You are using square brackets in your I/O!
+                Support for square bracket tags "[]" will be phased out in the future.
+                Switch to using parentheses "()" instead.'''))
+            self.__class__.found_bracket_warning = True
+
         self.name = self.name.replace('(', '[', 1).replace(')', ']', 1)
 
 
