@@ -1,3 +1,4 @@
+# flake8: noqa
 import sys
 from pathlib import Path
 from functools import lru_cache
@@ -5,7 +6,7 @@ from functools import lru_cache
 import pytest
 
 from gregtech.flow.data.loadMachines import load_recipes
-from gregtech.flow.graph._solver import systemOfEquationsSolverGraphGen
+from gregtech.flow.graph._solver import equations_solver
 from gregtech.flow.cli import ProgramContext
 from gregtech.flow import flow
 
@@ -40,7 +41,7 @@ def test_lazyGenerateGraphs(project_name):
         project_name = project_name[:-5]
 
     try:
-        systemOfEquationsSolverGraphGen(pc, project_name, recipes, pc.graph_config)
+        equations_solver(pc, project_name, recipes, pc.graph_config)
         assert True == True
     except Exception as e:
         assert True == False, f'Failed on {project_name} with error {e}'

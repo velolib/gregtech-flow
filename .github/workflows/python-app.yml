@@ -70,13 +70,15 @@ jobs:
       # -------------------------------
       # Run tests
       # -------------------------------
+      - name: Run flake8
+        run: poetry run flake8 src
       - name: Run pytest
         run: |
           poetry run pytest --cov=./ --cov-report=xml -svv
       - name: Run mypy
         run: |
           source $VENV
-          mypy src
+          mypy src --no-incremental
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:

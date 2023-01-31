@@ -22,7 +22,7 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
 
 # Internal libraries
-from gregtech.flow.graph._solver import systemOfEquationsSolverGraphGen
+from gregtech.flow.graph._solver import equations_solver
 from gregtech.flow.data.loadMachines import load_recipes
 from gregtech.flow.schemas import Validator
 
@@ -64,11 +64,11 @@ class ProgramContext:
 
         # Setup logger
         if self.graph_config['DEBUG_LOGGING']:
-            LOG_LEVEL = logging.DEBUG
+            log_level = logging.DEBUG
         else:
-            LOG_LEVEL = logging.INFO
+            log_level = logging.INFO
         logging.basicConfig(handlers=[RichHandler(
-            level=LOG_LEVEL, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+            level=log_level, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
         self.logger = logging.getLogger('rich')
 
         # Load the game data
@@ -94,10 +94,8 @@ class ProgramContext:
 
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
-            if len(graph_config.keys()) != len(self.config_cache.keys()):  # trivial check
-                Validator.validate_config(graph_config)
-                self.config_cache = graph_config
-            elif graph_config != self.config_cache:  # order does not matter, only k:v pairs
+            # trivial check + equality check
+            if (len(graph_config.keys()) != len(self.config_cache.keys())) or (graph_config != self.config_cache):
                 Validator.validate_config(graph_config)
                 self.config_cache = graph_config
 
@@ -113,7 +111,7 @@ class ProgramContext:
                 raise RuntimeError('Graphviz path does not exist')
         return graph_config
 
-    def cLog(self, msg, level=logging.DEBUG):
+    def log(self, msg, level=logging.DEBUG):
         """Logging for gregtech.flow
 
         Args:
@@ -152,9 +150,10 @@ class ProgramContext:
                 if len(doc_load) >= 2:
                     header = doc_load[0]
                     title = header['title']
-                    self.cLog(f'Current project: "{title}" by [bright_green]{header["creator"]}', logging.INFO)
+                    self.log(
+                        f'Current project: "{title}" by [bright_green]{header["creator"]}', logging.INFO)
                 else:
-                    self.cLog(f'Current project: "{project_name}"', logging.INFO)
+                    self.log(f'Current project: "{project_name}"', logging.INFO)
 
             recipes = load_recipes(
                 project_name, self.graph_config, self.projects_path)
@@ -162,7 +161,7 @@ class ProgramContext:
             if project_name.endswith('.yaml'):
                 project_name = project_name[:-5]
 
-            systemOfEquationsSolverGraphGen(
+            equations_solver(
                 self, project_name, recipes, self.graph_config, title)
             return True
         else:
@@ -216,10 +215,12 @@ class ProgramContext:
             console.print(root_layout)
             console.print('[bright_white]> ', end='')
 
-            projects = list(map(lambda p: str(p.relative_to(self.projects_path)), self.projects_path.glob('**/*.yaml')))
+            projects = list(map(lambda p: str(p.relative_to(self.projects_path)),
+                            self.projects_path.glob('**/*.yaml')))
             path_completer = WordCompleter(projects)
 
-            sel_option = prompt(prompt_message, completer=path_completer, style=prompt_style)  # type: ignore
+            sel_option = prompt(prompt_message, completer=path_completer,  # type: ignore
+                                style=prompt_style)  # type: ignore
             match sel_option:
                 case 'end' | 'stop' | 'exit':
                     exit()

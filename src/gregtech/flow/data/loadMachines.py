@@ -75,9 +75,9 @@ def unalias_machine_name(name: str) -> str:
 
 def load_recipes(project_name: str | Path, graph_config: dict, project_folder: str | Path = 'projects') -> list:
     # Load config file
-    PROJECT_FILE_PATH = Path(project_folder) / f'{project_name}'
-    project_name = PROJECT_FILE_PATH.name.split('.')[0]
-    with open(PROJECT_FILE_PATH, 'r') as f:
+    project_filepath = Path(project_folder) / f'{project_name}'
+    project_name = project_filepath.name.split('.')[0]
+    with open(project_filepath, 'r') as f:
         project = list(yaml.load_all(f))[-1]
         Validator.validate_project(project)
 
@@ -94,8 +94,10 @@ def load_recipes(project_name: str | Path, graph_config: dict, project_folder: s
             Recipe(
                 machine_name,
                 rec['tier'].casefold(),
-                IngredientCollection(*[Ingredient(name, quant) for name, quant in rec['I'].items()]),
-                IngredientCollection(*[Ingredient(name, quant) for name, quant in rec['O'].items()]),
+                IngredientCollection(*[Ingredient(name, quant)
+                                     for name, quant in rec['I'].items()]),
+                IngredientCollection(*[Ingredient(name, quant)
+                                     for name, quant in rec['O'].items()]),
                 rec['eut'],
                 rec['dur'],
                 **{x: (rec[x].casefold() if type(rec[x]) == str else rec[x]) for x in rec.keys() if x not in {'m', 'I', 'O', 'eut', 'dur', 'tier'}},

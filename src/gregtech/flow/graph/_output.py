@@ -6,14 +6,14 @@ from pathlib import Path
 
 import graphviz  # type: ignore
 
-from gregtech.flow.graph._postProcessing import bottleneckPrint
+from gregtech.flow.graph._postProcessing import bottleneck_print
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def outputGraphviz(self: 'Graph'):
+def graphviz_output(self: 'Graph'):
     # Outputs a graphviz png using the graph info
     node_style = {
         'style': 'filled',
@@ -91,9 +91,10 @@ def outputGraphviz(self: 'Graph'):
                 io.write('<tr>')
                 for cell in line:
                     if port_type:
-                        port_id = self.getPortId(cell, port_type)
-                        ing_name = self.getIngLabel(cell)
-                        io.write(f'<td border="1" PORT="{port_id}">{self.stripBrackets(ing_name)}</td>')
+                        port_id = self.get_port_id(cell, port_type)
+                        ing_name = self.get_ing_label(cell)
+                        io.write(
+                            f'<td border="1" PORT="{port_id}">{self.strip_brackets(ing_name)}</td>')
                     else:
                         io.write(f'<td border="0">{cell}</td>')
                 io.write('</tr>')
@@ -111,9 +112,10 @@ def outputGraphviz(self: 'Graph'):
                 for cell in line:
                     io.write('<tr>')
                     if port_type:
-                        port_id = self.getPortId(cell, port_type)
-                        ing_name = self.getIngLabel(cell)
-                        io.write(f'<td border="1" PORT="{port_id}">{self.stripBrackets(ing_name)}</td>')
+                        port_id = self.get_port_id(cell, port_type)
+                        ing_name = self.get_ing_label(cell)
+                        io.write(
+                            f'<td border="1" PORT="{port_id}">{self.strip_brackets(ing_name)}</td>')
                     else:
                         io.write(f'<td border="0">{cell}</td>')
                     io.write('</tr>')
@@ -125,8 +127,8 @@ def outputGraphviz(self: 'Graph'):
 
     def add_node_internal(graph, node_name, **kwargs):
         label = kwargs['label'] if 'label' in kwargs else None
-        isTable = False
-        newLabel = None
+        is_table = False
+        new_label = None
 
         def unique(sequence):
             seen = set()
@@ -134,18 +136,18 @@ def outputGraphviz(self: 'Graph'):
 
         if node_name == 'source':
             names = unique([name for src, _, name in self.edges.keys() if src == 'source'])
-            isTable, newLabel = make_table(label, None, names)
+            is_table, new_label = make_table(label, None, names)
         elif node_name == 'sink':
             names = unique([name for _, dst, name in self.edges.keys() if dst == 'sink'])
-            isTable, newLabel = make_table(label, names, None)
+            is_table, new_label = make_table(label, names, None)
         elif re.match(r'^\d+$', node_name):
             rec = self.recipes[node_name]
             in_ports = [ing.name for ing in rec.I]
             out_ports = [ing.name for ing in rec.O]
-            isTable, newLabel = make_table(label, in_ports, out_ports)
+            is_table, new_label = make_table(label, in_ports, out_ports)
 
-        if isTable:
-            kwargs['label'] = newLabel
+        if is_table:
+            kwargs['label'] = new_label
             kwargs['shape'] = 'plain'
 
         graph.node(
@@ -162,8 +164,8 @@ def outputGraphviz(self: 'Graph'):
                 add_node_internal(g, rec_id, **kwargs)
         else:
             with g.subgraph(name=f'cluster_{group}') as c:
-                self.parent_context.cLog(f'Creating subgraph {group}')
-                cluster_color = self.getUniqueColor(group)
+                self.parent_context.log(f'Creating subgraph {group}')
+                cluster_color = self.get_unique_color(group)
 
                 # Populate nodes
                 for rec_id, kwargs in groups[group]:
@@ -178,8 +180,8 @@ def outputGraphviz(self: 'Graph'):
                     fontsize=f'{self.graph_config["GROUP_FONTSIZE"]}pt'
                 )
 
-    inPort = self.getInputPortSide()
-    outPort = self.getOutputPortSide()
+    port_in = self.get_input_port_side()
+    port_out = self.get_output_port_side()
 
     is_inverted = self.graph_config['ORIENTATION'] in ['BT', 'RL']
     is_vertical = self.graph_config['ORIENTATION'] in ['TB', 'BT']
@@ -188,8 +190,8 @@ def outputGraphviz(self: 'Graph'):
         src_node, dst_node, ing_name = io_info
         ing_quant, kwargs = edge_data['quant'], edge_data['kwargs']
 
-        ing_id = self.getIngId(ing_name)
-        quant_label = self.getQuantLabel(ing_id, ing_quant)
+        ing_id = self.get_ing_id(ing_name)
+        quant_label = self.get_quant_label(ing_id, ing_quant)
         # ing_label = self.getIngLabel(ing_name)
 
         # Strip bad arguments
@@ -197,19 +199,19 @@ def outputGraphviz(self: 'Graph'):
             del kwargs['locked']
 
         # Assign ing color if it doesn't already exist
-        ing_color = self.getUniqueColor(ing_id)
+        ing_color = self.get_unique_color(ing_id)
 
-        src_has_port = self.nodeHasPort(src_node)
-        dst_has_port = self.nodeHasPort(dst_node)
+        src_has_port = self.check_node_has_port(src_node)
+        dst_has_port = self.check_node_has_port(dst_node)
 
-        src_port_name = self.getPortId(ing_name, 'o')
-        dst_port_name = self.getPortId(ing_name, 'i')
+        src_port_name = self.get_port_id(ing_name, 'o')
+        dst_port_name = self.get_port_id(ing_name, 'i')
 
         src_port = f'{src_node}:{src_port_name}' if src_has_port else src_node
         dst_port = f'{dst_node}:{dst_port_name}' if dst_has_port else dst_node
 
-        src_port = f'{src_port}:{outPort}' if src_has_port else src_port
-        dst_port = f'{dst_port}:{inPort}' if dst_has_port else dst_port
+        src_port = f'{src_port}:{port_out}' if src_has_port else src_port
+        dst_port = f'{dst_port}:{port_in}' if dst_has_port else dst_port
 
         port_style = dict(edge_style)
 
@@ -219,17 +221,17 @@ def outputGraphviz(self: 'Graph'):
 
         lab = f'({quant_label})'
         if dst_has_port:
-            debugHead = ''
+            debug_head = ''
             if 'debugHead' in edge_data:
-                debugHead = f'\n{edge_data["debugHead"]}'
+                debug_head = f'\n{edge_data["debugHead"]}'
             port_style.update(arrowhead='normal')
-            port_style.update(headlabel=f'{lab}{debugHead}')
+            port_style.update(headlabel=f'{lab}{debug_head}')
         if src_has_port:
-            debugTail = ''
+            debug_tail = ''
             if 'debugTail' in edge_data:
-                debugTail = f'\n{edge_data["debugTail"]}'
+                debug_tail = f'\n{edge_data["debugTail"]}'
             port_style.update(arrowtail='tee')
-            port_style.update(taillabel=f'{lab}{debugTail}')
+            port_style.update(taillabel=f'{lab}{debug_tail}')
 
         src_is_joint_i = re.match('^joint_i', src_node)
         dst_is_joint_i = re.match('^joint_i', dst_node)
@@ -274,7 +276,7 @@ def outputGraphviz(self: 'Graph'):
         input()
 
     if self.graph_config.get('PRINT_BOTTLENECKS'):
-        bottleneckPrint(self)
+        bottleneck_print(self)
 
-    self.parent_context.cLog(
+    self.parent_context.log(
         f'Output graph at: {Path("output", self.graph_name).with_suffix("." + self.graph_config["OUTPUT_FORMAT"])}', logging.INFO)

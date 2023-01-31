@@ -418,7 +418,7 @@ overclock_data:
       multiplier: 1
       heat: 2701
     nichrome:
-      multiplier:  1.5
+      multiplier: 1.5
       heat: 3601
     tungstensteel:
       multiplier: 2.0

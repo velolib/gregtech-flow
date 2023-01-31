@@ -1,7 +1,7 @@
 import itertools
 
 from gregtech.flow.gtnh.overclocks import OverclockHandler
-from ._utils import userRound
+from ._utils import round_readable
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -33,40 +33,40 @@ class Graph:
         # Overclock all recipes to the provided user voltage
         oh = OverclockHandler(self.parent_context)
         for i, rec in enumerate(recipes):
-            recipes[i] = oh.overclockRecipe(rec)
+            recipes[i] = oh.overclock_recipe(rec)
             rec.base_eut = rec.eut
 
         # DEBUG
         for rec in recipes:
-            self.parent_context.cLog(rec)
-        self.parent_context.cLog('')
-        self._checkIfMachine.cache_clear()
+            self.parent_context.log(rec)
+        self.parent_context.log('')
+        self._machine_check.cache_clear()
 
     @staticmethod
     def userRound(number: int | float) -> str:
-        return userRound(number)
+        return round_readable(number)
 
     # Graph utility functions
     from ._utils import (  # type: ignore
-        addNode,
-        addEdge,
-        tierToVoltage,
-        createAdjacencyList,
-        _iterateOverMachines,
-        _checkIfMachine,
+        add_node,
+        add_edge,
+        tier_to_voltage,
+        create_adjacency_list,
+        _machine_iterate,
+        _machine_check,
     )
 
     # Utilities for "port node" style graphviz nodes
     from ._portNodes import (  # type: ignore
-        stripBrackets,
-        nodeHasPort,
-        getOutputPortSide,
-        getInputPortSide,
-        getUniqueColor,
-        getPortId,
-        getIngId,
-        getIngLabel,
-        getQuantLabel,
-        _combineInputs,
-        _combineOutputs,
+        strip_brackets,
+        check_node_has_port,
+        get_output_port_side,
+        get_input_port_side,
+        get_unique_color,
+        get_port_id,
+        get_ing_id,
+        get_ing_label,
+        get_quant_label,
+        _combine_inputs,
+        _combine_outputs,
     )

@@ -2,22 +2,22 @@ import logging
 from collections import defaultdict
 
 from gregtech.flow.graph._backEdges import BasicGraph, dfs
-from gregtech.flow.graph._utils import swapIO
-from gregtech.flow.graph._output import outputGraphviz
+from gregtech.flow.graph._utils import swap_io
+from gregtech.flow.graph._output import graphviz_output
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def connectGraph(self: 'Graph'):
+def connect_graph(self: 'Graph'):
     '''
     Connects recipes without locking the quantities
     '''
 
     # Create source and sink nodes
-    self.addNode('source', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='source')
-    self.addNode('sink', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='sink')
+    self.add_node('source', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='source')
+    self.add_node('sink', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='sink')
 
     # Compute {[ingredient name][IO direction] -> involved recipes} table
     involved_recipes: dict = defaultdict(lambda: defaultdict(list))
@@ -49,7 +49,7 @@ def connectGraph(self: 'Graph'):
                 machine_label.append(line_generator(rec))
 
         label_string = '\n'.join(machine_label)
-        self.addNode(
+        self.add_node(
             rec_id,
             fillcolor=self.graph_config['NONLOCKEDNODE_COLOR'],
             label=label_string
@@ -60,7 +60,7 @@ def connectGraph(self: 'Graph'):
     for rec_id, rec in self.recipes.items():
         for io_type in ['I', 'O']:
             for ing in getattr(rec, io_type):
-                linked_machines = involved_recipes[ing.name][swapIO(io_type)]
+                linked_machines = involved_recipes[ing.name][swap_io(io_type)]
                 if len(linked_machines) == 0:
                     if io_type == 'I':
                         linked_machines = ['source']
@@ -77,7 +77,7 @@ def connectGraph(self: 'Graph'):
                         continue
 
                     if io_type == 'I':
-                        self.addEdge(
+                        self.add_edge(
                             str(link_id),
                             str(rec_id),
                             ing.name,
@@ -85,7 +85,7 @@ def connectGraph(self: 'Graph'):
                         )
                         added_edges.add(unique_edge_identifiers[0])
                     elif io_type == 'O':
-                        self.addEdge(
+                        self.add_edge(
                             str(rec_id),
                             str(link_id),
                             ing.name,
@@ -94,20 +94,20 @@ def connectGraph(self: 'Graph'):
                         added_edges.add(unique_edge_identifiers[1])
 
     if self.graph_config.get('DEBUG_SHOW_EVERY_STEP', False):
-        outputGraphviz(self)
+        graphviz_output(self)
 
 
-def removeBackEdges(self: 'Graph'):
+def remove_back_edges(self: 'Graph'):
     # Loops are possible in machine processing, but very difficult / NP-hard to solve properly
     # Want to make algorithm simple, so just break all back edges and send them to sink instead
     # The final I/O information will have these balanced, so this is ok
 
     # Run DFS back edges detector
     basic_edges = [(x[0], x[1]) for x in self.edges.keys()]
-    G = BasicGraph(basic_edges)
-    dfs(G)
+    g = BasicGraph(basic_edges)
+    dfs(g)
 
-    for back_edge in G.back_edges:
+    for back_edge in g.back_edges:
         # Note that although this doesn't include ingredient information, all edges between these two nodes
         # should be redirected
         from_node, to_node = back_edge
@@ -119,11 +119,11 @@ def removeBackEdges(self: 'Graph'):
 
         for edge_def, edge_data in relevant_edges:
             node_from, node_to, ing_name = edge_def
-            self.parent_context.cLog(
+            self.parent_context.log(
                 f'Fixing factory cycle by redirecting "{ing_name.title()}" to sink', level=logging.INFO)
 
             # Redirect looped ingredient to sink
-            self.addEdge(
+            self.add_edge(
                 node_from,
                 'sink',
                 ing_name,
@@ -131,7 +131,7 @@ def removeBackEdges(self: 'Graph'):
                 **edge_data['kwargs']
             )
             # Pull newly required ingredients from source
-            self.addEdge(
+            self.add_edge(
                 'source',
                 node_to,
                 ing_name,

@@ -1,5 +1,6 @@
+# flake8: noqa
 # Tests for _utils.py that are probably not needed
-from gregtech.flow.graph._utils import swapIO, userRound
+from gregtech.flow.graph._utils import swap_io, round_readable
 from gregtech.flow.schemas import yaml
 import sys
 from functools import lru_cache
@@ -24,20 +25,20 @@ def loadTestConfig():
     return graph_config
 
 def test_swapIO():
-    _i_ = swapIO('I')
-    _o_ = swapIO('O')
+    _i_ = swap_io('I')
+    _o_ = swap_io('O')
     assert _i_ == 'O'
     assert _o_ == 'I'
 
     with pytest.raises(RuntimeError):
-        swapIO('Z')
-        swapIO('sonar')
+        swap_io('Z')
+        swap_io('sonar')
 
 def test_userRound():
     nums = [0.0004, 512, 2_306, 7_777, 2_423_555,
             555_555_555, 2_416_777_876, 5_924_333]
     result = []
     for num in nums:
-        result.append(userRound(num))
+        result.append(round_readable(num))
     assert result == ['0.0', '512', '2.31K', '7.78K', '2.42M',
                       '555.56M', '2.42B', '5.92M']

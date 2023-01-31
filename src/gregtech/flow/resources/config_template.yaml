@@ -44,9 +44,9 @@ GROUP_FONTSIZE: 20
 TITLE_FONTSIZE: 40
 
 ## === COLORS ===
-BACKGROUND_COLOR: '#140e52'
-TITLE_COLOR: '#ffffff'
-SUMMARY_COLOR: '#ffffff'
+BACKGROUND_COLOR: "#140e52"
+TITLE_COLOR: "#ffffff"
+SUMMARY_COLOR: "#ffffff"
 EDGECOLOR_CYCLE:
   # Legacy colors
   # - '#b58900' # 'yellow'
@@ -57,14 +57,14 @@ EDGECOLOR_CYCLE:
   # - '#268bd2' # 'blue'
   # - '#2aa198' # 'cyan'
   # - '#859900' # 'green'
-  - '#ff6961'
-  - '#ffb480'
-  - '#f8f38d'
-  - '#42d6a4'
-  - '#08cad1'
-  - '#59adf6'
-  - '#9d94ff'
-  - '#c780e8'
+  - "#ff6961"
+  - "#ffb480"
+  - "#f8f38d"
+  - "#42d6a4"
+  - "#08cad1"
+  - "#59adf6"
+  - "#9d94ff"
+  - "#c780e8"
 SOURCESINK_COLOR: white
 NONLOCKEDNODE_COLOR: lightcyan
 LOCKEDNODE_COLOR: chartreuse
