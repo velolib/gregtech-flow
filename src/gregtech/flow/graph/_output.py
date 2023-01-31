@@ -6,7 +6,7 @@ from pathlib import Path
 
 import graphviz  # type: ignore
 
-from gregtech.flow.graph._postProcessing import bottleneck_print
+from gregtech.flow.graph._post_processing import bottleneck_print
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

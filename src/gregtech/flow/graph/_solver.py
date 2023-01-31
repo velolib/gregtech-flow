@@ -12,11 +12,11 @@ from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
 
 from gregtech.flow.graph import Graph
-from gregtech.flow.graph._preProcessing import (
+from gregtech.flow.graph._pre_processing import (
     connect_graph,
     remove_back_edges,
 )
-from gregtech.flow.graph._postProcessing import (
+from gregtech.flow.graph._post_processing import (
     add_machine_multipliers,
     add_powerline_nodes,
     add_summary_node,

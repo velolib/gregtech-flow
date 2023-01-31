@@ -1,7 +1,7 @@
 from collections import defaultdict
 from functools import lru_cache
 
-from gregtech.flow.data.basicTypes import Recipe
+from gregtech.flow.data.basic_types import Recipe
 
 
 def swap_io(io_type):

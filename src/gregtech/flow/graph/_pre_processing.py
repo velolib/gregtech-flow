@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 
-from gregtech.flow.graph._backEdges import BasicGraph, dfs
+from gregtech.flow.graph._back_edges import BasicGraph, dfs
 from gregtech.flow.graph._utils import swap_io
 from gregtech.flow.graph._output import graphviz_output
 

@@ -5,7 +5,7 @@ from functools import lru_cache
 
 import pytest
 
-from gregtech.flow.data.loadMachines import load_recipes
+from gregtech.flow.data.load_project import load_recipes
 from gregtech.flow.graph._solver import equations_solver
 from gregtech.flow.cli import ProgramContext
 from gregtech.flow import flow

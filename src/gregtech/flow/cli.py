@@ -23,7 +23,7 @@ from prompt_toolkit.styles import Style
 
 # Internal libraries
 from gregtech.flow.graph._solver import equations_solver
-from gregtech.flow.data.loadMachines import load_recipes
+from gregtech.flow.data.load_project import load_recipes
 from gregtech.flow.schemas import Validator
 
 install(show_locals=True)

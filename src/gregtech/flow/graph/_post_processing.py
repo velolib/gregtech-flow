@@ -4,7 +4,7 @@ from collections import defaultdict
 from copy import deepcopy
 from string import ascii_uppercase
 
-from gregtech.flow.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gregtech.flow.data.basic_types import Ingredient, IngredientCollection, Recipe
 from gregtech.flow.graph._utils import _machine_iterate
 from gregtech.flow.gtnh.overclocks import OverclockHandler
 

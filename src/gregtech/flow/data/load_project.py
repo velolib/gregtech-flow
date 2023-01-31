@@ -2,7 +2,7 @@ from pathlib import Path
 
 from gregtech.flow.schemas import yaml
 
-from gregtech.flow.data.basicTypes import Ingredient, IngredientCollection, Recipe
+from gregtech.flow.data.basic_types import Ingredient, IngredientCollection, Recipe
 from gregtech.flow.schemas import Validator
 
 

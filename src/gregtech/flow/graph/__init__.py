@@ -6,7 +6,7 @@ from ._utils import round_readable
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.cli import ProgramContext
-    from gregtech.flow.data.basicTypes import Recipe
+    from gregtech.flow.data.basic_types import Recipe
 
 
 class Graph:
@@ -57,7 +57,7 @@ class Graph:
     )
 
     # Utilities for "port node" style graphviz nodes
-    from ._portNodes import (  # type: ignore
+    from ._port_nodes import (  # type: ignore
         strip_brackets,
         check_node_has_port,
         get_output_port_side,
