@@ -121,7 +121,7 @@ metadata:
 #   eut: 480
 #   dur: 20
 
-### oil shit
+### oil
 - m: distillation tower # 9
   group: oil
   tier: HV
