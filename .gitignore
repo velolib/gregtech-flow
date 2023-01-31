@@ -6,6 +6,7 @@ output/
 
 testing.py
 cov.xml
+src/gregtech/flow/resources/project.yaml
 
 # === STANDARD PYTHON IGNORES ===
 # from https://github.com/github/gitignore/blob/main/Python.gitignore

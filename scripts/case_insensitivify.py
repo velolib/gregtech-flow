@@ -2,6 +2,7 @@
 # Because JSON Schema doesn't support the flag.
 import typer
 
+
 def main(strings: str):
     for string in strings.split(', '):
         words = string.split(' ')
@@ -12,6 +13,7 @@ def main(strings: str):
             words[idx] = ins_word
         result = ' '.join(words)
         print(result)
+
 
 if __name__ == '__main__':
     typer.run(main)
