@@ -7,7 +7,7 @@ import pkgutil
 import textwrap
 
 # Pypi libraries
-import yaml
+from gregtech.flow.schemas import yaml
 from rich import print as rprint
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -23,8 +23,8 @@ from prompt_toolkit.styles import Style
 
 # Internal libraries
 from gregtech.flow.graph._solver import systemOfEquationsSolverGraphGen
-from gregtech.flow.data.loadMachines import recipesFromConfig
-from gregtech.flow.schema import validate_config
+from gregtech.flow.data.loadMachines import load_recipes
+from gregtech.flow.schemas import Validator
 
 install(show_locals=True)
 
@@ -56,8 +56,8 @@ class ProgramContext:
 
         # Check CONFIG_VER key
         with config.open() as cfg:
-            load = yaml.safe_load(cfg)
-            template_load = yaml.safe_load(template)['CONFIG_VER']
+            load = yaml.load(cfg)
+            template_load = yaml.load(template)['CONFIG_VER']
             if not load['CONFIG_VER'] == template_load:
                 raise RuntimeError(
                     f'Config version mismatch! Delete the old configuration file to regenerate {load["CONFIG_VER"]} {template_load}')
@@ -74,7 +74,7 @@ class ProgramContext:
         # Load the game data
         data_yaml = pkgutil.get_data('gregtech.flow', 'resources/data.yaml')
         assert data_yaml is not None, 'Data file "resources/data.yaml" nonexistent, try reinstalling!'
-        self.data = yaml.safe_load(data_yaml)
+        self.data = yaml.load(data_yaml)
 
         # Create paths if selected option
         output_path = Path(output_path)
@@ -90,15 +90,15 @@ class ProgramContext:
     @property
     def graph_config(self):
         with open('flow_config.yaml' if not self.config_path else self.config_path, 'r') as f:
-            graph_config = yaml.safe_load(f)
+            graph_config = yaml.load(f)
 
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
             if len(graph_config.keys()) != len(self.config_cache.keys()):  # trivial check
-                validate_config(graph_config)
+                Validator.validate_config(graph_config)
                 self.config_cache = graph_config
             elif graph_config != self.config_cache:  # order does not matter, only k:v pairs
-                validate_config(graph_config)
+                Validator.validate_config(graph_config)
                 self.config_cache = graph_config
 
         # Checks for graph_config
@@ -148,7 +148,7 @@ class ProgramContext:
         if project_relpath.exists():
             title = None
             with project_relpath.open(mode='r') as f:
-                doc_load = list(yaml.safe_load_all(f))
+                doc_load = list(yaml.load_all(f))
                 if len(doc_load) >= 2:
                     header = doc_load[0]
                     title = header['title']
@@ -156,7 +156,7 @@ class ProgramContext:
                 else:
                     self.cLog(f'Current project: "{project_name}"', logging.INFO)
 
-            recipes = recipesFromConfig(
+            recipes = load_recipes(
                 project_name, self.graph_config, self.projects_path)
 
             if project_name.endswith('.yaml'):

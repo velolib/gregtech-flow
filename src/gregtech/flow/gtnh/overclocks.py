@@ -28,11 +28,11 @@ class OverclockHandler:
         self.voltage_cutoffs = [32 * pow(4, x) + 1 for x in range(len(self.voltages))]
 
     def modifyGTpp(self, recipe):
-        if recipe.machine not in self.overclock_data['GTpp_stats']:
-            raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:GTpp_stats')
+        if recipe.machine not in self.overclock_data['gtpp_stats']:
+            raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats')
 
         # Get per-machine boosts
-        SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['GTpp_stats'][recipe.machine]
+        SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['gtpp_stats'][recipe.machine]
         SPEED_BOOST = 1 / (SPEED_BOOST + 1)
 
         # Calculate base parallel count and clip time to 1 tick
@@ -116,7 +116,7 @@ class OverclockHandler:
             raise RuntimeError(
                 f'Expected chem pipe casings in {list(chem_plant_pipe_casings)}\ngot "{recipe.pipe_casings}". (More are allowed, I just haven\'t added them yet.)')
 
-        recipe.dur /= self.overclock_data['coil_multipliers'][recipe.coils]
+        recipe.dur /= self.overclock_data['coil_data'][recipe.coils]['multiplier']
         throughput_multiplier = chem_plant_pipe_casings[recipe.pipe_casings]
         recipe.I *= throughput_multiplier
         recipe.O *= throughput_multiplier
@@ -143,7 +143,7 @@ class OverclockHandler:
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
 
-        actual_heat = self.overclock_data['coil_heat'][recipe.coils] + 100 * min(0, user_voltage - 2)
+        actual_heat = self.overclock_data['coil_data'][recipe.coils]['heat'] + 100 * min(0, user_voltage - 2)
         excess_heat = actual_heat - recipe.heat
         eut_discount = 0.95 ** (excess_heat // 900)
         perfect_ocs = (excess_heat // 1800)
@@ -162,15 +162,21 @@ class OverclockHandler:
         )
         oc_count = self.calculateStandardOC(recipe)
         recipe.eut = recipe.eut * 4**oc_count
-        recipe.dur = recipe.dur / 2**oc_count / self.overclock_data['coil_multipliers'][recipe.coils]
+        recipe.dur = recipe.dur / 2**oc_count / self.overclock_data['coil_data'][recipe.coils]['multiplier']
 
         return recipe
 
     def modifyMultiSmelter(self, recipe):
+        require(
+            recipe,
+            [
+                ['coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").']
+            ]
+        )
         recipe.eut = 4
         recipe.dur = 500
         recipe = self.modifyStandard(recipe)
-        coil_list = list(self.overclock_data['coil_multipliers'])
+        coil_list = list(self.overclock_data['coil_data'].keys())
         batch_size = 8 * 2**max(4, coil_list.index(recipe.coils))
         recipe.I *= batch_size
         recipe.O *= batch_size
@@ -218,11 +224,11 @@ class OverclockHandler:
         )
 
         # First do parallel step of GTpp
-        if recipe.machine not in self.overclock_data['GTpp_stats']:
-            raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:GTpp_stats')
+        if recipe.machine not in self.overclock_data['gtpp_stats']:
+            raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats')
 
         # Get per-machine boosts
-        SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['GTpp_stats'][recipe.machine]
+        SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['gtpp_stats'][recipe.machine]
         SPEED_BOOST = 1 / (SPEED_BOOST + 1)
 
         # Calculate base parallel count and clip time to 1 tick
@@ -245,7 +251,7 @@ class OverclockHandler:
         oc_count = user_voltage - base_voltage
 
         # + 100 * min(0, user_voltage - 1) # I assume there's no bonus heat on UT
-        actual_heat = self.overclock_data['coil_heat'][recipe.coils]
+        actual_heat = self.overclock_data['coil_data'][recipe.coils]['heat']
         excess_heat = actual_heat - recipe.heat
         eut_discount = 0.95 ** (excess_heat // 900)
         perfect_ocs = (excess_heat // 1800)

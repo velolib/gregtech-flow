@@ -1,0 +1,100 @@
+- m: xl GAS tURbinE
+  tier: IV
+  I:
+    benzene: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: xl stEam TurbIne
+  tier: IV
+  I:
+    steam: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: xLgT
+  tier: IV
+  I:
+    benzene: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: Xl gaS TurBINE
+  tier: IV
+  I:
+    benzene: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: lsT
+  tier: IV
+  I:
+    steam: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: xl tuRbo gAS tuRbIne
+  tier: IV
+  I:
+    benzene: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: Xl tUrBO stEAM tURbiNe
+  tier: IV
+  I:
+    steam: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: lArGe steAM tURbiNE
+  tier: IV
+  I:
+    steam: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: LarGe sTEaM tURbIne
+  tier: IV
+  I:
+    steam: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1
+- m: lGT
+  tier: IV
+  I:
+    benzene: 1
+  O: {}
+  eut: 0
+  dur: 0
+  material: shadow
+  size: large
+  number: 1

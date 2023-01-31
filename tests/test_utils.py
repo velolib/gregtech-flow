@@ -1,12 +1,12 @@
 # Tests for _utils.py that are probably not needed
 from gregtech.flow.graph._utils import swapIO, userRound
-import yaml
+from gregtech.flow.schemas import yaml
 import sys
 from functools import lru_cache
 
 import pytest
 
-from gregtech.flow.data.loadMachines import recipesFromConfig
+from gregtech.flow.data.loadMachines import load_recipes
 
 @lru_cache(1)
 def get_os_config():
@@ -20,7 +20,7 @@ def get_os_config():
 
 def loadTestConfig():
     with open(get_os_config(), 'r') as f:
-        graph_config = yaml.safe_load(f)
+        graph_config = yaml.load(f)
     return graph_config
 
 def test_swapIO():

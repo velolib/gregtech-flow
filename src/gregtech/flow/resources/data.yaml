@@ -336,7 +336,7 @@ power_data:
     butanol: 1_125_000
     jet fuel no.3: 1_324_000
     high octane gasoline: 2_500_000
-    jet fuel A: 2_048_000
+    jet fuel a: 2_048_000
   semifluids:
     seed oil: 4_000
     fish oil: 4_000
@@ -363,11 +363,11 @@ power_data:
     unsymmetrical dimethylhydrazine fuel mix: 9_000_000
     h8n4c2o4 rocket fuel: 12_588_000
   naqline_fuels:
-    naquadah based liquid fuel mkI: 4_400_000_000
-    naquadah based liquid fuel mkII: 7_600_000_000
-    naquadah based liquid fuel mkIII: 724_088_000_000
-    naquadah based liquid fuel mkIV: 8_800_540_000_000
-    naquadah based liquid fuel mkV: 63_849_216_000_000
+    naquadah based liquid fuel mki: 4_400_000_000
+    naquadah based liquid fuel mkii: 7_600_000_000
+    naquadah based liquid fuel mkiii: 724_088_000_000
+    naquadah based liquid fuel mkiv: 8_800_540_000_000
+    naquadah based liquid fuel mkv: 63_849_216_000_000
     uranium based liquid fuel (excited state): 1_200_960_000
     plutonium based liquid fuel (excited state): 4_806_000_000
     thorium based liquid fuel (excited state): 1_010_000_000
@@ -410,44 +410,57 @@ power_data:
       uv: 1
       uhv: 1
 overclock_data:
-  coil_multipliers:
-    cupronickel: 0.5
-    kanthal: 1
-    nichrome: 1.5
-    tungstensteel: 2.0
-    hss-g: 2.5
-    hss-s: 3.0
-    naquadah: 3.5
-    naquadah alloy: 4
-    trinium: 4.5
-    electrum flux: 5
-    awakened draconium: 5.5
-    infinity: 6
-    hypogen: 6.5
-    eternal: 7
-  coil_heat:
-    cupronickel: 1801
-    kanthal: 2701
-    nichrome: 3601
-    tungstensteel: 4501
-    HSS-G: 5401
-    HSS-S: 6301
-    naquadah: 7201
-    naquadah alloy: 8101
-    trinium: 9001
-    electrum flux: 9901
-    awakened draconium: 10801
-    infinity: 11701
-    hypogen: 12601
-    eternal: 13501
+  coil_data:
+    cupronickel:
+      multiplier: 0.5
+      heat: 1801
+    kanthal:
+      multiplier: 1
+      heat: 2701
+    nichrome:
+      multiplier:  1.5
+      heat: 3601
+    tungstensteel:
+      multiplier: 2.0
+      heat: 4501
+    hss-g:
+      multiplier: 2.5
+      heat: 5401
+    hss-s:
+      multiplier: 3.0
+      heat: 6301
+    naquadah:
+      multiplier: 3.5
+      heat: 7201
+    naquadah alloy:
+      multiplier: 4
+      heat: 8101
+    trinium:
+      multiplier: 4.5
+      heat: 9001
+    electrum flux:
+      multiplier: 5
+      heat: 9901
+    awakened draconium:
+      multiplier: 5.5
+      heat: 10801
+    infinity:
+      multiplier: 6
+      heat: 11701
+    hypogen:
+      multiplier: 6.5
+      heat: 12601
+    eternal:
+      multiplier: 7
+      heat: 13501
   pipe_casings:
     bronze: 2
     steel: 4
     titanium: 6
     tungstensteel: 8
-    # TODO: Add the rest
-  # [speed X, EU/t discount, parallels per tier]
-  GTpp_stats:
+    # TODO: add the rest
+  # [speed x, eu/t discount, parallels per tier]
+  gtpp_stats:
     industrial centrifuge: [1.25, 0.9, 6]
     industrial material press: [5.0, 1.0, 4]
     industrial electrolyzer: [1.8, 0.9, 2]

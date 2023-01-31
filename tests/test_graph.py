@@ -4,7 +4,7 @@ from functools import lru_cache
 
 import pytest
 
-from gregtech.flow.data.loadMachines import recipesFromConfig
+from gregtech.flow.data.loadMachines import load_recipes
 from gregtech.flow.graph._solver import systemOfEquationsSolverGraphGen
 from gregtech.flow.cli import ProgramContext
 from gregtech.flow import flow
@@ -34,7 +34,7 @@ def test_lazyGenerateGraphs(project_name):
 
     pc = ProgramContext(config_path=get_os_config())
 
-    recipes = recipesFromConfig(project_name, pc.graph_config, project_folder='')
+    recipes = load_recipes(project_name, pc.graph_config, project_folder='')
 
     if project_name.endswith('.yaml'):
         project_name = project_name[:-5]

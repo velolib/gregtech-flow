@@ -9,7 +9,7 @@ class Ingredient:
 
     # NOTE: Too lazy to implement, just replace () [].
     def __post_init__(self) -> None:
-        self.name = self.name.replace('(', '[', 1).replace(']', ')', 1)
+        self.name = self.name.replace('(', '[', 1).replace(')', ']', 1)
 
 
 class IngredientCollection:
