@@ -10,7 +10,7 @@ class Ingredient:
     name: str
     quant: float
     # Used to track deprecation.
-    found_bracket_warning: typing.ClassVar[bool] = field(init=False, default=0)
+    found_bracket_warning: typing.ClassVar[bool] = field(init=False, default=0)  # type: ignore
 
     # NOTE: Too lazy to implement, just replace () to [].
     def __post_init__(self) -> None:
