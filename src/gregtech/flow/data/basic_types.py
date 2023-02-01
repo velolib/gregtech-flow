@@ -5,24 +5,30 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 
-@dataclass
+@dataclass  # type: ignore
 class Ingredient:
     name: str
     quant: float
-    # Used to track the deprecation warning.
-    found_bracket_warning: typing.ClassVar[bool] = field(init=False, default=0)  # type: ignore
+    # Used to track deprecation.
+    found_bracket_warning: typing.ClassVar[bool] = field(init=False, default=0)
 
-    # NOTE: Too lazy to implement, just replace () [].
+    # NOTE: Too lazy to implement, just replace () to [].
     def __post_init__(self) -> None:
+        logger = logging.getLogger('rich')
         first_word = self.name.split(' ')[0]
         if not self.__class__.found_bracket_warning and '[' in first_word and ']' in first_word:
-            logging.getLogger('rich').warning(textwrap.dedent('''\
+            logger.warning(textwrap.dedent('''\
                 You are using square brackets in your I/O!
                 Support for square bracket tags "[]" will be phased out in the future.
                 Switch to using parentheses "()" instead.'''))
             self.__class__.found_bracket_warning = True
-
-        self.name = self.name.replace('(', '[', 1).replace(')', ']', 1)
+        if self.name.casefold() != self.name:
+            raise DeprecationWarning(textwrap.dedent('''\
+                You are using uppercase characters in your I/O!
+                Most characters will be lowercased, so switch to using unique I/O names or just use lowercase characters!
+                The program will not be able to run if you keep using uppercase characters.
+                                                     '''))
+        self.name = self.name.casefold().replace('(', '[', 1).replace(')', ']', 1)
 
 
 class IngredientCollection:

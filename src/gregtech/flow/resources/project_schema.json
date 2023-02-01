@@ -146,21 +146,21 @@
           ]
         },
         "I": {
-          "title": "Recipe Inputs",
+          "title": "Recipe input ingredients",
           "type": "object",
           "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
           "additionalProperties": {
-            "title": "Material output",
+            "title": "The ingredient that you want to input",
             "type": "number",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
           }
         },
         "O": {
-          "title": "Recipe Outputs",
+          "title": "Recipe output ingredients",
           "type": "object",
           "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
           "additionalProperties": {
-            "title": "Material output",
+            "title": "The ingredient that you want to output",
             "type": "number",
             "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
           }
