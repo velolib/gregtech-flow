@@ -12,7 +12,7 @@ metadata:
 - m: large chemical reactor
   tier: EV
   I:
-    PMP: 9
+    pmp: 9
     (100% recycle) aqua regia: 9000
   O:
     platinum residue dust: 1
@@ -59,7 +59,7 @@ metadata:
   I:
     refined platinum salt dust: 1
   O:
-    (recycle) PMP: 1
+    (recycle) pmp: 1
     (recycle) chlorine: 87
   eut: 120
   dur: 10

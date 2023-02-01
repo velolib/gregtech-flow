@@ -22,9 +22,9 @@ class Ingredient:
                 Support for square bracket tags "[]" will be phased out in the future.
                 Switch to using parentheses "()" instead.'''))
             self.__class__.found_bracket_warning = True
-        if self.name.casefold() != self.name:
-            raise DeprecationWarning(textwrap.dedent('''\
-                You are using uppercase characters in your I/O!
+        if self.name not in {"EU"} and self.name.casefold() != self.name:
+            raise DeprecationWarning(textwrap.dedent(f'''\
+                You are using uppercase characters in your I/O ({self.name})!
                 Most characters will be lowercased, so switch to using unique I/O names or just use lowercase characters!
                 The program will not be able to run if you keep using uppercase characters.
                                                      '''))
