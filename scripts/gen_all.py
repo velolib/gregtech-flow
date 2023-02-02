@@ -1,3 +1,4 @@
+# flake8: noqa
 # Script to generate all projects in the repository.
 # Used for the website
 from gregtech.flow import flow

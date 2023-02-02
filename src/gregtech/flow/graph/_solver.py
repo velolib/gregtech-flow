@@ -4,36 +4,35 @@
 import logging
 from collections import Counter, deque
 from math import isclose
+from typing import TYPE_CHECKING, Callable
 
 from rich.progress import Progress
-
 from sympy import linsolve, symbols
-from sympy.solvers import solve
 from sympy.sets.sets import EmptySet
+from sympy.solvers import solve
 
 from gregtech.flow.graph import Graph
-from gregtech.flow.graph._pre_processing import (
-    connect_graph,
-    remove_back_edges,
-)
-from gregtech.flow.graph._post_processing import (
-    add_machine_multipliers,
-    add_powerline_nodes,
-    add_summary_node,
-    add_user_node_color,
-    create_machine_labels,
-)
-from gregtech.flow.graph._output import (
-    graphviz_output
-)
+from gregtech.flow.graph._output import graphviz_output
+from gregtech.flow.graph._post_processing import (add_machine_multipliers,
+                                                  add_powerline_nodes,
+                                                  add_summary_node,
+                                                  add_user_node_color,
+                                                  create_machine_labels)
+from gregtech.flow.graph._pre_processing import (connect_graph,
+                                                 remove_back_edges)
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.cli import ProgramContext
 
 
 class SympySolver:
     def __init__(self, graph: Graph):
+        """
+        Sympy Solver class.
+
+        Args:
+            graph (Graph): Graph object
+        """
         self.graph = graph
         self.variables: list = []
         self.variable_idx_counter = 0  # Autogen current "head" index for variable number
@@ -46,6 +45,7 @@ class SympySolver:
         self.edge_from_perspective_to_index: dict = {}  # (edge, machine_id) -> variable index
 
     def array_index(self, machine, product, direction, multi_idx=0):
+        # TODO: Docstring
         key = (machine, product, direction, multi_idx)
         if key not in self.lookup:
             # print(f'Unique key {key}')
@@ -55,7 +55,13 @@ class SympySolver:
         else:
             return self.lookup[key]
 
-    def run(self, progress_cb):
+    def run(self, progress_cb: Callable):
+        """
+        Runs the solver.
+
+        Args:
+            progress_cb (Callable): Progress callback for rich Progress object
+        """
         self._create_variables()  # initialize v1, v2, v3 ... (first pass)
         progress_cb(6.6)
 
@@ -77,7 +83,9 @@ class SympySolver:
         progress_cb(6.6)
 
     def _create_variables(self):
-        # Compute number of variables
+        """
+        Computes number of variables
+        """
         num_variables = 0
         for rec_id in self.graph.nodes:
             if self.graph._machine_check(rec_id):
@@ -90,7 +98,9 @@ class SympySolver:
         self.variables = list(symbols(symbols_str, positive=True, real=True))
 
     def _add_userlocking(self):
-        # Add user-determined locked inputs
+        """
+        Adds user-determined locked inputs.
+        """
         targeted_nodes = [i for i, x in self.graph.recipes.items(
         ) if getattr(x, 'target', False) is not False]
         numbered_nodes = [i for i, x in self.graph.recipes.items(
@@ -152,7 +162,12 @@ class SympySolver:
                     raise RuntimeError(f'Targetted quantity must be in machine I/O for \n{rec}')
 
     def _add_machine_internal_locking(self):
-        # Add machine equations
+        """
+        Add machine equations
+
+        Raises:
+            RuntimeError: {rec} has no inputs or outputs!
+        """
         for rec_id in self.graph.nodes:
             if self.graph._machine_check(rec_id):
                 rec = self.graph.recipes[rec_id]
@@ -182,7 +197,9 @@ class SympySolver:
                             )
 
     def _populate_efpti(self):
-        # Populate edge_from_perspective_to_index for all edges - so there's something consistent to call for all edges
+        """
+        Populate edge_from_perspective_to_index for all edges - so there's something consistent to call for all edges
+        """
         for edge in self.graph.edges:
             a, b, product = edge
 
@@ -193,7 +210,9 @@ class SympySolver:
                 self.edge_from_perspective_to_index[(edge, b)] = self.array_index(b, product, 'I')
 
     def _add_machinemachine_edges(self):
-        # Add machine-machine edges
+        """
+        Adds machine-machine edges.
+        """
         # Need to be careful about how these are added - multi input and multi output can
         #   require arbitrarily many variables per equation
         # See https://github.com/OrderedSet86/gtnh-flow/issues/7#issuecomment-1331312996 for an example
@@ -304,6 +323,7 @@ class SympySolver:
                 computed_edges.update(involved_edges)
 
     def _add_multiequations_on_edge(self, multi_edge, multi_machine, destinations):
+        # TODO: Docstring
         # destinations = list of nodes
 
         multi_a, multi_b, multi_product = multi_edge
@@ -361,8 +381,14 @@ class SympySolver:
 
         self.num_variables += len(destinations)
 
-    def _solve(self):
-        while True:  # Loop until solved - algorithm may adjust edges each time it sees an EmptySet
+    def _solve(self) -> None:
+        """
+        Loops solving until solved. Algorithm may adjust edges each time it sees an EmptySet.
+
+        Raises:
+            NotImplementedError: Multiple solutions - no code written to deal with this scenario yet
+        """
+        while True:
             res = linsolve(self.system, self.variables)
             # print(res)
             if isinstance(res, EmptySet):
@@ -377,8 +403,10 @@ class SympySolver:
                 'Multiple solutions - no code written to deal with this scenario yet')
         self.solved_vars = res.args[0]
 
-    def _inconsistency_search(self):
-        # Solve each equation stepwise until inconsistency is found, then report to end user
+    def _inconsistency_search(self) -> None:
+        """
+        Solves each equation stepwise until inconsistency is found, then report to end user.
+        """
 
         self.graph.parent_context.log(
             'Searching for inconsistency in system of equations...', level=logging.INFO)
@@ -391,7 +419,7 @@ class SympySolver:
         max_iter = len(self.system) ** 2 + 1
         iterations = 0
 
-        solved_values = {}
+        solved_values: dict = {}
         inconsistent_variables = []
 
         while equations_to_check and iterations < max_iter:
@@ -564,7 +592,9 @@ class SympySolver:
             self.graph.nodes[rec_id]['label'] = f'[id:{rec_id}] {rec.machine}'
 
     def _write_quants_to_graph(self):
-        # Update graph edge values
+        """
+        Updates graph edge values.
+        """
         for edge in self.graph.edges:
             a, b, product = edge
             a_machine = self.graph._machine_check(a)
@@ -603,6 +633,13 @@ class SympySolver:
 
 
 def preprocess_graph(self: 'Graph', progress_cb):
+    """
+    Graph pre-processing.
+
+    Args:
+        self (Graph): Graph object
+        progress_cb (Callable): Progress callback for rich Progress object
+    """
     connect_graph(self)
     progress_cb(6.6)
     remove_back_edges(self)
@@ -611,7 +648,14 @@ def preprocess_graph(self: 'Graph', progress_cb):
     progress_cb(6.6)
 
 
-def postprocess_graph(self: 'Graph', progress_cb):
+def postprocess_graph(self: 'Graph', progress_cb: Callable):
+    """
+    Graph post-processing.
+
+    Args:
+        self (Graph): Graph object
+        progress_cb (Callable): Progress callback for rich Progress object
+    """
     if self.graph_config.get('POWER_LINE', False):
         add_powerline_nodes(self)
 
@@ -631,13 +675,22 @@ def postprocess_graph(self: 'Graph', progress_cb):
     progress_cb(6.6)
 
 
-def equations_solver(self: 'ProgramContext', project_name, recipes, graph_config, title=None):
+def equations_solver(self: 'ProgramContext', project_name: str, recipes: list, title: str = '') -> None:
+    """
+    Runs the equations solver and outputs a graph.
+
+    Args:
+        self (ProgramContext): ProgramContext object
+        project_name (str): Project name as a string
+        recipes (list): Recipes list
+        title (str, optional): Graph title. Defaults to None.
+    """
     with Progress(disable=bool(self.quiet), transient=True) as progress:
         task = progress.add_task(f'[cyan]{project_name}', total=100)
 
         def update_progress(advance: float):
             return progress.update(task, advance=advance)
-        g = Graph(project_name, recipes, self, graph_config=graph_config, title=title)
+        g = Graph(project_name, recipes, self, title=title)
 
         preprocess_graph(g, update_progress)
 

@@ -1,30 +1,29 @@
 # Standard libraries
 import logging
 import os
-from pathlib import Path
-from typing import Optional
 import pkgutil
 import textwrap
+from pathlib import Path
+from typing import Optional
 
-# Pypi libraries
-from gregtech.flow.schemas import yaml
-from rich import print as rprint
-from rich.logging import RichHandler
-from rich.panel import Panel
-from rich.console import Console
-from rich.traceback import install
-from rich.layout import Layout
-from rich.align import Align
-from rich.rule import Rule
 import typer
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.styles import Style
+from rich import print as rprint
+from rich.align import Align
+from rich.console import Console
+from rich.layout import Layout
+from rich.logging import RichHandler
+from rich.panel import Panel
+from rich.rule import Rule
+from rich.traceback import install
 
+from gregtech.flow.data.load_project import load_recipes
 # Internal libraries
 from gregtech.flow.graph._solver import equations_solver
-from gregtech.flow.data.load_project import load_recipes
-from gregtech.flow.schemas import Validator
+# Pypi libraries
+from gregtech.flow.schemas import Validator, yaml
 
 install(show_locals=True)
 
@@ -144,7 +143,7 @@ class ProgramContext:
         project_relpath = self.projects_path / f'{project_name}'
 
         if project_relpath.exists():
-            title = None
+            title = ''
             with project_relpath.open(mode='r') as f:
                 doc_load = list(yaml.load_all(f))
                 if len(doc_load) >= 2:
@@ -162,7 +161,7 @@ class ProgramContext:
                 project_name = project_name[:-5]
 
             equations_solver(
-                self, project_name, recipes, self.graph_config, title)
+                self, project_name, recipes, title)
             return True
         else:
             return False

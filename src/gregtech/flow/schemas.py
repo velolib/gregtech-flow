@@ -1,6 +1,7 @@
-import ruamel.yaml as ruamel  # type: ignore
 import pkgutil
+
 import jsonschema
+import ruamel.yaml as ruamel  # type: ignore
 
 yaml = ruamel.YAML(typ='safe', pure=True)
 

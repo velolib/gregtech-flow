@@ -1,20 +1,26 @@
 import logging
 import re
-from io import StringIO
 from collections import defaultdict
+from io import StringIO
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import graphviz  # type: ignore
 
 from gregtech.flow.graph._post_processing import bottleneck_print
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def graphviz_output(self: 'Graph'):
-    # Outputs a graphviz png using the graph info
+def graphviz_output(self: 'Graph') -> None:
+    """
+    Outputs a graphviz graph using the info in the graph object.
+
+    Args:
+        self (Graph): Graph object
+    """
+    # Create graphviz.Digraph object
     node_style = {
         'style': 'filled',
         'fontname': self.graph_config['GENERAL_FONT'],
@@ -59,11 +65,22 @@ def graphviz_output(self: 'Graph'):
         else:
             groups['no-group'].append(repackaged)
 
-    def make_table(lab, inputs, outputs):
+    def make_table(lab: str, inputs: list, outputs: list) -> tuple[bool, str]:
+        """
+        Make table of a node that has I or O, or both.
+
+        Args:
+            lab (str): Label of a node
+            inputs (list): List of inputs
+            outputs (list): List of outputs
+
+        Returns:
+            tuple[bool, str]: True if succeeded, else False. str is the table created
+        """
         is_inverted = self.graph_config['ORIENTATION'] in ['BT', 'RL']
         is_vertical = self.graph_config['ORIENTATION'] in ['TB', 'BT']
-        num_inputs = len(inputs) if inputs is not None else 0
-        num_outputs = len(outputs) if outputs is not None else 0
+        num_inputs = len(inputs) if inputs else 0
+        num_outputs = len(outputs) if outputs else 0
         has_input = num_inputs > 0
         has_output = num_outputs > 0
 
@@ -125,7 +142,15 @@ def graphviz_output(self: 'Graph'):
             io.write('</table>>')
         return (True, io.getvalue())
 
-    def add_node_internal(graph, node_name, **kwargs):
+    def add_node_internal(graph: graphviz.Digraph, node_name: str, **kwargs) -> None:
+        """
+        Adds a node to the inputted graphviz.Digraph.
+
+        Args:
+            graph (graphviz.Digraph): graphviz.Digraph object
+            node_name (str): Node name
+            **kwargs: Other kwargs for graphviz.Digraph.node()
+        """
         label = kwargs['label'] if 'label' in kwargs else None
         is_table = False
         new_label = None
@@ -136,10 +161,10 @@ def graphviz_output(self: 'Graph'):
 
         if node_name == 'source':
             names = unique([name for src, _, name in self.edges.keys() if src == 'source'])
-            is_table, new_label = make_table(label, None, names)
+            is_table, new_label = make_table(label, [], names)
         elif node_name == 'sink':
             names = unique([name for _, dst, name in self.edges.keys() if dst == 'sink'])
-            is_table, new_label = make_table(label, names, None)
+            is_table, new_label = make_table(label, names, [])
         elif re.match(r'^\d+$', node_name):
             rec = self.recipes[node_name]
             in_ports = [ing.name for ing in rec.I]

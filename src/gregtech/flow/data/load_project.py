@@ -1,14 +1,13 @@
 from pathlib import Path
 
-from gregtech.flow.schemas import yaml
-
-from gregtech.flow.data.basic_types import Ingredient, IngredientCollection, Recipe
-from gregtech.flow.schemas import Validator
+from gregtech.flow.data.basic_types import (Ingredient, IngredientCollection,
+                                            Recipe)
+from gregtech.flow.schemas import Validator, yaml
 
 
 def unalias_machine_name(name: str) -> str:
     """
-    Used to turn machine name aliases into their standard form used in the code.
+    Used to turn machine name aliases into their standard form used for comparisons in the code.
 
     Args:
         name (str): Machine name
@@ -16,7 +15,7 @@ def unalias_machine_name(name: str) -> str:
     Returns:
         str: Standardized machine name
     """
-    replacements = {
+    aliases = {
         # <--CAL--> #
         'cal': 'circuit assembly line',
 
@@ -67,15 +66,23 @@ def unalias_machine_name(name: str) -> str:
         'ico': 'industrial coke oven',
     }
 
-    if name in replacements:
-        return replacements[name]
-    else:
-        return name
+    return aliases.get(name, name)
 
 
-def load_recipes(project_name: str | Path, graph_config: dict, project_folder: str | Path = 'projects') -> list:
+def load_recipes(project_name: str | Path, graph_config: dict, project_dir: str | Path = 'projects') -> list:
+    """
+    Loads the inputted project and returns a list of Recipe objects.
+
+    Args:
+        project_name (str | Path): Project name relative to project_folder
+        graph_config (dict): Graph config as a dict
+        project_dir (str | Path, optional): Project directory. Defaults to 'projects'
+
+    Returns:
+        list: _description_
+    """
     # Load config file
-    project_filepath = Path(project_folder) / f'{project_name}'
+    project_filepath = Path(project_dir) / f'{project_name}'
     project_name = project_filepath.name.split('.')[0]
     with open(project_filepath, 'r') as f:
         project = list(yaml.load_all(f))[-1]

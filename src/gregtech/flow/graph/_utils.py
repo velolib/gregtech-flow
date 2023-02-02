@@ -1,23 +1,54 @@
 from collections import defaultdict
 from functools import lru_cache
+from typing import TYPE_CHECKING, Generator
 
 from gregtech.flow.data.basic_types import Recipe
 
+if TYPE_CHECKING:
+    from gregtech.flow.graph import Graph
 
-def swap_io(io_type):
+
+def swap_io(io_type: str) -> str:
+    """
+    Swaps I to O and vice versa.
+
+    Args:
+        io_type (str): I or O as strings
+
+    Raises:
+        RuntimeError: Improper I/O string
+
+    Returns:
+        str: O or I depending on io_type
+    """
     if io_type == 'I':
         return 'O'
     elif io_type == 'O':
         return 'I'
     else:
-        raise RuntimeError(f'Improper I/O type: {io_type}')
+        raise RuntimeError(f'Improper I/O string: {io_type}')
 
 
-def add_node(self, recipe_id, **kwargs):
+def add_node(self: 'Graph', recipe_id: str, **kwargs) -> None:
+    """
+    Adds a node to the Graph.
+
+    Args:
+        recipe_id (_type_): Recipe ID in string form.
+    """
     self.nodes[recipe_id] = kwargs
 
 
-def add_edge(self, node_from, node_to, ing_name, quantity, **kwargs):
+def add_edge(self: 'Graph', node_from: str, node_to: str, ing_name: str, quantity: float | int, **kwargs) -> None:
+    """
+    Adds an edge to the Graph.
+
+    Args:
+        node_from (str): Starting node.
+        node_to (str): Destination node.
+        ing_name (str): Ingredient name.
+        quantity (float | int): Ingredient quantity.
+    """
     self.edges[(node_from, node_to, ing_name)] = {
         'quant': quantity,
         'kwargs': kwargs
@@ -25,8 +56,19 @@ def add_edge(self, node_from, node_to, ing_name, quantity, **kwargs):
 
 
 def round_readable(number: int | float) -> str:
-    # Display numbers nicely for end user (eg. 814.3k)
-    # input int/float, return string
+    """
+    Transforms a number into a more readable form by using orders of magnitude.
+    For example: 10K, 27.5B, 55T, etc.
+
+    Args:
+        number (int | float): Input number.
+
+    Raises:
+        NotImplementedError: Negative number not allowed.
+
+    Returns:
+        str: Readable number in string form
+    """
     cutoffs: dict = {
         1_000_000_000_000: lambda x: f'{round(x/1_000_000_000_000, 2)}T',
         1_000_000_000: lambda x: f'{round(x/1_000_000_000, 2)}B',
@@ -42,10 +84,13 @@ def round_readable(number: int | float) -> str:
     raise NotImplementedError('Negative number not allowed')
 
 
-def create_adjacency_list(self):
+def create_adjacency_list(self: 'Graph') -> None:
+    """
+    Computes an adjacency list (node -> {I: edges, O: edges})
+    """
     # Compute "adjacency list" (node -> {I: edges, O: edges}) for edges and machine-involved edges
-    adj = defaultdict(lambda: defaultdict(list))
-    adj_machine = defaultdict(lambda: defaultdict(list))
+    adj: dict = defaultdict(lambda: defaultdict(list))
+    adj_machine: dict = defaultdict(lambda: defaultdict(list))
     for edge in self.edges:
         node_from, node_to, ing_name = edge
         adj[node_from]['O'].append(edge)
@@ -71,19 +116,42 @@ def create_adjacency_list(self):
     self.parent_context.log('')
 
 
-def tier_to_voltage(self, tier_idx):
-    # Return voltage from tier index
+def idx_to_voltage(self: 'Graph', tier_idx: int) -> int:
+    """
+    Returns the amperage of the inputted tier.
+
+    Args:
+        tier_idx (int): Tier index.
+
+    Returns:
+        int: Tier index amperage.
+    """
     return 32 * pow(4, tier_idx)
 
 
 @lru_cache(maxsize=256)  # Arbitrary amount
-def _machine_check(self, rec_id):
+def _machine_check(self: 'Graph', rec_id: str) -> bool:
+    """
+    Returns if inputted recipe ID is a machine and not a builtin.
+
+    Args:
+        rec_id (str): Recipe ID in string form.
+
+    Returns:
+        bool: Whether or not rec_id is a usable ID.
+    """
     if rec_id in {'source', 'sink', 'total_io_node'} or rec_id.startswith(('power_', 'joint_')):
         return False
     return True
 
 
-def _machine_iterate(self):
+def _machine_iterate(self: 'Graph') -> Generator['Recipe', None, None]:
+    """
+    Returns a generator of recipes.
+
+    Yields:
+        Generator[str, None, None]: Recipe generator.
+    """
     # Iterate over non-source/sink noedes and non power nodes
     for rec_id in self.nodes:
         if self._machine_check(rec_id):

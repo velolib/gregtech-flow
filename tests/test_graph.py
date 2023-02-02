@@ -35,13 +35,13 @@ def test_lazyGenerateGraphs(project_name):
 
     pc = ProgramContext(config_path=get_os_config())
 
-    recipes = load_recipes(project_name, pc.graph_config, project_folder='')
+    recipes = load_recipes(project_name, pc.graph_config, project_dir='')
 
     if project_name.endswith('.yaml'):
         project_name = project_name[:-5]
 
     try:
-        equations_solver(pc, project_name, recipes, pc.graph_config)
+        equations_solver(pc, project_name, recipes)
         assert True == True
     except Exception as e:
         assert True == False, f'Failed on {project_name} with error {e}'

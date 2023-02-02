@@ -1,8 +1,8 @@
 import math
 import re
 from collections import defaultdict
-
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
@@ -10,7 +10,16 @@ if TYPE_CHECKING:
 # as designed by Usagirei in https://github.com/OrderedSet86/gtnh-flow/pull/4
 
 
-def strip_brackets(self: 'Graph', ing: str):
+def strip_brackets(self: 'Graph', ing: str) -> str:
+    """
+    Strips brackets from an ingredient string.
+
+    Args:
+        ing (str): Ingredient string
+
+    Returns:
+        str: Ingredient string without brackets
+    """
     if self.graph_config['STRIP_BRACKETS']:
         prefix = False
         if ing[:2] == '\u2588 ':
@@ -23,7 +32,16 @@ def strip_brackets(self: 'Graph', ing: str):
         return ing
 
 
-def check_node_has_port(self: 'Graph', node):
+def check_node_has_port(self: 'Graph', node: str) -> bool:
+    """
+    Checks if the inputted node has a port or not.
+
+    Args:
+        node (str): Node string
+
+    Returns:
+        bool: Whether or not the inputted node has a port or not
+    """
     if node in ['source', 'sink']:
         return True
     if re.match(r'^\d+$', node):
@@ -31,28 +49,68 @@ def check_node_has_port(self: 'Graph', node):
     return False
 
 
-def get_output_port_side(self: 'Graph'):
+def get_output_port_side(self: 'Graph') -> str:
+    """
+    Get output port side depending on graph orientation.
+
+    Returns:
+        str: Direction based on graph_config['ORIENTATION']
+    """
     dir = self.graph_config['ORIENTATION']
     return {'TB': 's', 'BT': 'n', 'LR': 'e', 'RL': 'w'}.get(dir, 'w')
 
 
-def get_input_port_side(self: 'Graph'):
+def get_input_port_side(self: 'Graph') -> str:
+    """
+    Get input port side depending on graph orientation.
+
+    Returns:
+        str: Direction based on graph_config['ORIENTATION']
+    """
     dir = self.graph_config['ORIENTATION']
     return {'TB': 'n', 'BT': 's', 'LR': 'w', 'RL': 'e'}.get(dir, 'w')
 
 
-def get_unique_color(self: 'Graph', id):
+def get_unique_color(self: 'Graph', id: str) -> str:
+    """
+    Returns a unique color from inputted ID.
+
+    Args:
+        id (str): Unique ID string. Same ID will return same color
+
+    Returns:
+        str: Hex color string
+    """
     if id not in self._color_dict:
         self._color_dict[id] = next(self._color_cycler)
     return self._color_dict[id]
 
 
-def get_port_id(self: 'Graph', ing_name, port_type):
+def get_port_id(self: 'Graph', ing_name: str, port_type: str) -> str:
+    """
+    Generate a port ID from ing_name and port_type.
+
+    Args:
+        ing_name (str): Port ingredient name
+        port_type (str): Port type
+
+    Returns:
+        str: Port ID
+    """
     normal = re.sub(' ', '_', ing_name).lower().strip()
     return f'{port_type}_{normal}'
 
 
-def get_ing_id(self: 'Graph', ing_name):
+def get_ing_id(self: 'Graph', ing_name: str) -> str:
+    """
+    Get ingredient ID from ingredient name.
+
+    Args:
+        ing_name (str): Ingredient name
+
+    Returns:
+        str: Ingredient ID as a string
+    """
     id = ing_name
     id = re.sub(r'\[.*?\]', '', id)
     id = id.strip()
@@ -60,7 +118,16 @@ def get_ing_id(self: 'Graph', ing_name):
     return id.lower()
 
 
-def get_ing_label(self: 'Graph', ing_name):
+def get_ing_label(self: 'Graph', ing_name: str) -> str:
+    """
+    Returns a string from an ingredient name into a title. Only exception is EU.
+
+    Args:
+        ing_name (str): Ingredient name
+
+    Returns:
+        str: Ingredient name as a title
+    """
     capitalization_exceptions = {
         'eu': 'EU',
     }
@@ -71,7 +138,17 @@ def get_ing_label(self: 'Graph', ing_name):
         return ing_name.title()
 
 
-def get_quant_label(self: 'Graph', ing_id, ing_quant):
+def get_quant_label(self: 'Graph', ing_id: str, ing_quant: float | int) -> str:
+    """
+    Get quantity label from ingredient ID and ingredient quantity.
+
+    Args:
+        ing_id (str): Ingredient ID as a string
+        ing_quant (float | int): Ingredient quantity
+
+    Returns:
+        str: Quantity label string
+    """
     unit_exceptions = {
         'eu': lambda eu: f'{int(math.floor(eu / 20))}/t'
     }
@@ -82,6 +159,9 @@ def get_quant_label(self: 'Graph', ing_id, ing_quant):
 
 
 def _combine_outputs(self: 'Graph'):
+    """
+    Creates a meta-node to combine outputs.
+    """
     ings = defaultdict(list)
     for src, dst, ing in self.edges.keys():
         ings[(src, ing)].append(dst)
@@ -111,6 +191,9 @@ def _combine_outputs(self: 'Graph'):
 
 
 def _combine_inputs(self: 'Graph'):
+    """
+    Creates a meta-node to combine inputs.
+    """
     ings = defaultdict(list)
     for src, dst, ing in self.edges.keys():
         ings[(dst, ing)].append(src)

@@ -3,12 +3,13 @@ import math
 from collections import defaultdict
 from copy import deepcopy
 from string import ascii_uppercase
+from typing import TYPE_CHECKING
 
-from gregtech.flow.data.basic_types import Ingredient, IngredientCollection, Recipe
+from gregtech.flow.data.basic_types import (Ingredient, IngredientCollection,
+                                            Recipe)
 from gregtech.flow.graph._utils import _machine_iterate
 from gregtech.flow.gtnh.overclocks import OverclockHandler
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
@@ -47,18 +48,12 @@ def create_machine_labels(self: 'Graph'):
         else:
             continue
 
-        label_lines = []
-
-        # Standard label
-
-        default_label = [
+        label_lines = [
             f'{round(rec.multiplier, 2)}x {rec.user_voltage.upper()} {capitalize_machine(rec.machine)}',
             f'Cycle: {rec.dur/20}s',
             f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
             f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
         ]
-
-        label_lines.extend(default_label)
 
         if self.graph_config['POWER_UNITS'] != 'eut':
             if self.graph_config['POWER_UNITS'] == 'auto':
@@ -66,7 +61,7 @@ def create_machine_labels(self: 'Graph'):
             else:
                 tier_idx = overclock_data['voltage_data']['tiers'].index(
                     self.graph_config['POWER_UNITS'])
-            voltage_at_tier = self.tier_to_voltage(tier_idx)
+            voltage_at_tier = self.idx_to_voltage(tier_idx)
             label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
             label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
 
@@ -304,6 +299,12 @@ def add_powerline_nodes(self: 'Graph'):
 
 
 def add_summary_node(self: 'Graph'):
+    """
+    Create summary in graph.
+
+    Args:
+        self (Graph): Graph object
+    """
     # Now that tree is fully locked, add I/O node
     # Specifically, inputs are adj[source] and outputs are adj[sink]
     misc_data = self.parent_context.data['special_machine_weights']
@@ -312,7 +313,20 @@ def add_summary_node(self: 'Graph'):
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']
 
-    def make_html_line(lab_text, amt_text, lab_color, amt_color, unit=None):
+    def make_html_line(lab_text: str, amt_text: str, lab_color: str, amt_color: str, unit: str = ''):
+        """
+        Returns an HTML line from inputs.
+
+        Args:
+            lab_text (str): Label text
+            amt_text (str): Amount text
+            lab_color (str): Label color
+            amt_color (str): Amount color
+            unit (str, optional): Amount text unit. Defaults to None.
+
+        Returns:
+            _type_: _description_
+        """
         if not unit:
             unit = ''
         return ''.join([
@@ -381,7 +395,7 @@ def add_summary_node(self: 'Graph'):
         tier = tiers.index(rec.user_voltage)
         if tier > max_tier:
             max_tier = tier
-    voltage_at_tier = self.tier_to_voltage(max_tier)
+    voltage_at_tier = self.idx_to_voltage(max_tier)
 
     # TODO: Clean this up somehhow. So unreadable
     match self.graph_config['POWER_UNITS']:
@@ -394,7 +408,7 @@ def add_summary_node(self: 'Graph'):
             unit_function = self.userRound  # noqa
         case _:
             def unit_function(z):
-                return self.userRound(z / self.tier_to_voltage(tiers.index(self.graph_config['POWER_UNITS'])))
+                return self.userRound(z / self.idx_to_voltage(tiers.index(self.graph_config['POWER_UNITS'])))
             unit = f' {self.graph_config["POWER_UNITS"].upper()}'
 
     io_label_lines.append(make_html_line(
@@ -455,6 +469,15 @@ def add_summary_node(self: 'Graph'):
 
 
 def bottleneck_print(self: 'Graph'):
+    """
+    Prints bottlenecks normalized to an input voltage.
+
+    Args:
+        self (Graph): Graph object.
+
+    Raises:
+        NotImplementedError: Negative overclocking not implemented.
+    """
     # Prints bottlenecks normalized to an input voltage.
     machine_recipes = [x for x in _machine_iterate(self)]
     machine_recipes.sort(
@@ -470,7 +493,8 @@ def bottleneck_print(self: 'Graph'):
         chosen_voltage = self.graph_config.get('BOTTLENECK_MIN_VOLTAGE')
 
         oh = OverclockHandler(self.parent_context)
-        raise NotImplementedError()  # FIXME: Add negative overclocking
+        # FIXME: Add negative overclocking
+        raise NotImplementedError('Negative overclocking not implemented')
         for i, rec in enumerate(self.recipes):
             rec.user_voltage = chosen_voltage
 

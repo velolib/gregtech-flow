@@ -42,20 +42,3 @@ def dfs_visit(g, u, discovered, finished):
 
     discovered.remove(u)
     finished.add(u)
-
-
-if __name__ == "__main__":
-    G = BasicGraph(
-        [
-            ('u', 'v'),
-            ('u', 'x'),
-            ('v', 'y'),
-            ('w', 'y'),
-            ('w', 'z'),
-            ('x', 'v'),
-            ('y', 'x'),
-            ('z', 'z'),
-        ]
-    )
-
-    dfs(G)

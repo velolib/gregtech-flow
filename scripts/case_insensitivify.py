@@ -1,3 +1,4 @@
+# flake8: noqa
 # Script to case insensitivify string separated by comma space
 # Because JSON Schema doesn't support the flag.
 import typer

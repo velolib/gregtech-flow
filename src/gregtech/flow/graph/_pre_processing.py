@@ -1,19 +1,22 @@
 import logging
 from collections import defaultdict
+from typing import TYPE_CHECKING
 
 from gregtech.flow.graph._back_edges import BasicGraph, dfs
-from gregtech.flow.graph._utils import swap_io
 from gregtech.flow.graph._output import graphviz_output
+from gregtech.flow.graph._utils import swap_io
 
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
 def connect_graph(self: 'Graph'):
-    '''
-    Connects recipes without locking the quantities
-    '''
+    """
+    Connects graph.
+
+    Args:
+        self (Graph): Graph object
+    """
 
     # Create source and sink nodes
     self.add_node('source', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='source')
@@ -98,6 +101,12 @@ def connect_graph(self: 'Graph'):
 
 
 def remove_back_edges(self: 'Graph'):
+    """
+    Removes back edges in a graph.
+
+    Args:
+        self (Graph): Graph object
+    """
     # Loops are possible in machine processing, but very difficult / NP-hard to solve properly
     # Want to make algorithm simple, so just break all back edges and send them to sink instead
     # The final I/O information will have these balanced, so this is ok

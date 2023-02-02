@@ -1,12 +1,19 @@
 import logging
-import typing
 import textwrap
+import typing
 from collections import defaultdict
 from dataclasses import dataclass, field
 
 
 @dataclass  # type: ignore
 class Ingredient:
+    """
+    Ingredient class for recipes.
+
+    Args:
+        name (str): Ingredient name
+        quant (float): Ingredient quantity
+    """
     name: str
     quant: float
     # Used to track deprecation.
@@ -32,7 +39,13 @@ class Ingredient:
 
 
 class IngredientCollection:
-    def __init__(self, *ingredient_list):
+    def __init__(self, *ingredient_list: Ingredient):
+        """
+        Ingredient collection class for recipes. Used for I/O.
+
+        Args:
+            *ingredient list: Variable length ingredient list
+        """
         self._ings = ingredient_list
         # Note: name is not a unique identifier for multi-input situations
         # therefore, need to defaultdict a list
@@ -76,11 +89,23 @@ class Recipe:
         user_voltage: str,
         inputs: IngredientCollection,
         outputs: IngredientCollection,
-        eut,
-        dur,
+        eut: int,
+        dur: float | int,
         circuit=0,
         **kwargs
     ):
+        """
+        Recipe glass for GT: Flow
+
+        Args:
+            machine_name (str): Machine name
+            user_voltage (str): Selected user voltage
+            inputs (IngredientCollection): Inputs wrapped in an IngredientCollection class
+            outputs (IngredientCollection): Outputs wrapped in an IngredientCollection class
+            eut (int): The EU in EU/t
+            dur (float | int): Duration in ticks
+            circuit (int, optional): Circuit number. Defaults to 0. Unused for now
+        """
         self.machine = machine_name
         self.user_voltage = user_voltage
         self.I = inputs
