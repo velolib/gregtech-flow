@@ -109,21 +109,3 @@ class Recipe:
         self.multiplier = mul_num
 
         return self
-
-
-if __name__ == '__main__':
-    r = Recipe(
-        'centrifuge',
-        'LV',
-        IngredientCollection(
-            Ingredient('glass dust', 1)
-        ),
-        IngredientCollection(
-            Ingredient('silicon dioxide', 1)
-        ),
-        5,
-        80,
-    )
-    print(r)
-    print(r.I['glass dust'])
-    print(list(r.I))
