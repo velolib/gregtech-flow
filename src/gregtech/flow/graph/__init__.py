@@ -59,9 +59,10 @@ class Graph:
     # Imports
     from ._port_nodes import _combine_inputs  # type: ignore
     from ._port_nodes import _combine_outputs  # type: ignore
-    from ._port_nodes import (check_node_has_port, get_ing_id, get_ing_label,
-                              get_input_port_side, get_output_port_side,
-                              get_port_id, get_quant_label, get_unique_color,
+    from ._port_nodes import (check_node_has_port, get_ing_id,  # type: ignore
+                              get_ing_label, get_input_port_side,
+                              get_output_port_side, get_port_id,
+                              get_quant_label, get_unique_color,
                               strip_brackets)
     from ._utils import (_machine_check, _machine_iterate,  # type: ignore
                          add_edge, add_node, create_adjacency_list,
