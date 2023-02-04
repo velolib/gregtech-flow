@@ -1,14 +1,17 @@
+"""Class abstractions for GT: Flow projects."""
+
 import logging
 import textwrap
 import typing
 from collections import defaultdict
+from collections.abc import Iterator
 from dataclasses import dataclass, field
+from functools import singledispatchmethod
 
 
 @dataclass  # type: ignore
 class Ingredient:
-    """
-    Ingredient class for recipes.
+    """Ingredient class for recipes.
 
     Args:
         name (str): Ingredient name
@@ -21,6 +24,11 @@ class Ingredient:
 
     # NOTE: Too lazy to implement, just replace () to [].
     def __post_init__(self) -> None:
+        """Catches deprecations after constructing an Ingredient object.
+
+        Raises:
+            DeprecationWarning: A feature or attribute of this Ingredient is deprecated.
+        """
         logger = logging.getLogger('rich')
         first_word = self.name.split(' ')[0]
         if not self.__class__.found_bracket_warning and '[' in first_word and ']' in first_word:
@@ -39,9 +47,10 @@ class Ingredient:
 
 
 class IngredientCollection:
+    """Collection of Ingredients with modified magic methods."""
+
     def __init__(self, *ingredient_list: Ingredient):
-        """
-        Ingredient collection class for recipes. Used for I/O.
+        """Ingredient collection class for recipes. Used for I/O.
 
         Args:
             *ingredient list: Variable length ingredient list
@@ -54,21 +63,64 @@ class IngredientCollection:
             self._ingdict[ing.name].append(ing.quant)
         # self._ingdict = {x.name: x.quant for x in self._ings}
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Ingredient]:
+        """This method is called when an iterator is required for a container.
+
+        Returns an Iterator of the Ingredients in this IngredientCollection.
+        """
         return iter(self._ings)
 
-    def __getitem__(self, idx):
-        if isinstance(idx, int):
-            return self._ings[idx]
-        elif isinstance(idx, str):
+    @singledispatchmethod
+    def __getitem__(self, idx) -> list:
+        """Getitem method."""
+        raise NotImplementedError(f'Invalid index: {idx}')
+
+    @__getitem__.register  # type: ignore [arg-type]
+    def _(self, idx: str) -> list[float]:
+        """Called to implement evaluation of self[key].
+
+        Args:
+            idx (str): An Ingredient's name
+
+        Raises:
+            RuntimeError: Improper access. (type error)
+
+        Returns:
+            list[float]: An Ingredient's quantity in a list
+        """
+        if isinstance(idx, str):
             return self._ingdict[idx]
         else:
             raise RuntimeError(f'Improper access to {self} using {idx}')
 
-    def __repr__(self):
+    @__getitem__.register  # type: ignore [arg-type]
+    def _(self, idx: int) -> Ingredient:
+        """Called to implement evaluation of self[key].
+
+        Args:
+            idx (int): Integer index
+
+        Raises:
+            RuntimeError: Improper access. (type error)
+
+        Returns:
+            Ingredient: An Ingredient in this IngredientCollection.
+        """
+        if isinstance(idx, int):
+            return self._ings[idx]
+        else:
+            raise RuntimeError(f'Improper access to {self} using {idx}')
+
+    def __repr__(self) -> str:
+        """Returns an "official" string representation of this IngredientCollection."""
         return str([x for x in self._ings])
 
-    def __mul__(self, mul_num):
+    # TODO: Type hint Self as return value when mypy supports it.
+    def __mul__(self, mul_num: float | int):
+        """Arithmetic operation for *.
+
+        Multiplies the quantities of the Ingredients in this IngredientCollection.
+        """
         for ing in self._ings:
             ing.quant *= mul_num
         self._ingdict = defaultdict(list)
@@ -78,11 +130,14 @@ class IngredientCollection:
 
         return self
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """Called to implement the built-in function len()."""
         return len(self._ings)
 
 
 class Recipe:
+    """Recipe class abstraction for GT: Flow projects."""
+
     def __init__(
         self,
         machine_name: str,
@@ -94,8 +149,7 @@ class Recipe:
         circuit=0,
         **kwargs
     ):
-        """
-        Recipe glass for GT: Flow
+        """Recipe class constructor.
 
         Args:
             machine_name (str): Machine name
@@ -103,7 +157,7 @@ class Recipe:
             inputs (IngredientCollection): Inputs wrapped in an IngredientCollection class
             outputs (IngredientCollection): Outputs wrapped in an IngredientCollection class
             eut (int): The EU in EU/t
-            dur (float | int): Duration in ticks
+            dur (float | int): Duration in ticks. Will be converted to float.
             circuit (int, optional): Circuit number. Defaults to 0. Unused for now
         """
         self.machine = machine_name
@@ -111,7 +165,7 @@ class Recipe:
         self.I = inputs
         self.O = outputs
         self.eut = eut
-        self.dur = dur
+        self.dur = float(dur)
         self.circuit = circuit
         self.multiplier = -1
         self.base_eut = eut  # Used for final graph output
@@ -122,10 +176,16 @@ class Recipe:
                 case _:
                     setattr(self, key, value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Returns an "official" string representation of this Recipe."""
         return str([f'{x}={getattr(self, x)}' for x in vars(self)])
 
-    def __mul__(self, mul_num: int):
+    def __mul__(self, mul_num):  # TODO: Type hint Self when mypy supports it.
+        """Arithmetic operation for *.
+
+        Multiplies the I, O, and eut attributes of this Recipe.
+        Only runnable once.
+        """
         assert self.multiplier == -1, 'Cannot multiply recipe multiple times'
 
         self.I *= mul_num

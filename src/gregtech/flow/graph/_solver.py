@@ -2,6 +2,7 @@
 # this prototype explores this.
 
 import logging
+import typing
 from collections import Counter, deque
 from math import isclose
 from typing import TYPE_CHECKING, Callable
@@ -13,8 +14,8 @@ from sympy.solvers import solve
 
 from gregtech.flow.graph import Graph
 from gregtech.flow.graph._output import graphviz_output
-from gregtech.flow.graph._post_processing import (add_machine_multipliers,
-                                                  add_powerline_nodes,
+from gregtech.flow.graph._post_processing import (add_powerline_nodes,
+                                                  add_recipe_multipliers,
                                                   add_summary_node,
                                                   add_user_node_color,
                                                   create_machine_labels)
@@ -26,9 +27,10 @@ if TYPE_CHECKING:
 
 
 class SympySolver:
-    def __init__(self, graph: Graph):
-        """
-        Sympy Solver class.
+    """Sympy solver for GT: Flow calculations."""
+
+    def __init__(self, graph: Graph) -> None:
+        """Initializes SympySolver.
 
         Args:
             graph (Graph): Graph object
@@ -41,12 +43,24 @@ class SympySolver:
         self.solved_vars: list = []  # Result from linear solver
 
         # TODO: Look into merging lookup and edge_from_perspective_to_index - they describe mostly the same thing
-        self.lookup: dict = {}  # (machine, product, direction, multi_idx) -> variable index
-        self.edge_from_perspective_to_index: dict = {}  # (edge, machine_id) -> variable index
+        # (machine, product, direction, multi_idx) -> variable index
+        self.lookup: dict[tuple[str, str, typing.Literal['I', 'O'] | str, int], int] = {}
+        # (edge, machine_id) -> variable index
+        self.edge_from_perspective_to_index: dict[tuple, int] = {}
 
-    def array_index(self, machine, product, direction, multi_idx=0):
-        # TODO: Docstring
-        key = (machine, product, direction, multi_idx)
+    def array_index(self, rec_id: str, product: str, direction: typing.Literal['I', 'O'] | str, multi_idx: int = 0) -> int:
+        """Gets a variable index from self.lookup, else generates unique key.
+
+        Args:
+            machine (str): Recipe ID
+            product (str): Product of the machine
+            direction (str): Direction, either I or O.
+            multi_idx (int, optional): Multi index. Defaults to 0.
+
+        Returns:
+            int: Variable index
+        """
+        key = (rec_id, product, direction, multi_idx)
         if key not in self.lookup:
             # print(f'Unique key {key}')
             self.lookup[key] = self.variable_idx_counter
@@ -55,9 +69,8 @@ class SympySolver:
         else:
             return self.lookup[key]
 
-    def run(self, progress_cb: Callable):
-        """
-        Runs the solver.
+    def run(self, progress_cb: Callable) -> None:
+        """Runs the solver.
 
         Args:
             progress_cb (Callable): Progress callback for rich Progress object
@@ -82,10 +95,8 @@ class SympySolver:
         self._write_quants_to_graph()
         progress_cb(6.6)
 
-    def _create_variables(self):
-        """
-        Computes number of variables
-        """
+    def _create_variables(self) -> None:
+        """Computes number of variables."""
         num_variables = 0
         for rec_id in self.graph.nodes:
             if self.graph._machine_check(rec_id):
@@ -97,10 +108,8 @@ class SympySolver:
         symbols_str = ', '.join(['v' + str(x) for x in range(num_variables)])
         self.variables = list(symbols(symbols_str, positive=True, real=True))
 
-    def _add_userlocking(self):
-        """
-        Adds user-determined locked inputs.
-        """
+    def _add_userlocking(self) -> None:
+        """Adds user-determined locked inputs."""
         targeted_nodes = [i for i, x in self.graph.recipes.items(
         ) if getattr(x, 'target', False) is not False]
         numbered_nodes = [i for i, x in self.graph.recipes.items(
@@ -161,9 +170,8 @@ class SympySolver:
                 else:
                     raise RuntimeError(f'Targetted quantity must be in machine I/O for \n{rec}')
 
-    def _add_machine_internal_locking(self):
-        """
-        Add machine equations
+    def _add_machine_internal_locking(self) -> None:
+        """Add machine equations.
 
         Raises:
             RuntimeError: {rec} has no inputs or outputs!
@@ -197,9 +205,7 @@ class SympySolver:
                             )
 
     def _populate_efpti(self):
-        """
-        Populate edge_from_perspective_to_index for all edges - so there's something consistent to call for all edges
-        """
+        """Populates edge_from_perspective_to_index for all edges - so there's something consistent to call for all edges."""
         for edge in self.graph.edges:
             a, b, product = edge
 
@@ -210,9 +216,7 @@ class SympySolver:
                 self.edge_from_perspective_to_index[(edge, b)] = self.array_index(b, product, 'I')
 
     def _add_machinemachine_edges(self):
-        """
-        Adds machine-machine edges.
-        """
+        """Adds machine-machine edges."""
         # Need to be careful about how these are added - multi input and multi output can
         #   require arbitrarily many variables per equation
         # See https://github.com/OrderedSet86/gtnh-flow/issues/7#issuecomment-1331312996 for an example
@@ -382,8 +386,7 @@ class SympySolver:
         self.num_variables += len(destinations)
 
     def _solve(self) -> None:
-        """
-        Loops solving until solved. Algorithm may adjust edges each time it sees an EmptySet.
+        """Loops solving until solved. Algorithm may adjust edges each time it sees an EmptySet.
 
         Raises:
             NotImplementedError: Multiple solutions - no code written to deal with this scenario yet
@@ -404,10 +407,7 @@ class SympySolver:
         self.solved_vars = res.args[0]
 
     def _inconsistency_search(self) -> None:
-        """
-        Solves each equation stepwise until inconsistency is found, then report to end user.
-        """
-
+        """Solves each equation stepwise until inconsistency is found, then report to end user."""
         self.graph.parent_context.log(
             'Searching for inconsistency in system of equations...', level=logging.INFO)
 
@@ -560,7 +560,7 @@ class SympySolver:
                     # 3. Give option for user to add new I/O association to YAML config (will delete comments)
                     pass
 
-    def _add_vars_to_edges(self):
+    def _add_vars_to_edges(self) -> None:
         # Add variable indices to edges and rec_id to machines
 
         # Lookup is a dictionary defined like this:
@@ -591,10 +591,8 @@ class SympySolver:
 
             self.graph.nodes[rec_id]['label'] = f'[id:{rec_id}] {rec.machine}'
 
-    def _write_quants_to_graph(self):
-        """
-        Updates graph edge values.
-        """
+    def _write_quants_to_graph(self) -> None:
+        """Updates graph edge values."""
         for edge in self.graph.edges:
             a, b, product = edge
             a_machine = self.graph._machine_check(a)
@@ -632,9 +630,8 @@ class SympySolver:
                 relevant_edge['locked'] = True  # TODO: Legacy - check if can be removed
 
 
-def preprocess_graph(self: 'Graph', progress_cb):
-    """
-    Graph pre-processing.
+def preprocess_graph(self: 'Graph', progress_cb) -> None:
+    """Graph pre-processing.
 
     Args:
         self (Graph): Graph object
@@ -648,9 +645,8 @@ def preprocess_graph(self: 'Graph', progress_cb):
     progress_cb(6.6)
 
 
-def postprocess_graph(self: 'Graph', progress_cb: Callable):
-    """
-    Graph post-processing.
+def postprocess_graph(self: 'Graph', progress_cb: Callable) -> None:
+    """Graph post-processing.
 
     Args:
         self (Graph): Graph object
@@ -659,7 +655,7 @@ def postprocess_graph(self: 'Graph', progress_cb: Callable):
     if self.graph_config.get('POWER_LINE', False):
         add_powerline_nodes(self)
 
-    add_machine_multipliers(self)
+    add_recipe_multipliers(self)
     progress_cb(6.6)
     create_machine_labels(self)
     progress_cb(6.6)
@@ -676,8 +672,7 @@ def postprocess_graph(self: 'Graph', progress_cb: Callable):
 
 
 def equations_solver(self: 'ProgramContext', project_name: str, recipes: list, title: str = '') -> None:
-    """
-    Runs the equations solver and outputs a graph.
+    """Runs the equations solver and outputs a graph.
 
     Args:
         self (ProgramContext): ProgramContext object

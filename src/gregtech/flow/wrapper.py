@@ -1,3 +1,5 @@
+"""GT: Flow CLI wrapper implementation."""
+
 import logging
 from pathlib import Path
 
@@ -5,8 +7,7 @@ from gregtech.flow.cli import ProgramContext
 
 
 def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = False, config_path: Path | str = 'flow_config.yaml'):
-    """
-    GT: Flow flow wrapper
+    """GT: Flow CLI wrapper. Note that this is basically the Direct CLI.
 
     Args:
         project_name (Path | str): Project path relative to projects_path
@@ -15,7 +16,6 @@ def flow(project_name: Path | str, output_path: Path | str = 'output/', projects
         create_dirs (bool, optional): Whether or not to create output_path and projects_path
         config_path (Path | str, optional): Configuration file path. Will create one if nonexistent. Defaults to 'flow_config.yaml'
     """
-
     project_name = Path(project_name)
     projects_path = Path(projects_path)
     output_path = Path(output_path)

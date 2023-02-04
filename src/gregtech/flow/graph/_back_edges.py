@@ -1,3 +1,5 @@
+# flake8: noqa
+# TODO: Docstrings
 import collections
 
 # Modified from https://stackoverflow.com/a/53995651/7247528

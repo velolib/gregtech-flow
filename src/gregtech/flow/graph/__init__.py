@@ -1,3 +1,5 @@
+"""The main graph logic of GT: Flow."""
+
 import itertools
 from typing import TYPE_CHECKING
 
@@ -7,20 +9,20 @@ from ._utils import round_readable
 
 if TYPE_CHECKING:
     from gregtech.flow.cli import ProgramContext
-    from gregtech.flow.data.basic_types import Recipe
+    from gregtech.flow.recipe.basic_types import Recipe
 
 
 class Graph:
+    """Graphviz Graph abstraction for GT: Flow."""
 
     def __init__(self, graph_name: str, recipes: list, parent_context: 'ProgramContext', title: str = ''):
-        """
-        Graph abstraction class. This is not the graphviz Digraph class.
+        """Initializes Graph and also overclocks all recipes.
 
         Args:
             graph_name (str): Graph name, used as a title
             recipes (list): List of recipes
             parent_context (ProgramContext): ProgramContext object
-            title (_type_, optional): _description_. Defaults to None.
+            title (_type_, optional): The title of the graph. Defaults to '.
         """
         self.graph_name = graph_name
         self.recipes: dict[str, 'Recipe'] = {str(i): x for i, x in enumerate(recipes)}
@@ -53,8 +55,44 @@ class Graph:
         self._machine_check.cache_clear()
 
     @staticmethod
-    def userRound(number: int | float) -> str:
+    def round_readable(number: int | float) -> str:
+        """Transforms a number into a more readable form by using orders of magnitude.
+
+        For example: 10K, 27.5B, 55T, etc.
+
+        Args:
+            number (int | float): Input number.
+
+        Raises:
+            NotImplementedError: Negative number not allowed.
+
+        Returns:
+            str: Readable number in string form
+        """
         return round_readable(number)
+
+    def add_node(self: 'Graph', recipe_id: str, **kwargs) -> None:
+        """Adds a node to the Graph.
+
+        Args:
+            recipe_id (str): Recipe ID in string form
+            **kwargs: Kwargs of the recipe ID
+        """
+        self.nodes[recipe_id] = kwargs
+
+    def add_edge(self: 'Graph', node_from: str, node_to: str, ing_name: str, quantity: float | int, **kwargs) -> None:
+        """Adds an edge to the Graph.
+
+        Args:
+            node_from (str): Origin node
+            node_to (str): Destination node
+            ing_name (str): Ingredient name
+            quantity (float | int): Ingredient quantity
+        """
+        self.edges[(node_from, node_to, ing_name)] = {
+            'quant': quantity,
+            'kwargs': kwargs
+        }
 
     # Imports
     from ._port_nodes import _combine_inputs  # type: ignore
@@ -65,5 +103,4 @@ class Graph:
                               get_quant_label, get_unique_color,
                               strip_brackets)
     from ._utils import (_machine_check, _machine_iterate,  # type: ignore
-                         add_edge, add_node, create_adjacency_list,
-                         idx_to_voltage)
+                         create_adjacency_list, idx_to_voltage)

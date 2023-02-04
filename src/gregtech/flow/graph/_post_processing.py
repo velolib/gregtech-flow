@@ -5,22 +5,29 @@ from copy import deepcopy
 from string import ascii_uppercase
 from typing import TYPE_CHECKING
 
-from gregtech.flow.data.basic_types import (Ingredient, IngredientCollection,
-                                            Recipe)
 from gregtech.flow.graph._utils import _machine_iterate
 from gregtech.flow.gtnh.overclocks import OverclockHandler
+from gregtech.flow.recipe.basic_types import (Ingredient, IngredientCollection,
+                                              Recipe)
 
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def capitalize_machine(machine):
-    # check if machine has capitals, and if so, preserve them
+def capitalize_machine(machine: str) -> str:
+    """Check if machine string has capitals, and if so, preserve them.
+
+    Args:
+        machine (str): Machine name as astring
+
+    Returns:
+        str: Capitalized (or not) machine name
+    """
     capitals = set(ascii_uppercase)
     machine_capitals = [ch for ch in machine if ch in capitals]
 
-    capitalization_exceptions = {
-        # Format is old_str: new_str
+    capitalization_exceptions: dict[str, str] = {
+        '': ''  # placeholder
     }
 
     if len(machine_capitals) > 0:
@@ -31,14 +38,12 @@ def capitalize_machine(machine):
         return machine.title()
 
 
-def create_machine_labels(self: 'Graph'):
-    # Distillation Tower
-    # ->
-    # 5.71x HV Distillation Tower
-    # Cycle: 2.0s
-    # Amoritized: 1.46K EU/t
-    # Per Machine: 256EU/t
+def create_machine_labels(self: 'Graph') -> None:
+    """Creates machine labels for the nodes in this Graph.
 
+    Args:
+        self (Graph): Graph object
+    """
     overclock_data = self.parent_context.data['overclock_data']
 
     for node_id in self.nodes:
@@ -51,8 +56,8 @@ def create_machine_labels(self: 'Graph'):
         label_lines = [
             f'{round(rec.multiplier, 2)}x {rec.user_voltage.upper()} {capitalize_machine(rec.machine)}',
             f'Cycle: {rec.dur/20}s',
-            f'Amoritized: {self.userRound(int(round(rec.eut, 0)))} EU/t',
-            f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)))} EU/t',
+            f'Amoritized: {self.round_readable(int(round(rec.eut, 0)))} EU/t',
+            f'Per Machine: {self.round_readable(int(round(rec.base_eut, 0)))} EU/t',
         ]
 
         if self.graph_config['POWER_UNITS'] != 'eut':
@@ -62,8 +67,8 @@ def create_machine_labels(self: 'Graph'):
                 tier_idx = overclock_data['voltage_data']['tiers'].index(
                     self.graph_config['POWER_UNITS'])
             voltage_at_tier = self.idx_to_voltage(tier_idx)
-            label_lines[-2] = f'Amoritized: {self.userRound(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
-            label_lines[-1] = f'Per Machine: {self.userRound(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
+            label_lines[-2] = f'Amoritized: {self.round_readable(int(round(rec.eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
+            label_lines[-1] = f'Per Machine: {self.round_readable(int(round(rec.base_eut, 0)) / voltage_at_tier)} {overclock_data["voltage_data"]["tiers"][tier_idx].upper()}'
 
         # Edits for power machines
         recognized_basic_power_machines = {
@@ -104,7 +109,12 @@ def create_machine_labels(self: 'Graph'):
         self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
 
-def add_user_node_color(self: 'Graph'):
+def add_user_node_color(self: 'Graph') -> None:
+    """Sets the color of the locked nodes in this Graph.
+
+    Args:
+        self (Graph): Graph object
+    """
     targeted_nodes = [i for i, x in self.recipes.items(
     ) if getattr(x, 'target', False) is not False]
     numbered_nodes = [i for i, x in self.recipes.items(
@@ -115,8 +125,13 @@ def add_user_node_color(self: 'Graph'):
         self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
 
 
-def add_machine_multipliers(self: 'Graph'):
-    # Compute machine multiplier based on solved ingredient quantities
+def add_recipe_multipliers(self: 'Graph') -> None:
+    """Multiplies the Recipes in this Graph using the data from the SympySolver.
+
+    Args:
+        self (Graph): Graph object
+    """
+    # Compute recipe multiplier based on solved ingredient quantities
     # FIXME: If multipliers disagree, sympy solver might have failed on an earlier step
 
     for rec_id, rec in self.recipes.items():
@@ -148,7 +163,12 @@ def add_machine_multipliers(self: 'Graph'):
         rec.eut = rec.multiplier * rec.eut
 
 
-def add_powerline_nodes(self: 'Graph'):
+def add_powerline_nodes(self: 'Graph') -> None:
+    """Adds power line nodes to this Graph.
+
+    Args:
+        self (Graph): Graph object
+    """
     generator_names = {
         0: 'gas turbine',
         1: 'combustion gen',
@@ -258,14 +278,14 @@ def add_powerline_nodes(self: 'Graph'):
                 0,
                 1,
                 efficiency=f'{efficiency*100}%',
-                wasted_fuel=f'{self.userRound(loss_on_singleblock_output)}EU/t/amp',
+                wasted_fuel=f'{self.round_readable(loss_on_singleblock_output)}EU/t/amp',
             )
 
             produced_eut_s = quant_s / expended_fuel_t * output_eut
             self.parent_context.log(
                 ''.join([
                     f'Added {gen_voltage} generator burning {quant_s} {ing_name} for '
-                    f'{self.userRound(produced_eut_s/20)}EU/t at {output_eut}EU/t each.'
+                    f'{self.round_readable(produced_eut_s/20)}EU/t at {output_eut}EU/t each.'
                 ])
             )
 
@@ -298,9 +318,8 @@ def add_powerline_nodes(self: 'Graph'):
             highest_node_index += 1
 
 
-def add_summary_node(self: 'Graph'):
-    """
-    Create summary in graph.
+def add_summary_node(self: 'Graph') -> None:
+    """Create summary node in graph.
 
     Args:
         self (Graph): Graph object
@@ -313,9 +332,8 @@ def add_summary_node(self: 'Graph'):
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']
 
-    def make_html_line(lab_text: str, amt_text: str, lab_color: str, amt_color: str, unit: str = ''):
-        """
-        Returns an HTML line from inputs.
+    def make_html_line(lab_text: str, amt_text: str, lab_color: str, amt_color: str, unit: str = '') -> str:
+        """Returns an HTML <tr></tr> element from inputs for the summary.
 
         Args:
             lab_text (str): Label text
@@ -325,7 +343,7 @@ def add_summary_node(self: 'Graph'):
             unit (str, optional): Amount text unit. Defaults to None.
 
         Returns:
-            _type_: _description_
+            str: HTML <tr></tr> element
         """
         if not unit:
             unit = ''
@@ -401,14 +419,14 @@ def add_summary_node(self: 'Graph'):
     match self.graph_config['POWER_UNITS']:
         case 'auto':
             def unit_function(z):
-                return self.userRound(z / voltage_at_tier)
+                return self.round_readable(z / voltage_at_tier)
             unit = f' {tiers[max_tier].upper()}'
         case 'eut':
             unit = ''
-            unit_function = self.userRound  # noqa
+            unit_function = self.round_readable  # noqa
         case _:
             def unit_function(z):
-                return self.userRound(z / self.idx_to_voltage(tiers.index(self.graph_config['POWER_UNITS'])))
+                return self.round_readable(z / self.idx_to_voltage(tiers.index(self.graph_config['POWER_UNITS'])))
             unit = f' {self.graph_config["POWER_UNITS"].upper()}'
 
     io_label_lines.append(make_html_line(
@@ -437,7 +455,7 @@ def add_summary_node(self: 'Graph'):
         sumval += machine_weight
 
     io_label_lines.append(make_html_line('Total machine count:',
-                          self.userRound(sumval), 'white', color_positive))
+                          self.round_readable(sumval), 'white', color_positive))
 
     # Add peak power load in maximum voltage on chart
     # Compute maximum draw
@@ -468,9 +486,8 @@ def add_summary_node(self: 'Graph'):
     )
 
 
-def bottleneck_print(self: 'Graph'):
-    """
-    Prints bottlenecks normalized to an input voltage.
+def bottleneck_print(self: 'Graph') -> None:
+    """Prints bottlenecks normalized to an input voltage.
 
     Args:
         self (Graph): Graph object.

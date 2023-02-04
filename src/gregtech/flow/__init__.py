@@ -1,1 +1,6 @@
-from gregtech.flow.module.flow import flow
+"""GT: Flow.
+
+https://github.com/velolib/gregtech-flow
+"""
+
+from gregtech.flow.wrapper import flow  # noqa

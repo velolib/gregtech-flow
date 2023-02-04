@@ -14,8 +14,7 @@ if TYPE_CHECKING:
 
 
 def graphviz_output(self: 'Graph') -> None:
-    """
-    Outputs a graphviz graph using the info in the graph object.
+    """Outputs a graphviz graph using the data included in the graph object.
 
     Args:
         self (Graph): Graph object
@@ -66,8 +65,7 @@ def graphviz_output(self: 'Graph') -> None:
             groups['no-group'].append(repackaged)
 
     def make_table(lab: str, inputs: list, outputs: list) -> tuple[bool, str]:
-        """
-        Make table of a node that has I or O, or both.
+        """Make table of a node that has I or O, or both.
 
         Args:
             lab (str): Label of a node
@@ -143,8 +141,7 @@ def graphviz_output(self: 'Graph') -> None:
         return (True, io.getvalue())
 
     def add_node_internal(graph: graphviz.Digraph, node_name: str, **kwargs) -> None:
-        """
-        Adds a node to the inputted graphviz.Digraph.
+        """Adds a node to the inputted graphviz.Digraph.
 
         Args:
             graph (graphviz.Digraph): graphviz.Digraph object

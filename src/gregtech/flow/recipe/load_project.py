@@ -1,13 +1,14 @@
+"""Module containing functions to load recipes from a GT: Flow project."""
+
 from pathlib import Path
 
-from gregtech.flow.data.basic_types import (Ingredient, IngredientCollection,
-                                            Recipe)
-from gregtech.flow.schemas import Validator, yaml
+from gregtech.flow.recipe.basic_types import (Ingredient, IngredientCollection,
+                                              Recipe)
+from gregtech.flow.schemas import validate_project, yaml
 
 
 def unalias_machine_name(name: str) -> str:
-    """
-    Used to turn machine name aliases into their standard form used for comparisons in the code.
+    """Used to turn machine name aliases into their standard form used for comparisons in the code.
 
     Args:
         name (str): Machine name
@@ -70,8 +71,7 @@ def unalias_machine_name(name: str) -> str:
 
 
 def load_recipes(project_name: str | Path, graph_config: dict, project_dir: str | Path = 'projects') -> list:
-    """
-    Loads the inputted project and returns a list of Recipe objects.
+    """Loads the inputted project and returns a list of Recipe objects.
 
     Args:
         project_name (str | Path): Project name relative to project_folder
@@ -79,14 +79,14 @@ def load_recipes(project_name: str | Path, graph_config: dict, project_dir: str 
         project_dir (str | Path, optional): Project directory. Defaults to 'projects'
 
     Returns:
-        list: _description_
+        list: Loaded recipe
     """
     # Load config file
     project_filepath = Path(project_dir) / f'{project_name}'
     project_name = project_filepath.name.split('.')[0]
     with open(project_filepath, 'r') as f:
         project = list(yaml.load_all(f))[-1]
-        Validator.validate_project(project)
+        validate_project(project)
 
     # Create recipe objects for graph
     recipes = []

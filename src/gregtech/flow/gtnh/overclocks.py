@@ -1,17 +1,34 @@
-# Standard libraries
+"""GregTech: New Horizons overclock calculations for GT: Flow."""
+
 import math
+import typing
 from bisect import bisect_right
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
-# Internal libraries
-from gregtech.flow.data.basic_types import Ingredient, IngredientCollection
+from gregtech.flow.recipe.basic_types import Ingredient, IngredientCollection
 
 if TYPE_CHECKING:
     from gregtech.flow.cli import ProgramContext
-    from gregtech.flow.data.basic_types import Recipe
+    from gregtech.flow.recipe.basic_types import Recipe
 
 
-def require(recipe, requirements):
+def require(recipe: 'Recipe', requirements: Sequence[tuple[str, typing.Type[typing.Any], str]]):
+    """Raises error with reason if inputted recipe does not have attribute with specific type.
+
+    Requirements format is for example:
+
+    (('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'), ('heat', int, 'calculating perfect OCs and heat requirement (eg "4300").'))
+
+    The first argument is the attribute name, then the type, then the reason why it is needed.
+
+    Args:
+        recipe (Recipe): Recipe object
+        requirements (Sequence[tuple[str, typing.Type, str]]): Requirements to check from
+
+    Raises:
+        RuntimeError: _description_
+    """
     # requirements should be a list of [key, type, reason]
     for req in requirements:
         key, req_type, reason = req
@@ -22,13 +39,13 @@ def require(recipe, requirements):
 
 
 class OverclockHandler:
+    """Class for all overclocks."""
 
     def __init__(self, parent_context: 'ProgramContext'):
-        """
-        Class for handling overclocks.
+        """Initializes OverclockHandler and instance variables from program context.
 
         Args:
-            parent_context (ProgramContext): ProgramContext object
+            parent_context (ProgramContext): ProgramContext object, mainly used for configuration
         """
         self.parent_context = parent_context
         self.ignore_underclock = False  # Whether to throw an error or actually underclock if
@@ -40,8 +57,7 @@ class OverclockHandler:
         self.voltage_cutoffs = [32 * pow(4, x) + 1 for x in range(len(self.voltages))]
 
     def modify_gtplusplus(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        GT++ overclock.
+        """GT++ overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -94,8 +110,7 @@ class OverclockHandler:
         return recipe
 
     def modify_gtplusplus_custom(self, recipe: 'Recipe', max_parallels: int, speed_per_tier: int | float = 1) -> 'Recipe':
-        """
-        GT++ overclock with extra inputs.
+        """GT++ overclock with extra inputs.
 
         Args:
             recipe (Recipe): Recipe object
@@ -138,8 +153,7 @@ class OverclockHandler:
         return recipe
 
     def modify_chemplant(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Chemplant overclock.
+        """Chemplant overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -150,8 +164,8 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['coils', str, 'calculating recipe duration (eg "nichrome").'],
-                ['pipe_casings', str, 'calculating throughput multiplier (eg "steel").']
+                ('coils', str, 'calculating recipe duration (eg "nichrome").'),
+                ('pipe_casings', str, 'calculating throughput multiplier (eg "steel").')
             ]
         )
         # assert 'solid_casings' in dir(recipe), 'Chem plant requires "solid_casings" argument (eg "vigorous laurenium")'
@@ -171,8 +185,7 @@ class OverclockHandler:
         return recipe
 
     def modify_zhuhai(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Zhuhai overclock.
+        """Zhuhai overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -186,8 +199,7 @@ class OverclockHandler:
         return recipe
 
     def modify_ebf(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        EBF overclock.
+        """EBF overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -198,8 +210,8 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'],
-                ['heat', int, 'calculating perfect OCs and heat requirement (eg "4300").'],
+                ('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'),
+                ('heat', int, 'calculating perfect OCs and heat requirement (eg "4300").'),
             ]
         )
         base_voltage = bisect_right(self.voltage_cutoffs, recipe.eut)
@@ -218,8 +230,7 @@ class OverclockHandler:
         return recipe
 
     def modify_pyrolyse(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Pyrolyse Oven overclock.
+        """Pyrolyse Oven overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -230,7 +241,7 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['coils', str, 'calculating recipe time (eg "nichrome").']
+                ('coils', str, 'calculating recipe time (eg "nichrome").')
             ]
         )
         oc_count = self.calculate_standard_oc(recipe)
@@ -241,8 +252,7 @@ class OverclockHandler:
         return recipe
 
     def modify_multismelter(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Multi Smelter overclock.
+        """Multi Smelter overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -253,7 +263,7 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").']
+                ('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").')
             ]
         )
         recipe.eut = 4
@@ -266,8 +276,7 @@ class OverclockHandler:
         return recipe
 
     def modify_tgs(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Tree Growth Simulator overclock.
+        """Tree Growth Simulator overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -278,7 +287,7 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['saw_type', str, 'calculating throughput of TGS (eg "saw", "buzzsaw").']
+                ('saw_type', str, 'calculating throughput of TGS (eg "saw", "buzzsaw").')
             ]
         )
         saw_multipliers = {
@@ -308,8 +317,7 @@ class OverclockHandler:
         return recipe
 
     def modify_utupu(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Industrial Dehydrator (Utupu-Tanuri) overclock.
+        """Industrial Dehydrator (Utupu-Tanuri) overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -320,8 +328,8 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'],
-                ['heat', int, 'calculating heat and perfect OCs for recipes (eg "4300").'],
+                ('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'),
+                ('heat', int, 'calculating heat and perfect OCs for recipes (eg "4300").'),
             ]
         )
 
@@ -368,8 +376,7 @@ class OverclockHandler:
         return recipe
 
     def modify_fusion(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Fusion Reactor overclock.
+        """Fusion Reactor overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -382,10 +389,10 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['mk', int,
-                    'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'],
-                ['start', int,
-                    'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'],
+                ('mk', int,
+                    'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'),
+                ('start', int,
+                    'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'),
             ]
         )
 
@@ -401,8 +408,7 @@ class OverclockHandler:
         return recipe
 
     def modify_turbine(self, recipe: 'Recipe', fuel_type: str) -> 'Recipe':
-        """
-        Turbine overclock.
+        """Turbine overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -414,8 +420,8 @@ class OverclockHandler:
         require(
             recipe,
             [
-                ['material', str, 'calculating power output (eg "infinity").'],
-                ['size', str, 'calculating power output (eg "large").'],
+                ('material', str, 'calculating power output (eg "infinity").'),
+                ('size', str, 'calculating power output (eg "large").'),
             ]
         )
 
@@ -471,8 +477,7 @@ class OverclockHandler:
         return recipe
 
     def modify_xl_turbine(self, recipe: 'Recipe', fuel_type: str) -> 'Recipe':
-        """
-        XL Turbine overclock.
+        """XL Turbine overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -488,8 +493,7 @@ class OverclockHandler:
         return recipe
 
     def calculate_standard_oc(self, recipe: 'Recipe') -> int:
-        """
-        Calculate standard OC count.
+        """Calculate standard OC count.
 
         Args:
             recipe (Recipe): Recipe object
@@ -506,8 +510,7 @@ class OverclockHandler:
         return oc_count
 
     def modify_standard(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Standard overclock.
+        """Standard overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -521,8 +524,7 @@ class OverclockHandler:
         return recipe
 
     def modify_perfect(self, recipe: 'Recipe') -> 'Recipe':
-        """
-        Perfect overclock.
+        """Perfect overclock.
 
         Args:
             recipe (Recipe): Recipe object
@@ -536,8 +538,7 @@ class OverclockHandler:
         return recipe
 
     def overclock_recipe(self, recipe: 'Recipe', ignore_underclock: bool = False) -> 'Recipe':
-        """
-        Overclocks a recipe by selecting its overclock based on its name.
+        """Overclocks a recipe by selecting its overclock based on its **standardized** name.
 
         Args:
             recipe (Recipe): Recipe object
@@ -598,9 +599,10 @@ class OverclockHandler:
         }
 
         if getattr(recipe, 'do_not_overclock', False):
-            return recipe
+            retval = recipe
 
         if recipe.machine in machine_overrides:
-            return machine_overrides[recipe.machine](recipe)
+            retval = machine_overrides[recipe.machine](recipe)
         else:
-            return self.modify_standard(recipe)
+            retval = self.modify_standard(recipe)
+        return retval

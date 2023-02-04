@@ -1,16 +1,16 @@
 from collections import defaultdict
+from collections.abc import Iterator
 from functools import lru_cache
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING
 
-from gregtech.flow.data.basic_types import Recipe
+from gregtech.flow.recipe.basic_types import Recipe
 
 if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
 def swap_io(io_type: str) -> str:
-    """
-    Swaps I to O and vice versa.
+    """Swaps I to O and vice versa.
 
     Args:
         io_type (str): I or O as strings
@@ -29,35 +29,9 @@ def swap_io(io_type: str) -> str:
         raise RuntimeError(f'Improper I/O string: {io_type}')
 
 
-def add_node(self: 'Graph', recipe_id: str, **kwargs) -> None:
-    """
-    Adds a node to the Graph.
-
-    Args:
-        recipe_id (_type_): Recipe ID in string form.
-    """
-    self.nodes[recipe_id] = kwargs
-
-
-def add_edge(self: 'Graph', node_from: str, node_to: str, ing_name: str, quantity: float | int, **kwargs) -> None:
-    """
-    Adds an edge to the Graph.
-
-    Args:
-        node_from (str): Starting node.
-        node_to (str): Destination node.
-        ing_name (str): Ingredient name.
-        quantity (float | int): Ingredient quantity.
-    """
-    self.edges[(node_from, node_to, ing_name)] = {
-        'quant': quantity,
-        'kwargs': kwargs
-    }
-
-
 def round_readable(number: int | float) -> str:
-    """
-    Transforms a number into a more readable form by using orders of magnitude.
+    """Transforms a number into a more readable form by using orders of magnitude.
+
     For example: 10K, 27.5B, 55T, etc.
 
     Args:
@@ -85,9 +59,7 @@ def round_readable(number: int | float) -> str:
 
 
 def create_adjacency_list(self: 'Graph') -> None:
-    """
-    Computes an adjacency list (node -> {I: edges, O: edges})
-    """
+    """Computes an adjacency list (node -> {I: edges, O: edges})."""
     # Compute "adjacency list" (node -> {I: edges, O: edges}) for edges and machine-involved edges
     adj: dict = defaultdict(lambda: defaultdict(list))
     adj_machine: dict = defaultdict(lambda: defaultdict(list))
@@ -117,8 +89,7 @@ def create_adjacency_list(self: 'Graph') -> None:
 
 
 def idx_to_voltage(self: 'Graph', tier_idx: int) -> int:
-    """
-    Returns the amperage of the inputted tier.
+    """Returns the amperage of the inputted tier.
 
     Args:
         tier_idx (int): Tier index.
@@ -131,8 +102,7 @@ def idx_to_voltage(self: 'Graph', tier_idx: int) -> int:
 
 @lru_cache(maxsize=256)  # Arbitrary amount
 def _machine_check(self: 'Graph', rec_id: str) -> bool:
-    """
-    Returns if inputted recipe ID is a machine and not a builtin.
+    """Returns if inputted recipe ID is a machine and not a builtin.
 
     Args:
         rec_id (str): Recipe ID in string form.
@@ -145,9 +115,8 @@ def _machine_check(self: 'Graph', rec_id: str) -> bool:
     return True
 
 
-def _machine_iterate(self: 'Graph') -> Generator['Recipe', None, None]:
-    """
-    Returns a generator of recipes.
+def _machine_iterate(self: 'Graph') -> Iterator['Recipe']:
+    """Returns a generator of recipes.
 
     Yields:
         Generator[str, None, None]: Recipe generator.

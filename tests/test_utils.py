@@ -7,7 +7,7 @@ from functools import lru_cache
 
 import pytest
 
-from gregtech.flow.data.load_project import load_recipes
+from gregtech.flow.recipe.load_project import load_recipes
 
 @lru_cache(1)
 def get_os_config():
@@ -19,12 +19,12 @@ def get_os_config():
         case _:
             raise NotImplementedError(f'Invalid OS for testing: "{sys.platform}", contact dev for implementation!')
 
-def loadTestConfig():
+def load_config():
     with open(get_os_config(), 'r') as f:
         graph_config = yaml.load(f)
     return graph_config
 
-def test_swapIO():
+def test_swap_io():
     _i_ = swap_io('I')
     _o_ = swap_io('O')
     assert _i_ == 'O'
@@ -34,7 +34,7 @@ def test_swapIO():
         swap_io('Z')
         swap_io('sonar')
 
-def test_userRound():
+def test_round_readable():
     nums = [0.0004, 512, 2_306, 7_777, 2_423_555,
             555_555_555, 2_416_777_876, 5_924_333]
     result = []

@@ -5,7 +5,7 @@ from functools import lru_cache
 
 import pytest
 
-from gregtech.flow.data.load_project import load_recipes
+from gregtech.flow.recipe.load_project import load_recipes
 from gregtech.flow.graph._solver import equations_solver
 from gregtech.flow.cli import ProgramContext
 from gregtech.flow import flow
@@ -20,18 +20,18 @@ def get_os_config():
         case _:
             raise NotImplementedError(f'Invalid OS for testing: "{sys.platform}", contact dev for implementation!')
 
-def generateProjectPaths():
+def generate_paths():
     path_blacklist = [
         Path('circuits/nanocircuits.yaml'),
     ]
     project_paths = (str(pth) for pth in Path('projects/').glob('**/*.yaml') if pth not in path_blacklist
-                     if 'dev' not in str(pth))
+                     if Path('projects/dev') not in list(pth.parents))
 
     return project_paths
 
 
-@pytest.mark.parametrize('project_name', generateProjectPaths())
-def test_lazyGenerateGraphs(project_name):
+@pytest.mark.parametrize('project_name', generate_paths())
+def test_code(project_name):
 
     pc = ProgramContext(config_path=get_os_config())
 
@@ -46,7 +46,7 @@ def test_lazyGenerateGraphs(project_name):
     except Exception as e:
         assert True == False, f'Failed on {project_name} with error {e}'
 
-@pytest.mark.parametrize('project_name', generateProjectPaths())
+@pytest.mark.parametrize('project_name', generate_paths())
 def test_flow(project_name):
     project_name = str(Path(project_name).relative_to('projects/'))
 
@@ -59,5 +59,5 @@ def test_flow(project_name):
         assert True == False, f'Failed on {project_name} with error {e}'
 
 if __name__ == '__main__':
-    for p in generateProjectPaths():
+    for p in generate_paths():
         print(p)

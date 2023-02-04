@@ -1,4 +1,4 @@
-from gregtech.flow.cli import main
+from gregtech.flow.cli import run_cli
 
 if __name__ == '__main__':
-    main()
+    run_cli()

@@ -1,8 +1,13 @@
-# Standard libraries
+"""CLI and Program Context module for GT: Flow.
+
+This module is used to provide the program context for other modules.
+It is also used to run the Interactive CLI and the Direct CLI.
+"""
 import logging
 import os
 import pkgutil
 import textwrap
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Optional
 
@@ -19,19 +24,18 @@ from rich.panel import Panel
 from rich.rule import Rule
 from rich.traceback import install
 
-from gregtech.flow.data.load_project import load_recipes
-# Internal libraries
 from gregtech.flow.graph._solver import equations_solver
-# Pypi libraries
-from gregtech.flow.schemas import Validator, yaml
+from gregtech.flow.recipe.load_project import load_recipes
+from gregtech.flow.schemas import validate_config, yaml
 
 install(show_locals=True)
 
 
 class ProgramContext:
+    """Class to provide context for other functions. Also used for the GT: Flow CLI."""
 
     def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('flow_config.yaml')) -> None:
-        """Program context class for GT: Flow
+        """Initializes ProgramContext and also sets up GT: Flow for use.
 
         Args:
             output_path (Path | str, optional): Output path. Defaults to 'output'.
@@ -41,7 +45,7 @@ class ProgramContext:
         """
         self.config_cache: dict = {}
         self.project_cache: str = ''
-        self.config_path = Path(config_path)
+        self.config_path = Path(config_path) if config_path else Path('flow_config.yaml')
         self.quiet = False
 
         config = self.config_path
@@ -87,20 +91,23 @@ class ProgramContext:
         self.projects_path = projects_path
 
     @property
-    def graph_config(self):
-        with open('flow_config.yaml' if not self.config_path else self.config_path, 'r') as f:
+    def graph_config(self) -> dict:
+        """Graph configuration.
+
+        Returns:
+            dict: Graph configuration
+        """
+        with self.config_path.open(mode='r') as f:
             graph_config = yaml.load(f)
 
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
             # trivial check + equality check
             if (len(graph_config.keys()) != len(self.config_cache.keys())) or (graph_config != self.config_cache):
-                Validator.validate_config(graph_config)
+                validate_config(graph_config)
                 self.config_cache = graph_config
 
         # Checks for graph_config
-        if not graph_config['GRAPHVIZ']:
-            raise RuntimeError('Graphviz option not inputted!')
         if graph_config['GRAPHVIZ'] == 'path':
             pass
         else:
@@ -111,22 +118,17 @@ class ProgramContext:
         return graph_config
 
     def log(self, msg, level=logging.DEBUG):
-        """Logging for gregtech.flow
+        """Logging method for gregtech.flow.
 
         Args:
             msg (str): The message
             level (logging.DEBUG, logging.INFO, etc., optional): Logging level. Defaults to logging.DEBUG.
         """
         log = self.logger
-        if level == logging.DEBUG:
-            log.debug(f'{msg}')
-        elif level == logging.INFO:
-            log.info(f'{msg}')
-        elif level == logging.WARNING:
-            log.warning(f'{msg}')
+        log.log(level, f'{msg}')
 
     def create_graph(self, project_name: Path | str) -> bool:
-        """Centralized graph creation function to check if the project exists or not
+        """Centralized graph creation function to check if the project exists or not.
 
         Args:
             project_name (Path | str): The project's path
@@ -136,8 +138,6 @@ class ProgramContext:
         """
         project_name = str(project_name)
         if not project_name.endswith('.yaml'):
-            # Assume when the user wrote "power/fish/methane", they meant "power/fish/methane.yaml"
-            # This happens because autocomplete will not add .yaml if there are alternatives (like "power/fish/methane_no_biogas")
             project_name += '.yaml'
 
         project_relpath = self.projects_path / f'{project_name}'
@@ -166,13 +166,46 @@ class ProgramContext:
         else:
             return False
 
+    def create_filetree(self, path: Path, pfx: str = '', max_depth: int = 720, emoji: bool = True) -> Iterator[str] | list:
+        """Creates a file tree of the input path.
+
+        Args:
+            path (Path): Path of the directory
+            pfx (str, optional): Prefix. Defaults to ''.
+            max_depth (int, optional): Recursion limit of the function. Defaults to 720 (arbitrary).
+            emoji (bool, optional): Whether or not to use emojis. Defaults to True.
+
+        Yields:
+            Generator[str, None, None]: Lines of the file tree in string form.
+        """
+        if max_depth > 0:
+            space = '    '
+            branch = '│   '
+            tee = '├── '
+            last = '└── '
+
+            contents = list(path.iterdir())
+            pointers = [tee] * (len(contents) - 1) + [last]
+            for pointer, path in zip(pointers, contents):
+                if emoji:
+                    if path.is_file():
+                        yield pfx + pointer + ':page_facing_up: ' + path.name
+                    else:
+                        yield pfx + pointer + ':file_folder: ' + path.name
+                else:
+                    yield pfx + pointer + path.name
+                if path.is_dir():
+                    extension = branch if pointer == tee else space
+                    yield from self.create_filetree(path, f'{pfx}{extension}')
+        else:
+            return ['Exceeded maximum recursion limit',]
+
     def interactive_cli(self, current_error) -> bool:
-        """The interactive CLI for gregtech.flow
+        """The interactive CLI for gregtech.flow.
 
         Returns:
             bool: Whether or not the project file was found
         """
-
         header = Layout(Panel(Align('[bold bright_cyan]GT: Flow', align='center',
                         vertical='middle'), border_style='bold bright_cyan'), name='header', size=3)
 
@@ -182,14 +215,15 @@ class ProgramContext:
         [bright_white]Valid commands:[/]
         [bright_white]- [/][bright_green]end[/][bright_white] / [/][bright_green]stop[/][bright_white] / [/][bright_green]exit[/][bright_white]: Stop the program[/]
         [bright_white]- [/][bright_green]all[/][bright_white]: Select all files for graph creation[/]
-        [bright_white]- [/][bright_green]last[/][bright_white]: The last project inputted[/]
+        [bright_white]- [/][bright_green]last[/][bright_white]: The last project inputted (or just type nothing)[/]
+        [bright_white]- [/][bright_green]tree[/][bright_white]: Prints the './projects/' file tree[/]
         ''')
         guide = Layout(Panel(guide_text, border_style='bold bright_magenta',
                        title='guide.txt', title_align='left'), name='guide')
 
         links_text = textwrap.dedent('''\
         [bright_green link=https://github.com/velolib/gregtech-flow]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow]https://github.com/velolib/gregtech-flow[/]
-        [bright_green link=https://github.com/velolib/gregtech-flow/wiki]Wiki[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow/wiki]https://github.com/velolib/gregtech-flow/wiki[/]
+        [bright_green link=https://github.com/velolib/gregtech-flow/wiki]Website[/][bright_white]: [/][underline bright_cyan link=https://velolib.github.io/gregtech-flow/]https://velolib.github.io/gregtech-flow/[/]
         ''')
         links = Layout(Panel(links_text, border_style='bold bright_white',
                        title='links.txt', title_align='left'), name='links')
@@ -199,13 +233,13 @@ class ProgramContext:
 
         root_layout = Layout()
         root_layout.size = 4
-        root_layout.split_column(header, Layout(name='content', size=8))
+        root_layout.split_column(header, Layout(name='content', size=9))
         root_layout['content'].split_row(guide, Layout(name='right_sect'))
 
         # TODO: Increase functionality of the errors panel
         root_layout['content']['right_sect'].split_column(links, errors)
 
-        console = Console(height=11)
+        console = Console(height=12)
 
         prompt_style = Style.from_dict({'bigger_than': '#ffffff'})
         prompt_message = [('class:bigger_than', '> ')]
@@ -244,6 +278,15 @@ class ProgramContext:
                     console.print(Rule(style='bright_white'))
                     console.print('')
                     return create_graph
+                case 'tree':
+                    console.print('')
+                    console.print(Rule(style='bright_white',
+                                  title='[bold bright_white]tree.txt', align='center'))
+                    for x in self.create_filetree(Path(self.projects_path)):
+                        console.print(x)
+                    console.print(Rule(style='bright_white'))
+                    prompt('')
+                    return True
                 case _:
                     console.print('')
                     console.print(Rule(style='bright_white',
@@ -257,7 +300,7 @@ class ProgramContext:
                     return create_graph
 
     def direct_cli(self, path: Path) -> bool:
-        """Direct CLI implementation for gregtech.flow
+        """Direct CLI implementation for gregtech.flow.
 
         Args:
             path (Path): The path inputted from the command line
@@ -268,8 +311,7 @@ class ProgramContext:
         return self.create_graph(str(path))
 
     def run(self) -> None:
-        """Runs the program
-        """
+        """Runs the CLI."""
         def run_typer(path: Optional[Path] = typer.Argument(None), quiet: bool = typer.Option(False, '--quiet', '-q')):
             if quiet:
                 logger = self.logger
@@ -279,6 +321,10 @@ class ProgramContext:
             icli_error = None
             while True:
                 if path is None:
+                    cols, _ = os.get_terminal_size()
+                    if cols <= 139:
+                        raise NotImplementedError(
+                            'Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
                     result = self.interactive_cli(icli_error)
                     icli_error = None
                     if not result:
@@ -296,10 +342,11 @@ class ProgramContext:
         typer.run(run_typer)
 
 
-def main():
+def run_cli():
+    """Runs the CLI."""
     cli = ProgramContext()
     cli.run()
 
 
 if __name__ == '__main__':
-    main()
+    run_cli()

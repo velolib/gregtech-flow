@@ -10,14 +10,12 @@ if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def connect_graph(self: 'Graph'):
-    """
-    Connects graph.
+def connect_graph(self: 'Graph') -> None:
+    """Connects the graph.
 
     Args:
         self (Graph): Graph object
     """
-
     # Create source and sink nodes
     self.add_node('source', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='source')
     self.add_node('sink', fillcolor=self.graph_config['SOURCESINK_COLOR'], label='sink')
@@ -100,9 +98,8 @@ def connect_graph(self: 'Graph'):
         graphviz_output(self)
 
 
-def remove_back_edges(self: 'Graph'):
-    """
-    Removes back edges in a graph.
+def remove_back_edges(self: 'Graph') -> None:
+    """Removes the back edges in a graph (no loops).
 
     Args:
         self (Graph): Graph object

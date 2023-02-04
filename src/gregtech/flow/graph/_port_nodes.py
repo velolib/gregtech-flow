@@ -11,8 +11,7 @@ if TYPE_CHECKING:
 
 
 def strip_brackets(self: 'Graph', ing: str) -> str:
-    """
-    Strips brackets from an ingredient string.
+    """Strips brackets from an ingredient string.
 
     Args:
         ing (str): Ingredient string
@@ -33,8 +32,7 @@ def strip_brackets(self: 'Graph', ing: str) -> str:
 
 
 def check_node_has_port(self: 'Graph', node: str) -> bool:
-    """
-    Checks if the inputted node has a port or not.
+    """Checks if the inputted node has a port or not.
 
     Args:
         node (str): Node string
@@ -50,8 +48,7 @@ def check_node_has_port(self: 'Graph', node: str) -> bool:
 
 
 def get_output_port_side(self: 'Graph') -> str:
-    """
-    Get output port side depending on graph orientation.
+    """Get output port side depending on graph orientation.
 
     Returns:
         str: Direction based on graph_config['ORIENTATION']
@@ -61,8 +58,7 @@ def get_output_port_side(self: 'Graph') -> str:
 
 
 def get_input_port_side(self: 'Graph') -> str:
-    """
-    Get input port side depending on graph orientation.
+    """Get input port side depending on graph orientation.
 
     Returns:
         str: Direction based on graph_config['ORIENTATION']
@@ -72,8 +68,7 @@ def get_input_port_side(self: 'Graph') -> str:
 
 
 def get_unique_color(self: 'Graph', id: str) -> str:
-    """
-    Returns a unique color from inputted ID.
+    """Returns a unique color from inputted ID.
 
     Args:
         id (str): Unique ID string. Same ID will return same color
@@ -87,8 +82,7 @@ def get_unique_color(self: 'Graph', id: str) -> str:
 
 
 def get_port_id(self: 'Graph', ing_name: str, port_type: str) -> str:
-    """
-    Generate a port ID from ing_name and port_type.
+    """Generate a port ID from ing_name and port_type.
 
     Args:
         ing_name (str): Port ingredient name
@@ -102,8 +96,7 @@ def get_port_id(self: 'Graph', ing_name: str, port_type: str) -> str:
 
 
 def get_ing_id(self: 'Graph', ing_name: str) -> str:
-    """
-    Get ingredient ID from ingredient name.
+    """Get ingredient ID from ingredient name.
 
     Args:
         ing_name (str): Ingredient name
@@ -119,8 +112,7 @@ def get_ing_id(self: 'Graph', ing_name: str) -> str:
 
 
 def get_ing_label(self: 'Graph', ing_name: str) -> str:
-    """
-    Returns a string from an ingredient name into a title. Only exception is EU.
+    """Returns a string from an ingredient name into a title. Only exception is EU.
 
     Args:
         ing_name (str): Ingredient name
@@ -139,8 +131,7 @@ def get_ing_label(self: 'Graph', ing_name: str) -> str:
 
 
 def get_quant_label(self: 'Graph', ing_id: str, ing_quant: float | int) -> str:
-    """
-    Get quantity label from ingredient ID and ingredient quantity.
+    """Get quantity label from ingredient ID and ingredient quantity.
 
     Args:
         ing_id (str): Ingredient ID as a string
@@ -155,13 +146,11 @@ def get_quant_label(self: 'Graph', ing_id: str, ing_quant: float | int) -> str:
     if ing_id in unit_exceptions:
         return unit_exceptions[ing_id](ing_quant)
     else:
-        return f'{self.userRound(ing_quant)}/s'
+        return f'{self.round_readable(ing_quant)}/s'
 
 
 def _combine_outputs(self: 'Graph'):
-    """
-    Creates a meta-node to combine outputs.
-    """
+    """Creates a meta-node on the Graph to combine outputs."""
     ings = defaultdict(list)
     for src, dst, ing in self.edges.keys():
         ings[(src, ing)].append(dst)
@@ -191,9 +180,7 @@ def _combine_outputs(self: 'Graph'):
 
 
 def _combine_inputs(self: 'Graph'):
-    """
-    Creates a meta-node to combine inputs.
-    """
+    """Creates a meta-node on the Graphto combine inputs."""
     ings = defaultdict(list)
     for src, dst, ing in self.edges.keys():
         ings[(dst, ing)].append(src)
