@@ -1,25 +1,47 @@
-# flake8: noqa
-# TODO: Docstrings
 import collections
 
 # Modified from https://stackoverflow.com/a/53995651/7247528
 
 
 class BasicGraph():
-    def __init__(self, edges):
+    """Basic graph abstraction used to remove back edges (loops)."""
+
+    def __init__(self, edges: list[tuple]) -> None:
+        """Initializes a basic graph object.
+
+        Args:
+            edges (list[tuple]): List of edges
+        """
         self.edges = edges
         self.adj = BasicGraph._build_adjacency_list(edges)
         self.back_edges = []
 
     @staticmethod
-    def _build_adjacency_list(edges):
+    def _build_adjacency_list(edges: list[tuple]) -> collections.defaultdict[str, list]:
+        """Builds an adjacency from a list of edges.
+
+        Args:
+            edges (list[tuple]): List of edges
+
+        Returns:
+            collections.defaultdict[str, list]: Adjacency list
+        """
         adj = collections.defaultdict(list)
         for edge in edges:
             adj[edge[0]].append(edge[1])
         return adj
 
 
-def dfs(g):
+def dfs(g: BasicGraph) -> None:
+    """Performs a depth-first search of a BasicGraph object to remove back edges.
+
+    According to Lemma 22.11 of Cormen et al., Introduction to Algorithms (CLRS):
+
+    "A directed graph G is acyclic if and only if a depth-first search of G yields no back edges."
+
+    Args:
+        g (BasicGraph): _description_
+    """
     discovered = set()
     finished = set()
 
@@ -28,7 +50,15 @@ def dfs(g):
             dfs_visit(g, u, discovered, finished)
 
 
-def dfs_visit(g, u, discovered, finished):
+def dfs_visit(g: BasicGraph, u: str, discovered: set, finished: set) -> None:
+    """Depth-first search visit edge.
+
+    Args:
+        g (BasicGraph): BasicGraph object
+        u (str): Node of an edge
+        discovered (set): Set
+        finished (set): Set
+    """
     discovered.add(u)
 
     for v in g.adj[u]:

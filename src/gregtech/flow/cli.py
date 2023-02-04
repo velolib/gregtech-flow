@@ -34,7 +34,11 @@ install(show_locals=True)
 class ProgramContext:
     """Class to provide context for other functions. Also used for the GT: Flow CLI."""
 
-    def __init__(self, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = True, config_path: Path | str = Path('flow_config.yaml')) -> None:
+    def __init__(self,
+                 output_path: Path | str = 'output/',
+                 projects_path: Path | str = 'projects/',
+                 create_dirs: bool = True,
+                 config_path: Path | str = Path('flow_config.yaml')) -> None:
         """Initializes ProgramContext and also sets up GT: Flow for use.
 
         Args:
