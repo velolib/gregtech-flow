@@ -72,7 +72,7 @@ def test_direct_cli(project_name: str) -> None:
         project_name (str): Project name as a string
     """
     # TODO: Improve this a lot
-    with subprocess.Popen(['poetry', 'run', 'flow', project_name, '--config', f'{pytest.os_config_pathlib}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+    with subprocess.Popen([sys.executable, '-m', 'gregtech', project_name, '--config', f'{pytest.os_config_pathlib}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
         out, err = process.communicate()
         if 'Project could not be found!' in str(out):
             assert True == False, f'Failed on {project_name}. The project could not be found!'
