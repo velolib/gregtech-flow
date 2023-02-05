@@ -115,7 +115,7 @@ class ProgramContext:
         if graph_config['GRAPHVIZ'] == 'path':
             pass
         else:
-            if Path(graph_config['GRAPHVIZ']).exists():
+            if Path(graph_config['GRAPHVIZ']).exists() and Path(graph_config['GRAPHVIZ']).is_dir():
                 os.environ["PATH"] += os.pathsep + str(Path(graph_config['GRAPHVIZ']))
             else:
                 raise RuntimeError('Graphviz path does not exist')
