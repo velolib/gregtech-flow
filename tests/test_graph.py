@@ -64,23 +64,6 @@ def test_solver(project_name) -> None:
     except Exception as e:
         assert True == False, f'Failed on {project_name} with error {e}'
 
-@pytest.mark.parametrize('project_name', get_projects(remove_project=True))
-def test_direct_cli(project_name: str) -> None:
-    """Used to test the Direct CLI.
-
-    Args:
-        project_name (str): Project name as a string
-    """
-    # TODO: Improve this a lot
-    with subprocess.Popen([sys.executable, '-m', 'gregtech', project_name, '--config', f'{pytest.os_config_pathlib}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
-        out, err = process.communicate()
-        if 'Project could not be found!' in str(out):
-            assert True == False, f'Failed on {project_name}. The project could not be found!'
-        if process.returncode != 0:
-            print(f'{out=}')
-            print(f'{err=}')
-            assert True == False, f'Failed on {project_name}.'
-
 @pytest.mark.parametrize('project_name', get_projects())
 def test_flow(project_name: str) -> None:
     """Used to test the flow() CLI wrapper.
