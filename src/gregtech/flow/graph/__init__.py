@@ -22,7 +22,7 @@ class Graph:
             graph_name (str): Graph name, used as a title
             recipes (list): List of recipes
             parent_context (ProgramContext): ProgramContext object
-            title (_type_, optional): The title of the graph. Defaults to '.
+            title (str, optional): The title of the graph. Defaults to '.
         """
         self.graph_name = graph_name
         self.recipes: dict[str, 'Recipe'] = {str(i): x for i, x in enumerate(recipes)}

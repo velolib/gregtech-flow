@@ -1,4 +1,5 @@
 import collections
+from collections.abc import Sequence
 
 # Modified from https://stackoverflow.com/a/53995651/7247528
 
@@ -6,22 +7,22 @@ import collections
 class BasicGraph():
     """Basic graph abstraction used to remove back edges (loops)."""
 
-    def __init__(self, edges: list[tuple]) -> None:
+    def __init__(self, edges: Sequence[tuple[str, str]]) -> None:
         """Initializes a basic graph object.
 
         Args:
-            edges (list[tuple]): List of edges
+            edges (Sequence[tuple]): Sequence of basic edges
         """
         self.edges = edges
         self.adj = BasicGraph._build_adjacency_list(edges)
-        self.back_edges = []
+        self.back_edges: Sequence[tuple[str, str]] = []
 
     @staticmethod
-    def _build_adjacency_list(edges: list[tuple]) -> collections.defaultdict[str, list]:
-        """Builds an adjacency from a list of edges.
+    def _build_adjacency_list(edges: Sequence[tuple[str, str]]) -> collections.defaultdict[str, list]:
+        """Builds an adjacency from a list of basic edges.
 
         Args:
-            edges (list[tuple]): List of edges
+            edges (Sequence[tuple[str, str]]): Sequence of basic edges
 
         Returns:
             collections.defaultdict[str, list]: Adjacency list
@@ -40,10 +41,10 @@ def dfs(g: BasicGraph) -> None:
     "A directed graph G is acyclic if and only if a depth-first search of G yields no back edges."
 
     Args:
-        g (BasicGraph): _description_
+        g (BasicGraph): BasicGraph object
     """
-    discovered = set()
-    finished = set()
+    discovered: set[str] = set()
+    finished: set[str] = set()
 
     for u in list(g.adj):
         if u not in discovered and u not in finished:

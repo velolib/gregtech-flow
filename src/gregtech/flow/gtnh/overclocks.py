@@ -27,7 +27,7 @@ def require(recipe: 'Recipe', requirements: Sequence[tuple[str, typing.Type[typi
         requirements (Sequence[tuple[str, typing.Type, str]]): Requirements to check from
 
     Raises:
-        RuntimeError: _description_
+        RuntimeError: Improper config machine requires {key}. Also displays reason.
     """
     # requirements should be a list of [key, type, reason]
     for req in requirements:
