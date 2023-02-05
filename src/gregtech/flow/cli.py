@@ -25,7 +25,7 @@ from rich.rule import Rule
 from rich.traceback import install
 
 from gregtech.flow.graph._solver import equations_solver
-from gregtech.flow.recipe.load_project import load_recipes
+from gregtech.flow.recipe.load_project import load_project
 from gregtech.flow.schemas import validate_config, yaml
 
 install(show_locals=True)
@@ -158,7 +158,7 @@ class ProgramContext:
                 else:
                     self.log(f'Current project: "{project_name}"', logging.INFO)
 
-            recipes = load_recipes(
+            recipes = load_project(
                 project_name, self.graph_config, self.projects_path)
 
             if project_name.endswith('.yaml'):
@@ -316,19 +316,29 @@ class ProgramContext:
 
     def run(self) -> None:
         """Runs the CLI."""
-        def run_typer(path: Optional[Path] = typer.Argument(None), quiet: bool = typer.Option(False, '--quiet', '-q')):
+        def run_typer(path: Optional[Path] = typer.Argument(None, help='Project path relative to ./projects'), quiet: Optional[bool] = typer.Option(False, '--quiet', '-q', help='Disable logging'), config: Optional[Path] = typer.Option(None, help='Configuration file path')):
             if quiet:
                 logger = self.logger
                 logger.setLevel(logging.CRITICAL + 1)
             self.quiet = quiet
+
+            if config:
+                config = Path(config).absolute()
+                if config.is_file() and config.exists():
+                    self.config_path = Path(config).resolve()
+                elif config.is_dir() and config.exists():
+                    raise RuntimeError(f'Specified configuration path "{config}" is a directory.')
+                else:
+                    raise RuntimeError(
+                        f'Specified configuration path "{config}" is invalid or does not exist.')
 
             icli_error = None
             while True:
                 if path is None:
                     cols, _ = os.get_terminal_size()
                     if cols <= 139:
-                        raise NotImplementedError(
-                            'Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
+                        print(
+                            'Warning: Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
                     result = self.interactive_cli(icli_error)
                     icli_error = None
                     if not result:

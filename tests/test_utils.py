@@ -7,7 +7,7 @@ from functools import lru_cache
 
 import pytest
 
-from gregtech.flow.recipe.load_project import load_recipes
+from gregtech.flow.recipe.load_project import load_project
 
 @lru_cache(1)
 def get_os_config():

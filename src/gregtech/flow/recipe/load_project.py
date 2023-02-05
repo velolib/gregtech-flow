@@ -70,7 +70,7 @@ def unalias_machine_name(name: str) -> str:
     return aliases.get(name, name)
 
 
-def load_recipes(project_name: str | Path, graph_config: dict, project_dir: str | Path = 'projects') -> list:
+def load_project(project_name: str | Path, graph_config: dict, project_dir: str | Path = 'projects') -> list:
     """Loads the inputted project and returns a list of Recipe objects.
 
     Args:
@@ -79,7 +79,7 @@ def load_recipes(project_name: str | Path, graph_config: dict, project_dir: str 
         project_dir (str | Path, optional): Project directory. Defaults to 'projects'
 
     Returns:
-        list: Loaded recipe
+        list: Loaded project
     """
     # Load config file
     project_filepath = Path(project_dir) / f'{project_name}'
