@@ -17,13 +17,13 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  test:
     strategy:
       fail-fast: true
       matrix:
-        os: [ 'windows-latest', 'ubuntu-latest' ]
+        os: [ 'Windows', 'Ubuntu' ]
         py: [ '3.11' ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     name: |
       GT: Flow testing on OS ${{ matrix.os }} Python ${{ matrix.py }}
     steps:
