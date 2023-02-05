@@ -1,10 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/velolib/gregtech-flow/master/src/gregtech/flow/resources/config_schema.json
 # VSCode Users use this extension: https://github.com/redhat-developer/vscode-yaml 
 
-# GT: Flow CONFIGURATION FILE
-# DELETE THIS FILE TO REGENERATE UPON RUNNING
-# Documentation: https://velolib.github.io/gregtech-flow/docs/documentation/configuration.html
-CONFIG_VER: 2
+# ---------------------------------------------------------------------------- #
+#                          GT: Flow CONFIGURATION FILE                         #
+#                  DELETE THIS FILE TO REGENERATE UPON RUNNING                 #
+#               Website: https://velolib.github.io/gregtech-flow               #
+# ---------------------------------------------------------------------------- #
+CONFIG_VER: 3
 
 GRAPHVIZ: 'C:\Program Files\Graphviz\bin'
 # Input your graphviz /Graphivz/bin directory path in quotes
