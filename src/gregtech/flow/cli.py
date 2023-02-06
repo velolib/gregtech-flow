@@ -215,7 +215,7 @@ class ProgramContext:
         """
         @contextlib.contextmanager
         def latest_log(cs: Console):
-            """Context manager fot latest.log thing."""
+            """Context manager for latest.log thing."""
             if not self.quiet:
                 cs.print('')
                 cs.print(
