@@ -316,51 +316,53 @@ class ProgramContext:
         """
         return self.create_graph(str(path))
 
-    def run(self) -> None:
-        """Runs the CLI."""
-        def run_typer(
-                path: Optional[Path] = typer.Argument(
-                    None, help='Project path relative to ./projects'),
-                quiet: Optional[bool] = typer.Option(
-                    False, '--quiet', '-q', help='Disable logging'),
-                config: Optional[Path] = typer.Option(None, help='Configuration file path')):
-            if quiet:
-                logger = self.logger
-                logger.setLevel(logging.CRITICAL + 1)
-            self.quiet = bool(quiet)
+    def _run_typer(self, path: Optional[Path] = typer.Argument(None, help='Project path relative to ./projects'), quiet: Optional[bool] = typer.Option(
+            False, '--quiet', '-q', help='Disable logging'), config: Optional[Path] = typer.Option(None, help='Configuration file path')):
+        """For typer."""
+        if quiet:
+            logger = self.logger
+            logger.setLevel(logging.CRITICAL + 1)
+        self.quiet = bool(quiet)
 
-            if config:
-                config = Path(config).absolute()
-                if config.is_file() and config.exists():
-                    self.config_path = Path(config).resolve()
-                elif config.is_dir() and config.exists():
-                    raise RuntimeError(f'Specified configuration path "{config}" is a directory.')
-                else:
-                    raise RuntimeError(
-                        f'Specified configuration path "{config}" is invalid or does not exist.')
+        if config:
+            config = Path(config).absolute()
+            if config.is_file() and config.exists():
+                self.config_path = Path(config).resolve()
+            elif config.is_dir() and config.exists():
+                raise RuntimeError(f'Specified configuration path "{config}" is a directory.')
+            else:
+                raise RuntimeError(
+                    f'Specified configuration path "{config}" is invalid or does not exist.')
 
-            icli_error = None
-            while True:
-                if path is None:
-                    cols, _ = os.get_terminal_size()
-                    if cols <= 139:
-                        print(
-                            'Warning: Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
-                    result = self.interactive_cli(icli_error)
-                    icli_error = None
-                    if not result:
-                        icli_error = 'Project could not be found!'
+        icli_error = None
+        while True:
+            if path is None:
+                cols, _ = os.get_terminal_size()
+                if cols <= 139:
+                    print(
+                        'Warning: Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
+                result = self.interactive_cli(icli_error)
+                icli_error = None
+                if not result:
+                    icli_error = 'Project could not be found!'
+            else:
+                if not quiet:
+                    rprint(
+                        Panel(
+                            Align(
+                                '[bold bright_cyan]GT: Flow',
+                                align='center',
+                                vertical='middle'),
+                            border_style='bold bright_cyan'))
+                result = self.direct_cli(path)
+                if not result:
+                    raise RuntimeError(f'The specified project "{path}" could not be found!')
                 else:
-                    if not quiet:
-                        rprint(Panel(Align('[bold bright_cyan]GT: Flow', align='center',
-                               vertical='middle'), border_style='bold bright_cyan'))
-                    result = self.direct_cli(path)
-                    if not result:
-                        rprint(Panel('[bright_white]Project could not be found!',
-                               expand=False, title='[bright_red]Error', style='bright_red'))
                     exit()
 
-        typer.run(run_typer)
+    def run(self) -> None:
+        """Runs the CLI."""
+        typer.run(self._run_typer)
 
 
 def run_cli():
