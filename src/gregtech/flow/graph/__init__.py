@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 class Graph:
     """Graphviz Graph abstraction for GT: Flow."""
 
-    def __init__(self, graph_name: str, recipes: list, parent_context: 'ProgramContext', title: str = ''):
+    def __init__(self, graph_name: str, recipes: list,
+                 parent_context: 'ProgramContext', title: str = ''):
         """Initializes Graph and also overclocks all recipes.
 
         Args:
@@ -80,7 +81,8 @@ class Graph:
         """
         self.nodes[recipe_id] = kwargs
 
-    def add_edge(self: 'Graph', node_from: str, node_to: str, ing_name: str, quantity: float | int, **kwargs) -> None:
+    def add_edge(self: 'Graph', node_from: str, node_to: str,
+                 ing_name: str, quantity: float | int, **kwargs) -> None:
         """Adds an edge to the Graph.
 
         Args:

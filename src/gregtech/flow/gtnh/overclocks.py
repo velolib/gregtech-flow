@@ -109,7 +109,8 @@ class OverclockHandler:
 
         return recipe
 
-    def modify_gtplusplus_custom(self, recipe: 'Recipe', max_parallels: int, speed_per_tier: int | float = 1) -> 'Recipe':
+    def modify_gtplusplus_custom(self, recipe: 'Recipe', max_parallels: int,
+                                 speed_per_tier: int | float = 1) -> 'Recipe':
         """GT++ overclock with extra inputs.
 
         Args:

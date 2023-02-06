@@ -6,7 +6,8 @@ from pathlib import Path
 from gregtech.flow.cli import ProgramContext
 
 
-def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path | str = 'projects/', create_dirs: bool = False, config_path: Path | str = 'flow_config.yaml'):
+def flow(project_name: Path | str, output_path: Path | str = 'output/', projects_path: Path |
+         str = 'projects/', create_dirs: bool = False, config_path: Path | str = 'flow_config.yaml'):
     """GT: Flow CLI wrapper. Note that this is basically the Direct CLI.
 
     Args:

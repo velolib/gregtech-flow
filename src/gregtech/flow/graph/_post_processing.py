@@ -332,7 +332,8 @@ def add_summary_node(self: 'Graph') -> None:
     color_positive = self.graph_config['POSITIVE_COLOR']
     color_negative = self.graph_config['NEGATIVE_COLOR']
 
-    def make_html_line(lab_text: str, amt_text: str, lab_color: str, amt_color: str, unit: str = '') -> str:
+    def make_html_line(lab_text: str, amt_text: str, lab_color: str,
+                       amt_color: str, unit: str = '') -> str:
         """Returns an HTML <tr></tr> element from inputs for the summary.
 
         Args:
@@ -426,7 +427,8 @@ def add_summary_node(self: 'Graph') -> None:
             unit_function = self.round_readable  # noqa
         case _:
             def unit_function(z):
-                return self.round_readable(z / self.idx_to_voltage(tiers.index(self.graph_config['POWER_UNITS'])))
+                return self.round_readable(
+                    z / self.idx_to_voltage(tiers.index(self.graph_config['POWER_UNITS'])))
             unit = f' {self.graph_config["POWER_UNITS"].upper()}'
 
     io_label_lines.append(make_html_line(

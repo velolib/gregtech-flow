@@ -18,7 +18,8 @@ class BasicGraph():
         self.back_edges: Sequence[tuple[str, str]] = []
 
     @staticmethod
-    def _build_adjacency_list(edges: Sequence[tuple[str, str]]) -> collections.defaultdict[str, list]:
+    def _build_adjacency_list(edges: Sequence[tuple[str, str]]
+                              ) -> collections.defaultdict[str, list]:
         """Builds an adjacency from a list of basic edges.
 
         Args:

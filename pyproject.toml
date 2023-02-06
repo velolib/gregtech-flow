@@ -49,13 +49,20 @@ types-jsonschema = "^4.17.0.3"
 flake8 = "^6.0.0"
 flake8-simplify = "^0.19.3"
 flake8-docstrings = "^1.7.0"
+flake8-pyproject = "^1.2.2"
 pep8-naming = "^0.13.3"
 
 [tool.autopep8]
 ignore = "E402"
-max_line_length = 100
+max-line-length = 100
+aggressive = true
 recursive = true
 in-place = true
+
+[tool.flake8]
+ignore = ["E402", "E501", "E741", "W504", "W503", "F841"]
+exclude = ["__main__.py",]
+docstring-convention = "google"
 
 [tool.mypy]
 exclude = ".venv"

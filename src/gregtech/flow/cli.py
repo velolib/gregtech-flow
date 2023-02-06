@@ -107,7 +107,8 @@ class ProgramContext:
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
             # trivial check + equality check
-            if (len(graph_config.keys()) != len(self.config_cache.keys())) or (graph_config != self.config_cache):
+            if (len(graph_config.keys()) != len(self.config_cache.keys())) or (
+                    graph_config != self.config_cache):
                 validate_config(graph_config)
                 self.config_cache = graph_config
 
@@ -170,7 +171,8 @@ class ProgramContext:
         else:
             return False
 
-    def create_filetree(self, path: Path, pfx: str = '', max_depth: int = 720, emoji: bool = True) -> Iterator[str] | list:
+    def create_filetree(self, path: Path, pfx: str = '', max_depth: int = 720,
+                        emoji: bool = True) -> Iterator[str] | list:
         """Creates a file tree of the input path.
 
         Args:
@@ -316,11 +318,16 @@ class ProgramContext:
 
     def run(self) -> None:
         """Runs the CLI."""
-        def run_typer(path: Optional[Path] = typer.Argument(None, help='Project path relative to ./projects'), quiet: Optional[bool] = typer.Option(False, '--quiet', '-q', help='Disable logging'), config: Optional[Path] = typer.Option(None, help='Configuration file path')):
+        def run_typer(
+                path: Optional[Path] = typer.Argument(
+                    None, help='Project path relative to ./projects'),
+                quiet: Optional[bool] = typer.Option(
+                    False, '--quiet', '-q', help='Disable logging'),
+                config: Optional[Path] = typer.Option(None, help='Configuration file path')):
             if quiet:
                 logger = self.logger
                 logger.setLevel(logging.CRITICAL + 1)
-            self.quiet = quiet
+            self.quiet = bool(quiet)
 
             if config:
                 config = Path(config).absolute()

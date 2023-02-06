@@ -211,6 +211,23 @@ flake8 = ">=3"
 pydocstyle = ">=2.1"
 
 [[package]]
+name = "flake8-pyproject"
+version = "1.2.2"
+description = "Flake8 plug-in loading the configuration from pyproject.toml"
+category = "dev"
+optional = false
+python-versions = ">= 3.6"
+files = [
+    {file = "flake8_pyproject-1.2.2-py3-none-any.whl", hash = "sha256:52d412219e7db6227faa654675b1435947b11d49b453f3eced760f19bdd6f06a"},
+]
+
+[package.dependencies]
+Flake8 = ">=5"
+
+[package.extras]
+dev = ["pyTest", "pyTest-cov"]
+
+[[package]]
 name = "flake8-simplify"
 version = "0.19.3"
 description = "flake8 plugin which checks for code that can be simplified"
@@ -979,4 +996,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bc33bcf870cf6ae1a79cb68186010874913e5fdfb8302284d695c46ae289cae8"
+content-hash = "d54ca2c66bb7435cce25642e9512ecd11651d17fedac2d8b74adc3fbc8144fbf"

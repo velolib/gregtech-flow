@@ -138,17 +138,12 @@ class IngredientCollection:
 class Recipe:
     """Recipe class abstraction for GT: Flow projects."""
 
-    def __init__(
-        self,
-        machine_name: str,
-        user_voltage: str,
-        inputs: IngredientCollection,
-        outputs: IngredientCollection,
-        eut: int,
-        dur: float | int,
-        circuit=0,
-        **kwargs
-    ):
+    def __init__(self,
+                 machine_name: str, user_voltage: str, inputs: IngredientCollection,
+                 outputs: IngredientCollection,
+                 eut: int, dur: float | int,
+                 circuit=0,
+                 **kwargs):
         """Recipe class constructor.
 
         Args:

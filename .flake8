@@ -1,5 +1,0 @@
-[flake8]
-extend-ignore = E402, E501, E741, W504, W503, F841
-max-line-length = 100
-exclude = __main__.py
-docstring-convention = google

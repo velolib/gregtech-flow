@@ -48,7 +48,8 @@ class SympySolver:
         # (edge, machine_id) -> variable index
         self.edge_from_perspective_to_index: dict[tuple, int] = {}
 
-    def array_index(self, rec_id: str, product: str, direction: typing.Literal['I', 'O'] | str, multi_idx: int = 0) -> int:
+    def array_index(self, rec_id: str, product: str,
+                    direction: str, multi_idx: int = 0) -> int:
         """Gets a variable index from self.lookup, else generates unique key.
 
         Args:
@@ -127,7 +128,8 @@ class SympySolver:
             for rec_id in numbered_nodes:
                 rec = self.graph.recipes[rec_id]
 
-                # Pick a random ingredient to be the "solved" one, then solve for it based on machine number
+                # Pick a random ingredient to be the "solved" one, then solve for it based
+                # on machine number
                 if len(rec.I):
                     core_ing = rec.I[0]
                     core_direction = 'I'
@@ -180,7 +182,8 @@ class SympySolver:
             if self.graph._machine_check(rec_id):
                 rec = self.graph.recipes[rec_id]
 
-                # Pick a single ingredient to represent the rest of the equations (to avoid having more equations than needed)
+                # Pick a single ingredient to represent the rest of the equations (to
+                # avoid having more equations than needed)
                 if len(rec.I):
                     core_ing = rec.I[0]
                     core_direction = 'I'
@@ -209,10 +212,12 @@ class SympySolver:
         for edge in self.graph.edges:
             a, b, product = edge
 
-            if self.graph._machine_check(a) and ((edge, a) not in self.edge_from_perspective_to_index):
+            if self.graph._machine_check(a) and (
+                    (edge, a) not in self.edge_from_perspective_to_index):
                 self.edge_from_perspective_to_index[(edge, a)] = self.array_index(a, product, 'O')
 
-            if self.graph._machine_check(b) and ((edge, b) not in self.edge_from_perspective_to_index):
+            if self.graph._machine_check(b) and (
+                    (edge, b) not in self.edge_from_perspective_to_index):
                 self.edge_from_perspective_to_index[(edge, b)] = self.array_index(b, product, 'I')
 
     def _add_machinemachine_edges(self):
@@ -266,7 +271,8 @@ class SympySolver:
                     # print(involved_edges)
 
                     # Assume no loops since DAG was enforced earlier
-                    for rec_id, count in involved_machines.most_common():  # most_common so multi-IO variables are created first
+                    for rec_id, count in involved_machines.most_common(
+                    ):  # most_common so multi-IO variables are created first
                         if count > 1:
                             # Multi-input or multi-output
                             # Old variable is now the collected amount for that side
@@ -287,7 +293,8 @@ class SympySolver:
                             self._add_multiequations_on_edge(relevant_edge, rec_id, destinations)
 
                         else:
-                            # Still "simple" - can keep old self.graph variable, but opposite end of edge must point at correct multi-IO variable
+                            # Still "simple" - can keep old self.graph variable, but opposite end of
+                            # edge must point at correct multi-IO variable
 
                             # print('Pre-efpti')
                             # for k, v in edge_from_perspective_to_index.items():
@@ -349,7 +356,8 @@ class SympySolver:
 
         # Check for existing edge equations involving old_var in system and remove if exist
         # TODO: (ignoring this for now because it's not relevant for _addMachineMachineEdges)
-        #   Consider keeping the machine-internal equation - it will remain accurate as the old var is kept for it
+        # Consider keeping the machine-internal equation - it will remain accurate
+        # as the old var is kept for it
 
         # Update efpti and arrayIndex for new variables + edges
         connected_edges = self.graph.adj[multi_machine][direction]
@@ -471,7 +479,8 @@ class SympySolver:
             raise NotImplementedError(
                 'Both linear and nonlinear solver found empty set, so system of equations has no solutions -- report to dev.')
 
-        # Check inconsistent equations to see if products on both sides are the same - these are the core issues
+        # Check inconsistent equations to see if products on both sides are the
+        # same - these are the core issues
         def var_to_idx(var):
             return int(str(var).strip('v'))
 
@@ -548,7 +557,8 @@ class SympySolver:
                     #       b. create a new variable for old edge
                     #       c. create a new variable for machine -> sink
                     # 2. Redo linear solve
-                    # 3. Give option for user to add new I/O association to YAML config (will delete comments)
+                    # 3. Give option for user to add new I/O association to YAML config (will
+                    # delete comments)
                     pass
                 elif selection == '2':  # noqa
                     # Pull more of each other input from source
@@ -557,7 +567,8 @@ class SympySolver:
                     #       b. create a new variable for each old edge
                     #       c. create a new variable for each source -> machine
                     # 2. Redo linear solve
-                    # 3. Give option for user to add new I/O association to YAML config (will delete comments)
+                    # 3. Give option for user to add new I/O association to YAML config (will
+                    # delete comments)
                     pass
 
     def _add_vars_to_edges(self) -> None:
@@ -671,7 +682,8 @@ def postprocess_graph(self: 'Graph', progress_cb: Callable) -> None:
     progress_cb(6.6)
 
 
-def equations_solver(self: 'ProgramContext', project_name: str, recipes: list, title: str = '') -> None:
+def equations_solver(self: 'ProgramContext', project_name: str,
+                     recipes: list, title: str = '') -> None:
     """Runs the equations solver and outputs a graph.
 
     Args:

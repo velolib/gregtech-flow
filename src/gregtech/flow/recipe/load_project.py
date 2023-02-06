@@ -70,7 +70,8 @@ def unalias_machine_name(name: str) -> str:
     return aliases.get(name, name)
 
 
-def load_project(project_name: str | Path, graph_config: dict, project_dir: str | Path = 'projects') -> list:
+def load_project(project_name: str | Path, graph_config: dict,
+                 project_dir: str | Path = 'projects') -> list:
     """Loads the inputted project and returns a list of Recipe objects.
 
     Args:
@@ -107,7 +108,7 @@ def load_project(project_name: str | Path, graph_config: dict, project_dir: str 
                                      for name, quant in rec['O'].items()]),
                 rec['eut'],
                 rec['dur'],
-                **{x: (rec[x].casefold() if type(rec[x]) == str else rec[x]) for x in rec.keys() if x not in {'m', 'I', 'O', 'eut', 'dur', 'tier'}},
+                **{x: (rec[x].casefold() if isinstance(rec[x], str) else rec[x]) for x in rec.keys() if x not in {'m', 'I', 'O', 'eut', 'dur', 'tier'}},
             )
         )
 
