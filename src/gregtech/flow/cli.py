@@ -3,6 +3,7 @@
 This module is used to provide the program context for other modules.
 It is also used to run the Interactive CLI and the Direct CLI.
 """
+import contextlib
 import logging
 import os
 import pkgutil
@@ -207,35 +208,59 @@ class ProgramContext:
             return ['Exceeded maximum recursion limit',]
 
     def interactive_cli(self, current_error) -> bool:
-        """The interactive CLI for gregtech.flow.
+        """The interactive CLI for GT: Flow.
 
         Returns:
             bool: Whether or not the project file was found
         """
-        header = Layout(Panel(Align('[bold bright_cyan]GT: Flow', align='center',
-                        vertical='middle'), border_style='bold bright_cyan'), name='header', size=3)
+        @contextlib.contextmanager
+        def latest_log(cs: Console):
+            """Context manager fot latest.log thing."""
+            if not self.quiet:
+                cs.print('')
+                cs.print(
+                    Rule(style='bright_white',
+                         title='[bold bright_white]latest.log',
+                         align='center'))
+                yield
+                cs.print(Rule(style='bright_white'))
+                cs.print('')
+            else:
+                yield
+                cs.print('')
 
-        guide_text = textwrap.dedent('''\
-        [bright_green]Please enter project path (example: "[underline]power/oil/light_fuel.yaml[/]")[/]
-        [bright_green]Tab completion is [underline]enabled[/][/]
+        flow_red = "#ff6961"
+        flow_yellow = "#f8f38d"
+        flow_teal = "#08cad1"
+        flow_purple = "#7253ed"
+
+        text_color = "bright_green"
+
+        # TODO: Improvet the code look
+        header = Layout(Panel(Align(f'[bold {flow_purple}]GT: Flow Interactive CLI', align='center',
+                        vertical='middle'), border_style=f'bold {flow_purple}'), name='header', size=3)
+
+        guide_text = textwrap.dedent(f'''\
+        [{text_color}]Please enter project path (example: "[underline]power/oil/light_fuel.yaml[/]")[/]
+        [{text_color}]Tab completion is [underline]enabled[/][/]
         [bright_white]Valid commands:[/]
-        [bright_white]- [/][bright_green]end[/][bright_white] / [/][bright_green]stop[/][bright_white] / [/][bright_green]exit[/][bright_white]: Stop the program[/]
-        [bright_white]- [/][bright_green]all[/][bright_white]: Select all files for graph creation[/]
-        [bright_white]- [/][bright_green]last[/][bright_white]: The last project inputted (or just type nothing)[/]
-        [bright_white]- [/][bright_green]tree[/][bright_white]: Prints the './projects/' file tree[/]
+        [bright_white]- [/][{text_color}]end[/][bright_white] / [/][{text_color}]stop[/][bright_white] / [/][{text_color}]exit[/][bright_white]: Stop the program[/]
+        [bright_white]- [/][{text_color}]all[/][bright_white]: Select all files for graph creation[/]
+        [bright_white]- [/][{text_color}]last[/][bright_white]: The last project inputted (or just type nothing)[/]
+        [bright_white]- [/][{text_color}]tree[/][bright_white]: Prints the './projects/' file tree[/]
         ''')
-        guide = Layout(Panel(guide_text, border_style='bold bright_magenta',
+        guide = Layout(Panel(guide_text, border_style=f'bold {flow_teal}',
                        title='guide.txt', title_align='left'), name='guide')
 
-        links_text = textwrap.dedent('''\
-        [bright_green link=https://github.com/velolib/gregtech-flow]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow]https://github.com/velolib/gregtech-flow[/]
-        [bright_green link=https://github.com/velolib/gregtech-flow/wiki]Website[/][bright_white]: [/][underline bright_cyan link=https://velolib.github.io/gregtech-flow/]https://velolib.github.io/gregtech-flow/[/]
+        links_text = textwrap.dedent(f'''\
+        [{text_color} link=https://github.com/velolib/gregtech-flow]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow]https://github.com/velolib/gregtech-flow[/]
+        [{text_color} link=https://github.com/velolib/gregtech-flow/wiki]Website[/][bright_white]: [/][underline bright_cyan link=https://velolib.github.io/gregtech-flow/]https://velolib.github.io/gregtech-flow/[/]
         ''')
-        links = Layout(Panel(links_text, border_style='bold bright_white',
+        links = Layout(Panel(links_text, border_style=f'bold {flow_yellow}',
                        title='links.txt', title_align='left'), name='links')
 
-        errors = Layout(Panel('[bright_white]No errors found.' if not current_error else '[bright_red]' +
-                        current_error, border_style='bold bright_yellow', title='errors.log', title_align='left'), name='errors')
+        errors = Layout(Panel('[bright_white]No errors found.' if not current_error else f'[{flow_red}]' +
+                        current_error, border_style=f'bold {flow_red}', title='errors.log', title_align='left'), name='errors')
 
         root_layout = Layout()
         root_layout.size = 4
@@ -264,25 +289,17 @@ class ProgramContext:
                 case 'end' | 'stop' | 'exit':
                     exit()
                 case 'all':
-                    console.print('')
-                    console.print(Rule(style='bright_white',
-                                  title='[bold bright_white]latest.log', align='center'))
-
-                    valid_paths = [self.create_graph(v.relative_to(self.projects_path)) for v in Path(
-                        self.projects_path).glob('**/*.yaml') if 'dev' not in str(v)]
-
-                    console.print(Rule(style='bright_white'))
-                    console.print('')
+                    with latest_log(console):
+                        self.logger.info(f'Getting config from: "{self.config_path}"')
+                        valid_paths = [self.create_graph(v.relative_to(self.projects_path)) for v in Path(
+                            self.projects_path).glob('**/*.yaml') if 'dev' not in str(v)]
                     return all(valid_paths)
                 case 'last' | '':
-                    console.print('')
-                    console.print(Rule(style='bright_white',
-                                  title='[bold bright_white]latest.log', align='center'))
-                    create_graph = self.create_graph(self.project_cache)
-                    if not create_graph:
-                        print('')
-                    console.print(Rule(style='bright_white'))
-                    console.print('')
+                    with latest_log(console):
+                        self.logger.info(f'Getting config from: "{self.config_path}"')
+                        create_graph = self.create_graph(self.project_cache)
+                        if not create_graph:
+                            print('')
                     return create_graph
                 case 'tree':
                     console.print('')
@@ -294,19 +311,16 @@ class ProgramContext:
                     prompt('')
                     return True
                 case _:
-                    console.print('')
-                    console.print(Rule(style='bright_white',
-                                  title='[bold bright_white]latest.log', align='center'))
-                    create_graph = self.create_graph(sel_option)
-                    if not create_graph:
-                        print('')
-                    console.print(Rule(style='bright_white'))
-                    console.print('')
+                    with latest_log(console):
+                        self.logger.info(f'Getting config from: "{self.config_path}"')
+                        create_graph = self.create_graph(sel_option)
+                        if not create_graph:
+                            print('')
                     self.project_cache = sel_option
                     return create_graph
 
     def direct_cli(self, path: Path) -> bool:
-        """Direct CLI implementation for gregtech.flow.
+        """Direct CLI implementation for GT: Flow.
 
         Args:
             path (Path): The path inputted from the command line
@@ -316,11 +330,15 @@ class ProgramContext:
         """
         return self.create_graph(str(path))
 
-    def _run_typer(self, path: Optional[Path] = typer.Argument(None, help='Project path relative to ./projects'), quiet: Optional[bool] = typer.Option(
-            False, '--quiet', '-q', help='Disable logging'), config: Optional[Path] = typer.Option(None, help='Configuration file path')):
+    def _run_typer(self,
+                   path: Optional[Path] = typer.Argument(
+                       None, help='Project path relative to ./projects'),
+                   quiet: Optional[bool] = typer.Option(
+                       False, '--quiet', '-q', help='Disable logging'),
+                   config: Optional[Path] = typer.Option(None, help='Configuration file path')):
         """For typer."""
+        logger = self.logger
         if quiet:
-            logger = self.logger
             logger.setLevel(logging.CRITICAL + 1)
         self.quiet = bool(quiet)
 
@@ -350,10 +368,11 @@ class ProgramContext:
                     rprint(
                         Panel(
                             Align(
-                                '[bold bright_cyan]GT: Flow',
+                                '[bold #7253ed]GT: Flow Direct CLI',
                                 align='center',
                                 vertical='middle'),
-                            border_style='bold bright_cyan'))
+                            border_style='bold #7253ed'))
+                    self.logger.info(f'Getting config from: "{self.config_path}"')
                 result = self.direct_cli(path)
                 if not result:
                     raise RuntimeError(f'The specified project "{path}" could not be found!')

@@ -57,13 +57,14 @@ def get_fail(num):
 # ---------------------------------------------------------------------------- #
 
 @pytest.mark.parametrize('project_name', get_projects())
-def test_solver(project_name) -> None:
+def test_solver_when_succeed(project_name) -> None:
     """Used to test the GT: Flow equations solver directly.
 
     Args:
         project_name (str): Project name as a string
     """
     pc = ProgramContext(config_path=pytest.os_config)
+    pc.quiet = True
 
     recipes = load_project(project_name, pc.graph_config, project_dir='')
 
@@ -79,7 +80,7 @@ def test_solver(project_name) -> None:
         assert True == False, f'Failed on {project_name} with error {e}'
 
 @pytest.mark.parametrize('project_name', get_projects(remove_project=True))
-def test_flow(project_name: str) -> None:
+def test_flow_when_succeed(project_name: str) -> None:
     """Used to test the flow() CLI wrapper.
 
     Args:
@@ -88,6 +89,7 @@ def test_flow(project_name: str) -> None:
     project_name = str(Path(project_name))
 
     pc = ProgramContext(config_path=pytest.os_config)
+    pc.quiet = True
 
     try:
         flow(project_name, create_dirs=True, config_path=pytest.os_config)
@@ -98,13 +100,14 @@ def test_flow(project_name: str) -> None:
         assert True == False, f'Failed on {project_name} with error {e}'
 
 @pytest.mark.parametrize('project_name', get_projects(remove_project=True))
-def test_dcli(project_name):
+def test_dcli_when_succeed(project_name):
     """Used to test the GT: Flow Direct CLI.
 
     Args:
         project_name (str): Project name as a string
     """
     pc = ProgramContext(config_path=pytest.os_config)
+    pc.quiet = True
 
     with pytest.raises(SystemExit):
         pc._run_typer(Path(project_name), True, False)
@@ -113,13 +116,14 @@ def test_dcli(project_name):
         assert True == False, f'Failed on {project_name}'
 
 @pytest.mark.parametrize('s', get_fail(15))
-def test_fail(s):
+def test_dcli_when_fail(s):
     """Used to test the GT: Flow CLI by failing.
 
     Args:
         project_name (str): Project name as a string
     """
     pc = ProgramContext(config_path=pytest.os_config)
+    pc.quiet = True
     try:
         pc._run_typer(Path(s), True, False)
     except RuntimeError:
