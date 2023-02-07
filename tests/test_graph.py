@@ -151,7 +151,7 @@ def test_icli_when_succeed(project_name):
     pc.quiet = True
 
     with pytest.raises(SystemExit):
-        with mock.patch('gregtech.flow.cli.prompt', return_value = str(project_name)):
+        with mock.patch('gregtech.flow.cli.prompt', return_value = project_name):
             pc._run_typer(None, False, Path(pytest.os_config), True)
     
     if not (Path('projects') / Path(project_name).with_suffix('.yaml')).exists():
