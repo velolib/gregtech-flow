@@ -65,7 +65,7 @@ exclude = ["__main__.py",]
 docstring-convention = "google"
 
 [tool.mypy]
-exclude = ".venv"
+exclude = ["./.venv"]
 disable_error_code = "attr-defined"
 
 [build-system]

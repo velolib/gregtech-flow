@@ -4,8 +4,10 @@ from pathlib import Path
 from functools import lru_cache
 
 import pytest
+import unittest.mock as mock
 import random
 import string
+import shutil
 
 from gregtech.flow.recipe.load_project import load_project
 from gregtech.flow.graph._solver import equations_solver
@@ -25,6 +27,11 @@ match sys.platform:
         pytest.os_config_pathlib = Path('./tests/test_config_windows.yaml').resolve()
     case _:
         raise NotImplementedError(f'Invalid OS for testing: "{sys.platform}", contact dev for implementation!')
+
+@pytest.fixture(autouse=True)
+def initialize():
+    if Path('output/').absolute().exists():
+        shutil.rmtree(str(Path('output/').absolute()))
 
 def get_projects(ignore_broken: bool = True, remove_project: bool = False):
     if ignore_broken:
@@ -110,7 +117,7 @@ def test_dcli_when_succeed(project_name):
     pc.quiet = True
 
     with pytest.raises(SystemExit):
-        pc._run_typer(Path(project_name), True, False)
+        pc._run_typer(Path(project_name), True, Path(pytest.os_config), False)
     
     if not (Path('projects') / Path(project_name).with_suffix('.yaml')).exists():
         assert True == False, f'Failed on {project_name}'
@@ -125,11 +132,27 @@ def test_dcli_when_fail(s):
     pc = ProgramContext(config_path=pytest.os_config)
     pc.quiet = True
     try:
-        pc._run_typer(Path(s), True, False)
+        pc._run_typer(Path(s), True, False, once=False)
     except RuntimeError:
         assert True == True
     except SystemExit:
         assert True == False, f'Succeeded on {s}.'
     else:
         assert True == False, f'Succeeded on {s}.'
+
+@pytest.mark.parametrize('project_name', get_projects(remove_project=True))
+def test_icli_when_succeed(project_name):
+    """Used to test the GT: Flow Interactive CLI by inputting a path.
+
+    Args:
+        project_name (str): Project name as a string
+    """
+    pc = ProgramContext(config_path=pytest.os_config)
+    pc.quiet = True
+
+    with pytest.raises(SystemExit):
+        with mock.patch('gregtech.flow.cli.prompt', return_value = str(project_name)):
+            pc._run_typer(None, False, Path(pytest.os_config), True)
     
+    if not (Path('projects') / Path(project_name).with_suffix('.yaml')).exists():
+        assert True == False, f'Failed on {project_name}'

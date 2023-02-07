@@ -229,15 +229,15 @@ class ProgramContext:
                 yield
                 cs.print('')
 
-        flow_red = "#ff6961"
-        flow_yellow = "#f8f38d"
-        flow_teal = "#08cad1"
-        flow_purple = "#7253ed"
+        flow_red = '#ff6961'
+        flow_yellow = '#f8f38d'
+        flow_teal = '#08cad1'
+        flow_purple = '#7253ed'
 
-        text_color = "bright_green"
+        text_color = '#a5e075'
 
         # TODO: Improvet the code look
-        header = Layout(Panel(Align(f'[bold {flow_purple}]GT: Flow Interactive CLI', align='center',
+        header = Layout(Panel(Align(f'[bold {flow_purple} link=https://velolib.github.io/gregtech-flow/]GT: Flow Interactive CLI[/]', align='center',
                         vertical='middle'), border_style=f'bold {flow_purple}'), name='header', size=3)
 
         guide_text = textwrap.dedent(f'''\
@@ -335,7 +335,8 @@ class ProgramContext:
                        None, help='Project path relative to ./projects'),
                    quiet: Optional[bool] = typer.Option(
                        False, '--quiet', '-q', help='Disable logging'),
-                   config: Optional[Path] = typer.Option(None, help='Configuration file path')):
+                   config: Optional[Path] = typer.Option(None, help='Configuration file path'),
+                   once: bool = typer.Option(False, help='Only run Interactive CLI once')):
         """For typer."""
         logger = self.logger
         if quiet:
@@ -360,15 +361,16 @@ class ProgramContext:
                     print(
                         'Warning: Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
                 result = self.interactive_cli(icli_error)
-                icli_error = None
                 if not result:
-                    icli_error = 'Project could not be found!'
+                    raise RuntimeError('Project could not be found!')
+                if once:
+                    exit(0)
             else:
                 if not quiet:
                     rprint(
                         Panel(
                             Align(
-                                '[bold #7253ed]GT: Flow Direct CLI',
+                                '[bold #7253ed link=https://velolib.github.io/gregtech-flow/]GT: Flow Direct CLI[/]',
                                 align='center',
                                 vertical='middle'),
                             border_style='bold #7253ed'))
@@ -377,7 +379,7 @@ class ProgramContext:
                 if not result:
                     raise RuntimeError(f'The specified project "{path}" could not be found!')
                 else:
-                    exit()
+                    exit(0)
 
     def run(self) -> None:
         """Runs the CLI."""
