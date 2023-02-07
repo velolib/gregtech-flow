@@ -356,10 +356,6 @@ class ProgramContext:
         icli_error = None
         while True:
             if path is None:
-                cols, _ = os.get_terminal_size()
-                if cols <= 139:
-                    print(
-                        'Warning: Terminal width <= 139 columns is not supported. Use the direct CLI instead.')
                 result = self.interactive_cli(icli_error)
                 if not result:
                     raise RuntimeError('Project could not be found!')
