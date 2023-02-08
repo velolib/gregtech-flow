@@ -1,4 +1,4 @@
-"""Module containing functions to load recipes from a GT: Flow project."""
+"""Module used to load recipes from a GT: Flow project."""
 
 from pathlib import Path
 

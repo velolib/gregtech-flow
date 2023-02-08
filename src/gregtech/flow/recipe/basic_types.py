@@ -2,10 +2,9 @@
 
 import logging
 import textwrap
-import typing
 from collections import defaultdict
 from collections.abc import Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import singledispatchmethod
 
 
@@ -19,8 +18,6 @@ class Ingredient:
     """
     name: str
     quant: float
-    # Used to track deprecation.
-    found_bracket_warning: typing.ClassVar[bool] = field(init=False, default=0)  # type: ignore
 
     # NOTE: Too lazy to implement, just replace () to [].
     def __post_init__(self) -> None:
@@ -31,12 +28,11 @@ class Ingredient:
         """
         logger = logging.getLogger('rich')
         first_word = self.name.split(' ')[0]
-        if not self.__class__.found_bracket_warning and '[' in first_word and ']' in first_word:
+        if '[' in first_word and ']' in first_word:
             logger.warning(textwrap.dedent('''\
                 You are using square brackets in your I/O!
                 Support for square bracket tags "[]" will be phased out in the future.
                 Switch to using parentheses "()" instead.'''))
-            self.__class__.found_bracket_warning = True
         if self.name not in {"EU"} and self.name.casefold() != self.name:
             raise DeprecationWarning(textwrap.dedent(f'''\
                 You are using uppercase characters in your I/O ({self.name})!
