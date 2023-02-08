@@ -46,7 +46,7 @@ def graphviz_output(self: 'Graph') -> None:
             'labelloc': 't',
             'fontsize': str(self.graph_config["TITLE_FONTSIZE"]),
             'fontname': self.graph_config["TITLE_FONT"],
-            'fontcolor': self.graph_config["TITLE_COLOR"]
+            'fontcolor': self.graph_config["TITLE_COLOR"],
         }
     )
 

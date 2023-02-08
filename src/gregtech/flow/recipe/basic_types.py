@@ -139,7 +139,7 @@ class Recipe:
                  user_voltage: str,
                  inputs: IngredientCollection, outputs: IngredientCollection,
                  eut: int, dur: float | int,
-                 circuit=0,
+                 circuit=-1,
                  **kwargs):
         """Recipe class constructor.
 
@@ -150,7 +150,7 @@ class Recipe:
             outputs (IngredientCollection): Outputs wrapped in an IngredientCollection class
             eut (int): The EU in EU/t
             dur (float | int): Duration in ticks. Will be converted to float.
-            circuit (int, optional): Circuit number. Defaults to 0. Unused for now
+            circuit (int, optional): Circuit number. Defaults to -1 (None).
         """
         self.machine = machine_name
         self.user_voltage = user_voltage

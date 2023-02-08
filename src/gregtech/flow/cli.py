@@ -48,10 +48,13 @@ class ProgramContext:
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
             config_path (Path | str, optional): Configuration file location. Will create one if nonexistent
         """
-        self.config_cache: dict = {}
         self.project_cache: str = ''
-        self.config_path = Path(config_path) if config_path else Path('flow_config.yaml')
         self.quiet = False
+
+        self.config_path = Path(config_path) if config_path else Path('flow_config.yaml')
+        self.config_cache: dict = {}  # Used to skip schema validation
+        self.graph_config: dict = {}
+        self.reload_graph_config()
 
         config = self.config_path
         template = pkgutil.get_data('gregtech.flow', 'resources/config_template.yaml')
@@ -95,9 +98,8 @@ class ProgramContext:
             projects_path.mkdir()
         self.projects_path = projects_path
 
-    @property
-    def graph_config(self) -> dict:
-        """Graph configuration.
+    def reload_graph_config(self) -> dict:
+        """Reloads the graph configuration file.
 
         Returns:
             dict: Graph configuration
@@ -113,6 +115,7 @@ class ProgramContext:
                 validate_config(graph_config)
                 self.config_cache = graph_config
 
+        # TODO: Remove this check in favour of schema "required": ["x", "y", "z"]
         # Checks for graph_config
         if graph_config['GRAPHVIZ'] == 'path':
             pass
@@ -121,7 +124,7 @@ class ProgramContext:
                 os.environ["PATH"] += os.pathsep + str(Path(graph_config['GRAPHVIZ']))
             else:
                 raise RuntimeError('Graphviz path does not exist')
-        return graph_config
+        self.graph_config = graph_config
 
     def log(self, msg, level=logging.DEBUG):
         """Logging method for gregtech.flow.
@@ -214,13 +217,13 @@ class ProgramContext:
             bool: Whether or not the project file was found
         """
         @contextlib.contextmanager
-        def latest_log(cs: Console):
-            """Context manager for latest.log thing."""
+        def floor_ceiling(cs: Console, title: str):
+            """Context manager for Rule() above and below."""
             if not self.quiet:
                 cs.print('')
                 cs.print(
                     Rule(style='bright_white',
-                         title='[bold bright_white]latest.log',
+                         title=f'[bold bright_white]{title}',
                          align='center'))
                 yield
                 cs.print(Rule(style='bright_white'))
@@ -289,13 +292,13 @@ class ProgramContext:
                 case 'end' | 'stop' | 'exit':
                     exit()
                 case 'all':
-                    with latest_log(console):
+                    with floor_ceiling(console, 'latest.log'):
                         self.logger.info(f'Getting config from: "{self.config_path}"')
                         valid_paths = [self.create_graph(v.relative_to(self.projects_path)) for v in Path(
                             self.projects_path).glob('**/*.yaml') if 'dev' not in str(v)]
                     return all(valid_paths)
                 case 'last' | '':
-                    with latest_log(console):
+                    with floor_ceiling(console, 'latest.log'):
                         self.logger.info(f'Getting config from: "{self.config_path}"')
                         create_graph = self.create_graph(self.project_cache)
                         if not create_graph:
@@ -311,7 +314,7 @@ class ProgramContext:
                     prompt('')
                     return True
                 case _:
-                    with latest_log(console):
+                    with floor_ceiling(console, 'latest.log'):
                         self.logger.info(f'Getting config from: "{self.config_path}"')
                         create_graph = self.create_graph(sel_option)
                         if not create_graph:
@@ -361,6 +364,7 @@ class ProgramContext:
                     raise RuntimeError('Project could not be found!')
                 if once:
                     exit(0)
+                self.reload_graph_config()
             else:
                 if not quiet:
                     rprint(
