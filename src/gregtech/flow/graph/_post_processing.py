@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import math
 from collections import defaultdict
@@ -38,7 +40,7 @@ def capitalize_machine(machine: str) -> str:
         return machine.title()
 
 
-def create_machine_labels(self: 'Graph') -> None:
+def create_machine_labels(self: Graph) -> None:
     """Creates machine labels for the nodes in this Graph.
 
     Args:
@@ -109,7 +111,7 @@ def create_machine_labels(self: 'Graph') -> None:
         self.nodes[rec_id]['label'] = '\n'.join(label_lines)
 
 
-def add_user_node_color(self: 'Graph') -> None:
+def add_user_node_color(self: Graph) -> None:
     """Sets the color of the locked nodes in this Graph.
 
     Args:
@@ -125,7 +127,7 @@ def add_user_node_color(self: 'Graph') -> None:
         self.nodes[rec_id].update({'fillcolor': self.graph_config['LOCKEDNODE_COLOR']})
 
 
-def add_recipe_multipliers(self: 'Graph') -> None:
+def add_recipe_multipliers(self: Graph) -> None:
     """Multiplies the Recipes in this Graph using the data from the SympySolver.
 
     Args:
@@ -163,7 +165,7 @@ def add_recipe_multipliers(self: 'Graph') -> None:
         rec.eut = rec.multiplier * rec.eut
 
 
-def add_powerline_nodes(self: 'Graph') -> None:
+def add_powerline_nodes(self: Graph) -> None:
     """Adds power line nodes to this Graph.
 
     Args:
@@ -318,7 +320,7 @@ def add_powerline_nodes(self: 'Graph') -> None:
             highest_node_index += 1
 
 
-def add_summary_node(self: 'Graph') -> None:
+def add_summary_node(self: Graph) -> None:
     """Create summary node in graph.
 
     Args:
@@ -485,7 +487,7 @@ def add_summary_node(self: 'Graph') -> None:
     )
 
 
-def bottleneck_print(self: 'Graph') -> None:
+def bottleneck_print(self: Graph) -> None:
     """Prints bottlenecks normalized to an input voltage.
 
     Args:
@@ -495,7 +497,7 @@ def bottleneck_print(self: 'Graph') -> None:
         NotImplementedError: Negative overclocking not implemented.
     """
     # Prints bottlenecks normalized to an input voltage.
-    machine_recipes = [x for x in _machine_iterate(self)]
+    machine_recipes = list(_machine_iterate(self))
     machine_recipes.sort(
         key=lambda rec: rec.multiplier,
         reverse=True,
@@ -518,7 +520,7 @@ def bottleneck_print(self: 'Graph') -> None:
             rec.base_eut = rec.eut
 
     # Print actual bottlenecks
-    for i, rec in zip(range(number_to_print), machine_recipes):
+    for _i, rec in zip(range(number_to_print), machine_recipes):
         self.parent_context.log(
             f'{round(rec.multiplier, 2)}x {rec.user_voltage} {rec.machine}', logging.INFO)
         for out in rec.O:

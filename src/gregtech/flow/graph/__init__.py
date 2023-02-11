@@ -1,5 +1,7 @@
 """The main graph logic of GT: Flow."""
 
+from __future__ import annotations
+
 import itertools
 from typing import TYPE_CHECKING
 
@@ -16,7 +18,7 @@ class Graph:
     """Graphviz Graph abstraction for GT: Flow."""
 
     def __init__(self, graph_name: str, recipes: list,
-                 parent_context: 'ProgramContext', title: str = ''):
+                 parent_context: ProgramContext, title: str = ''):
         """Initializes Graph and also overclocks all recipes.
 
         Args:
@@ -26,7 +28,7 @@ class Graph:
             title (str, optional): The title of the graph. Defaults to '.
         """
         self.graph_name = graph_name
-        self.recipes: dict[str, 'Recipe'] = {str(i): x for i, x in enumerate(recipes)}
+        self.recipes: dict[str, Recipe] = {str(i): x for i, x in enumerate(recipes)}
         self.nodes: dict = {}
         self.edges: dict = {}  # uniquely defined by (machine from, machine to, ing name)
         self.parent_context = parent_context
@@ -37,7 +39,7 @@ class Graph:
         self.adj: dict = {}
         self.adj_machine: dict = {}
 
-        self._color_dict: dict = dict()
+        self._color_dict: dict = {}
         if self.graph_config.get('USE_RAINBOW_EDGES', None):
             self._color_cycler = itertools.cycle(self.graph_config['EDGECOLOR_CYCLE'])
         else:
@@ -72,7 +74,7 @@ class Graph:
         """
         return round_readable(number)
 
-    def add_node(self: 'Graph', recipe_id: str, **kwargs) -> None:
+    def add_node(self: Graph, recipe_id: str, **kwargs) -> None:
         """Adds a node to the Graph.
 
         Args:
@@ -81,7 +83,7 @@ class Graph:
         """
         self.nodes[recipe_id] = kwargs
 
-    def add_edge(self: 'Graph', node_from: str, node_to: str,
+    def add_edge(self: Graph, node_from: str, node_to: str,
                  ing_name: str, quantity: float | int, **kwargs) -> None:
         """Adds an edge to the Graph.
 

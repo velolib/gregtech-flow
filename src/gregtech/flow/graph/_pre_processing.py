@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from collections import defaultdict
 from typing import TYPE_CHECKING
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def connect_graph(self: 'Graph') -> None:
+def connect_graph(self: Graph) -> None:
     """Connects the graph.
 
     Args:
@@ -98,7 +100,7 @@ def connect_graph(self: 'Graph') -> None:
         graphviz_output(self)
 
 
-def remove_back_edges(self: 'Graph') -> None:
+def remove_back_edges(self: Graph) -> None:
     """Removes the back edges in a graph (no loops).
 
     Args:

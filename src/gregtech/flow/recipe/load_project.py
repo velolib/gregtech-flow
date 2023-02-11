@@ -1,5 +1,7 @@
 """Module used to load recipes from a GT: Flow project."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from gregtech.flow.recipe.basic_types import (Ingredient, IngredientCollection,
@@ -85,7 +87,7 @@ def load_project(project_name: str | Path, graph_config: dict,
     # Load config file
     project_filepath = Path(project_dir) / f'{project_name}'
     project_name = project_filepath.name.split('.')[0]
-    with open(project_filepath, 'r') as f:
+    with open(project_filepath) as f:
         project = list(yaml.load_all(f))[-1]
         validate_project(project)
 

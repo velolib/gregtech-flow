@@ -1,5 +1,7 @@
 """GT: Flow CLI wrapper implementation."""
 
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 

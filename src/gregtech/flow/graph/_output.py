@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import re
 from collections import defaultdict
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
     from gregtech.flow.graph import Graph
 
 
-def graphviz_output(self: 'Graph') -> None:
+def graphviz_output(self: Graph) -> None:
     """Outputs a graphviz graph using the data included in the graph object.
 
     Args:

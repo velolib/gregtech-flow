@@ -3,6 +3,8 @@
 This module is used to provide the program context for other modules.
 It is also used to run the Interactive CLI and the Direct CLI.
 """
+from __future__ import annotations
+
 import contextlib
 import inspect
 import logging
@@ -10,14 +12,12 @@ import os
 import pkgutil
 import shutil
 import sys
-from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Literal, Optional
+from typing import TYPE_CHECKING, Literal
 
 import typer
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.document import Document
 from prompt_toolkit.shortcuts import CompleteStyle
 from prompt_toolkit.styles import Style
 from rich import print as rprint
@@ -32,6 +32,11 @@ from rich.traceback import install
 from gregtech.flow.graph._solver import equations_solver
 from gregtech.flow.recipe.load_project import load_project
 from gregtech.flow.schemas import validate_config, validate_header, yaml
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
+
+    from prompt_toolkit.document import Document
 
 install(show_locals=True, max_frames=100)
 
@@ -434,11 +439,11 @@ class ProgramContext:
             raise
 
     def _run_typer(self,
-                   path: Optional[Path] = typer.Argument(
+                   path: Path | None = typer.Argument(
                        None, help='Project path relative to ./projects'),
-                   quiet: Optional[bool] = typer.Option(
+                   quiet: bool | None = typer.Option(
                        False, '--quiet', '-q', help='Disable logging'),
-                   config: Optional[Path] = typer.Option(None, help='Configuration file path'),
+                   config: Path | None = typer.Option(None, help='Configuration file path'),
                    once: bool = typer.Option(False, help='Only run Interactive CLI once')):
         """For typer."""
         if quiet:

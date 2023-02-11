@@ -1,10 +1,15 @@
 """Class abstractions for GT: Flow projects."""
 
+from __future__ import annotations
+
 import inspect
 from collections import defaultdict
-from collections.abc import Iterator
 from dataclasses import dataclass
 from functools import singledispatchmethod
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @dataclass  # type: ignore
@@ -45,7 +50,7 @@ class IngredientCollection:
         Args:
             *ingredient list: Variable length ingredient list
         """
-        self._ings = ingredient_list
+        self._ings: tuple[Ingredient, ...] = ingredient_list
         # Note: name is not a unique identifier for multi-input situations
         # therefore, need to defaultdict a list
         self._ingdict = defaultdict(list)
@@ -103,7 +108,7 @@ class IngredientCollection:
 
     def __repr__(self) -> str:
         """Returns an "official" string representation of this IngredientCollection."""
-        return str([x for x in self._ings])
+        return str(list[self._ings])  # type: ignore [name-defined]
 
     # TODO: Type hint Self as return value when mypy supports it.
     def __mul__(self, mul_num: float | int):

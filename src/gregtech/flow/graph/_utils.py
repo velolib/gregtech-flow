@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 from collections import defaultdict
-from collections.abc import Iterator
 from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from gregtech.flow.recipe.basic_types import Recipe
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from gregtech.flow.graph import Graph
 
 
@@ -58,7 +61,7 @@ def round_readable(number: int | float) -> str:
     raise ValueError('Negative number not allowed!')
 
 
-def create_adjacency_list(self: 'Graph') -> None:
+def create_adjacency_list(self: Graph) -> None:
     """Computes an adjacency list (node -> {I: edges, O: edges})."""
     # Compute "adjacency list" (node -> {I: edges, O: edges}) for edges and machine-involved edges
     adj: dict = defaultdict(lambda: defaultdict(list))
@@ -88,7 +91,7 @@ def create_adjacency_list(self: 'Graph') -> None:
     self.parent_context.log('')
 
 
-def idx_to_voltage(self: 'Graph', tier_idx: int) -> int:
+def idx_to_voltage(self: Graph, tier_idx: int) -> int:
     """Returns the amperage of the inputted tier.
 
     Args:
@@ -101,7 +104,7 @@ def idx_to_voltage(self: 'Graph', tier_idx: int) -> int:
 
 
 @lru_cache(maxsize=256)  # Arbitrary amount
-def _machine_check(self: 'Graph', rec_id: str) -> bool:
+def _machine_check(self: Graph, rec_id: str) -> bool:
     """Returns if inputted recipe ID is a machine and not a builtin.
 
     Args:
@@ -115,7 +118,7 @@ def _machine_check(self: 'Graph', rec_id: str) -> bool:
     return True
 
 
-def _machine_iterate(self: 'Graph') -> Iterator['Recipe']:
+def _machine_iterate(self: Graph) -> Iterator[Recipe]:
     """Returns a generator of recipes.
 
     Yields:

@@ -1,5 +1,10 @@
+from __future__ import annotations
+
 import collections
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 # Modified from https://stackoverflow.com/a/53995651/7247528
 

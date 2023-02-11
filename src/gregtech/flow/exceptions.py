@@ -1,5 +1,7 @@
 """Exceptions for GT: Flow."""
 
+from __future__ import annotations
+
 
 class GTFlowError(Exception):
     """Base exception for GT: Flow."""

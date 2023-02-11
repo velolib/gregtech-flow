@@ -1,11 +1,11 @@
 # In theory solving the machine flow as a linear program is fast and simple -
 # this prototype explores this.
+from __future__ import annotations
 
 import logging
 import typing
 from collections import Counter, deque
 from math import isclose
-from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
 from rich.progress import Progress
@@ -25,6 +25,8 @@ from gregtech.flow.graph._pre_processing import (connect_graph,
                                                  remove_back_edges)
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from gregtech.flow.cli import ProgramContext
 
 
@@ -386,7 +388,7 @@ class SympySolver:
 
         base = self.variables[self.array_index(
             multi_machine, multi_product, direction, multi_idx=0)]
-        for i, dst in enumerate(destinations):
+        for i, _dst in enumerate(destinations):
             base -= self.variables[self.array_index(multi_machine,
                                                     multi_product, direction, multi_idx=self.num_variables + i)]
         self.system.append(base)
@@ -488,7 +490,7 @@ class SympySolver:
         #     print(k, v)
 
         idx_to_mpdm = {idx: mpdm for mpdm, idx in self.lookup.items()}
-        for group, constant_diff in inconsistent_variables:
+        for group, _constant_diff in inconsistent_variables:
             assert len(group) == 2  # TODO: NotImplemented
 
             # Reverse lookup using var
@@ -513,10 +515,6 @@ class SympySolver:
 
                 self.graph.parent_context.log('Please fix by either:', level=logging.INFO)
 
-                # if constant_diff < 0:
-                #     parent_group_idx = 0
-                #     child_group_idx = 1
-                # else:
                 parent_group_idx = 0
                 child_group_idx = 1
 
@@ -641,7 +639,7 @@ class SympySolver:
                 relevant_edge['locked'] = True  # TODO: Legacy - check if can be removed
 
 
-def preprocess_graph(self: 'Graph', progress_cb) -> None:
+def preprocess_graph(self: Graph, progress_cb) -> None:
     """Graph pre-processing.
 
     Args:
@@ -656,7 +654,7 @@ def preprocess_graph(self: 'Graph', progress_cb) -> None:
     progress_cb(6.6)
 
 
-def postprocess_graph(self: 'Graph', progress_cb: Callable) -> None:
+def postprocess_graph(self: Graph, progress_cb: Callable) -> None:
     """Graph post-processing.
 
     Args:
@@ -682,7 +680,7 @@ def postprocess_graph(self: 'Graph', progress_cb: Callable) -> None:
     progress_cb(6.6)
 
 
-def equations_solver(self: 'ProgramContext', project_name: str | Path,
+def equations_solver(self: ProgramContext, project_name: str | Path,
                      recipes: list, title: str = '') -> None:
     """Runs the equations solver and outputs a graph.
 

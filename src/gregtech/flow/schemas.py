@@ -1,5 +1,7 @@
 """JSON Schema validators for the GT: Flow projects and the configuration file."""
 
+from __future__ import annotations
+
 import pkgutil
 
 import fastjsonschema  # type: ignore

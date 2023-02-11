@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 import re
 from collections import defaultdict
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
 # as designed by Usagirei in https://github.com/OrderedSet86/gtnh-flow/pull/4
 
 
-def strip_brackets(self: 'Graph', ing: str) -> str:
+def strip_brackets(self: Graph, ing: str) -> str:
     """Strips brackets from an ingredient string.
 
     Args:
@@ -31,7 +33,7 @@ def strip_brackets(self: 'Graph', ing: str) -> str:
         return ing
 
 
-def check_node_has_port(self: 'Graph', node: str) -> bool:
+def check_node_has_port(self: Graph, node: str) -> bool:
     """Checks if the inputted node has a port or not.
 
     Args:
@@ -47,7 +49,7 @@ def check_node_has_port(self: 'Graph', node: str) -> bool:
     return False
 
 
-def get_output_port_side(self: 'Graph') -> str:
+def get_output_port_side(self: Graph) -> str:
     """Get output port side depending on graph orientation.
 
     Returns:
@@ -57,7 +59,7 @@ def get_output_port_side(self: 'Graph') -> str:
     return {'TB': 's', 'BT': 'n', 'LR': 'e', 'RL': 'w'}.get(dir, 'w')
 
 
-def get_input_port_side(self: 'Graph') -> str:
+def get_input_port_side(self: Graph) -> str:
     """Get input port side depending on graph orientation.
 
     Returns:
@@ -67,7 +69,7 @@ def get_input_port_side(self: 'Graph') -> str:
     return {'TB': 'n', 'BT': 's', 'LR': 'w', 'RL': 'e'}.get(dir, 'w')
 
 
-def get_unique_color(self: 'Graph', id: str) -> str:
+def get_unique_color(self: Graph, id: str) -> str:
     """Returns a unique color from inputted ID.
 
     Args:
@@ -81,7 +83,7 @@ def get_unique_color(self: 'Graph', id: str) -> str:
     return self._color_dict[id]
 
 
-def get_port_id(self: 'Graph', ing_name: str, port_type: str) -> str:
+def get_port_id(self: Graph, ing_name: str, port_type: str) -> str:
     """Generate a port ID from ing_name and port_type.
 
     Args:
@@ -95,7 +97,7 @@ def get_port_id(self: 'Graph', ing_name: str, port_type: str) -> str:
     return f'{port_type}_{normal}'
 
 
-def get_ing_id(self: 'Graph', ing_name: str) -> str:
+def get_ing_id(self: Graph, ing_name: str) -> str:
     """Get ingredient ID from ingredient name.
 
     Args:
@@ -111,7 +113,7 @@ def get_ing_id(self: 'Graph', ing_name: str) -> str:
     return id.lower()
 
 
-def get_ing_label(self: 'Graph', ing_name: str) -> str:
+def get_ing_label(self: Graph, ing_name: str) -> str:
     """Returns a string from an ingredient name into a title. Only exception is EU.
 
     Args:
@@ -130,7 +132,7 @@ def get_ing_label(self: 'Graph', ing_name: str) -> str:
         return ing_name.title()
 
 
-def get_quant_label(self: 'Graph', ing_id: str, ing_quant: float | int) -> str:
+def get_quant_label(self: Graph, ing_id: str, ing_quant: float | int) -> str:
     """Get quantity label from ingredient ID and ingredient quantity.
 
     Args:
@@ -149,7 +151,7 @@ def get_quant_label(self: 'Graph', ing_id: str, ing_quant: float | int) -> str:
         return f'{self.round_readable(ing_quant)}/s'
 
 
-def _combine_outputs(self: 'Graph'):
+def _combine_outputs(self: Graph):
     """Creates a meta-node on the Graph to combine outputs."""
     ings = defaultdict(list)
     for src, dst, ing in self.edges.keys():
@@ -179,7 +181,7 @@ def _combine_outputs(self: 'Graph'):
         self.add_edge(src, joint_id, ing, q_sum)
 
 
-def _combine_inputs(self: 'Graph'):
+def _combine_inputs(self: Graph):
     """Creates a meta-node on the Graphto combine inputs."""
     ings = defaultdict(list)
     for src, dst, ing in self.edges.keys():
