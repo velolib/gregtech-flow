@@ -1,20 +1,2 @@
 {
-  "Project header": {
-    "isFileTemplate": true /*Toggles copying on file creation*/,
-    "scope": "yaml",
-    "prefix": "!header",
-    "body": [
-      "---",
-      "title: ${1:title}",
-      "creator: ${2:creator}",
-      "description: ${3:description}",
-      "grades:",
-      "\tpower: ${4|None,Partial,Sufficient,Significant|}",
-      "\toutput: ${5|Item,Hot,Dust,Fluid,Energy,Misc|}",
-      "\trecycle: ${7|None,Partial,Full|}",
-      "---",
-      ""
-    ],
-    "description": "Project header"
-  }
 }
