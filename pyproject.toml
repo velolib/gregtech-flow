@@ -1,5 +1,5 @@
 [tool.poetry.scripts]
-flow = 'gregtech:run_cli'
+flow = 'gregtech.__main__:run_cli'
 
 [tool.poetry]
 name = "gregtech-flow"
@@ -28,9 +28,9 @@ graphviz = "^0.20.1"
 rich = "^13.0.0"
 sympy = "^1.11.1"
 typer = "^0.7.0"
-jsonschema = "^4.17.3"
 ruamel-yaml = "^0.17.21"
 prompt-toolkit = "^3.0.36"
+fastjsonschema = "^2.16.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"
@@ -51,6 +51,7 @@ flake8-simplify = "^0.19.3"
 flake8-docstrings = "^1.7.0"
 flake8-pyproject = "^1.2.2"
 pep8-naming = "^0.13.3"
+snakeviz = "^2.1.1"
 
 [tool.autopep8]
 ignore = "E402"

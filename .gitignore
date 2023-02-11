@@ -1,12 +1,18 @@
 output/
 .idea/
-
-.vscode/
 .tokens
+
+.mypy_cache/
 
 testing.py
 cov.xml
 src/gregtech/flow/resources/project.yaml
+gregtech-flow.prof
+
+.vscode/*
+!.vscode/yaml.code-snippets
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # === STANDARD PYTHON IGNORES ===
 # from https://github.com/github/gitignore/blob/main/Python.gitignore
