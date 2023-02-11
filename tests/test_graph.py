@@ -11,7 +11,7 @@ import shutil
 
 from gregtech.flow.recipe.load_project import load_project
 from gregtech.flow.graph._solver import equations_solver
-from gregtech.flow.cli import ProgramContext, PromptSession
+from gregtech.flow.cli import ProgramContext
 from gregtech.flow.wrapper import flow
 
 # ---------------------------------------------------------------------------- #
@@ -159,11 +159,15 @@ def test_icli_when_succeed(project_name):
     pc = ProgramContext(config_path=pytest.os_config)
     pc.quiet = True
     
-    def fake(self, *_, **__):
-        return project_name
+    class Fake:
+        def __init__(self, *extra, **_) -> None:
+            pass
+        
+        def prompt(self, *extra, **_) -> None:
+            return project_name
 
     with pytest.raises(SystemExit):
-        with mock.patch.object(PromptSession, 'prompt', fake):
+        with mock.patch('gregtech.flow.cli.PromptSession', Fake):
             pc._run_typer(None, False, Path(pytest.os_config), True)
     
     if not (Path('projects') / Path(project_name).with_suffix('.yaml')).exists():
