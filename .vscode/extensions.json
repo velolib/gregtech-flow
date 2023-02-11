@@ -1,0 +1,13 @@
+{
+  // List of extensions which should be recommended for users of this workspace.
+  "recommendations": [
+    "njpwerner.autodocstring",
+    "esbenp.prettier-vscode",
+    "ms-python.vscode-pylance",
+    "ms-python.python",
+    "donjayamanne.python-extension-pack",
+    "redhat.vscode-yaml" // Needed if you want to use YAML schemas
+  ],
+  // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
+  "unwantedRecommendations": []
+}
