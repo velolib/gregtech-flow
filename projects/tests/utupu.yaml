@@ -8,7 +8,7 @@
     borax dust: 60
     rhenium dust: 20
     red mud slurry: 2000
-    '[output] water': 2000
+    (output) water: 2000
   eut: 1920
   dur: 120
   heat: 3500

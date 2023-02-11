@@ -30,7 +30,7 @@ def test_swap_io():
     assert _i_ == 'O'
     assert _o_ == 'I'
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         swap_io('Z')
         swap_io('sonar')
 

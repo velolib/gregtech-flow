@@ -1,12 +1,8 @@
 ---
 title: 2.2.0 Platline
+version: 2.2.8
 creator: OrderedSet86
 description: Platline for version 2.2.0
-metadata:
-  power output: None
-  output state: Dust
-  output handling: Full
-  recycling: Full
 ---
 
 - m: large chemical reactor

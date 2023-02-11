@@ -5,6 +5,7 @@ import logging
 import typing
 from collections import Counter, deque
 from math import isclose
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable
 
 from rich.progress import Progress
@@ -12,6 +13,7 @@ from sympy import linsolve, symbols
 from sympy.sets.sets import EmptySet
 from sympy.solvers import solve
 
+from gregtech.flow.exceptions import SolverError
 from gregtech.flow.graph import Graph
 from gregtech.flow.graph._output import graphviz_output
 from gregtech.flow.graph._post_processing import (add_powerline_nodes,
@@ -120,7 +122,7 @@ class SympySolver:
         lt = len(targeted_nodes)
 
         if lt == 0 and ln == 0:
-            raise RuntimeError(
+            raise SolverError(
                 'Need at least one "number" or "target" argument to base machine balancing around.')
 
         elif ln != 0 or lt != 0:
@@ -137,7 +139,7 @@ class SympySolver:
                     core_ing = rec.O[0]
                     core_direction = 'O'
                 else:
-                    raise RuntimeError(f'{rec} has no inputs or outputs!')
+                    raise SolverError(f'{rec} has no inputs or outputs!')
 
                 # Solve for ingredient quantity and add to system of equations
                 solved_quant_s = core_ing.quant * rec.number / (rec.dur / 20)
@@ -170,7 +172,7 @@ class SympySolver:
                         )
                         break
                 else:
-                    raise RuntimeError(f'Targetted quantity must be in machine I/O for \n{rec}')
+                    raise SolverError(f'Targetted quantity must be in machine I/O for \n{rec}')
 
     def _add_machine_internal_locking(self) -> None:
         """Add machine equations.
@@ -191,7 +193,7 @@ class SympySolver:
                     core_ing = rec.O[0]
                     core_direction = 'O'
                 else:
-                    raise RuntimeError(f'{rec} has no inputs or outputs!')
+                    raise SolverError(f'{rec} has no inputs or outputs!')
 
                 # Add equations in form of core_ingredient
                 for ing_direction in ['I', 'O']:
@@ -342,8 +344,6 @@ class SympySolver:
             direction = 'O'
         elif multi_machine == multi_b:
             direction = 'I'
-        else:
-            raise NotImplementedError('How did this happen?')
 
         # Add new variables vX, vY, ...
         new_symbols = ', '.join(['v' + str(x + self.num_variables)
@@ -476,7 +476,7 @@ class SympySolver:
             iterations += 1
 
         if inconsistent_variables == []:
-            raise NotImplementedError(
+            raise SolverError(
                 'Both linear and nonlinear solver found empty set, so system of equations has no solutions -- report to dev.')
 
         # Check inconsistent equations to see if products on both sides are the
@@ -622,7 +622,7 @@ class SympySolver:
                     relevant_edge['quant'] = float(a_quant)
                     relevant_edge['locked'] = True  # TODO: Legacy - check if can be removed
                 else:
-                    raise RuntimeError('\n'.join([
+                    raise SolverError('\n'.join([
                         'Mismatched machine-edge quantities:',
                         f'{a_quant}',
                         f'{b_quant}',
@@ -682,7 +682,7 @@ def postprocess_graph(self: 'Graph', progress_cb: Callable) -> None:
     progress_cb(6.6)
 
 
-def equations_solver(self: 'ProgramContext', project_name: str,
+def equations_solver(self: 'ProgramContext', project_name: str | Path,
                      recipes: list, title: str = '') -> None:
     """Runs the equations solver and outputs a graph.
 
@@ -692,6 +692,7 @@ def equations_solver(self: 'ProgramContext', project_name: str,
         recipes (list): Recipes list
         title (str, optional): Graph title. Defaults to None.
     """
+    project_name = str(project_name)
     with Progress(disable=bool(self.quiet), transient=True) as progress:
         task = progress.add_task(f'[cyan]{project_name}', total=100)
 

@@ -26,7 +26,7 @@ def swap_io(io_type: str) -> str:
     elif io_type == 'O':
         return 'I'
     else:
-        raise RuntimeError(f'Improper I/O string: {io_type}')
+        raise ValueError(f'Improper I/O string: {io_type}')
 
 
 def round_readable(number: int | float) -> str:
@@ -55,7 +55,7 @@ def round_readable(number: int | float) -> str:
         if abs(number) >= n:
             rounded: str = roundfxn(number)
             return rounded
-    raise NotImplementedError('Negative number not allowed')
+    raise ValueError('Negative number not allowed!')
 
 
 def create_adjacency_list(self: 'Graph') -> None:

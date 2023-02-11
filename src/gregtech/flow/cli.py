@@ -4,21 +4,25 @@ This module is used to provide the program context for other modules.
 It is also used to run the Interactive CLI and the Direct CLI.
 """
 import contextlib
+import inspect
 import logging
 import os
 import pkgutil
-import textwrap
-from collections.abc import Iterator
+import shutil
+import sys
+from collections.abc import Iterable, Iterator
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
 import typer
-from prompt_toolkit import prompt
-from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit import PromptSession
+from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.document import Document
+from prompt_toolkit.shortcuts import CompleteStyle
 from prompt_toolkit.styles import Style
 from rich import print as rprint
 from rich.align import Align
-from rich.console import Console
+from rich.console import Console, Group
 from rich.layout import Layout
 from rich.logging import RichHandler
 from rich.panel import Panel
@@ -27,13 +31,66 @@ from rich.traceback import install
 
 from gregtech.flow.graph._solver import equations_solver
 from gregtech.flow.recipe.load_project import load_project
-from gregtech.flow.schemas import validate_config, yaml
+from gregtech.flow.schemas import validate_config, validate_header, yaml
 
-install(show_locals=True)
+install(show_locals=True, max_frames=100)
+
+
+class PathCompleter(Completer):
+    """Completer class for the Interactive CLI.
+
+    Includes support for backslashes and frontslashes.
+    """
+
+    def __init__(self, directory: Path) -> None:
+        """Class constructor for PathCompleter.
+
+        Args:
+            directory (Path): Directory
+        """
+        assert directory.is_dir()
+        self.directory = Path(directory)
+        self.display_dict: dict = {}
+        self.meta_dict: dict = {}
+
+    def get_completions(self, document: Document, complete_event) -> Iterable[Completion]:
+        """Get completions for prompt_toolkit."""
+        if sys.platform == 'win32':
+            if '\\' in document.text:
+                backslash = True
+            else:
+                backslash = False
+        else:
+            backslash = False
+
+        words = [(x.relative_to(self.directory).as_posix() if not backslash else str(x.relative_to(self.directory)))
+                 for x in self.directory.glob('**/*.yaml')]
+        if callable(words):
+            words = words()
+
+        # Get word/text before cursor.
+        word_before_cursor = document.text_before_cursor
+        word_before_cursor = word_before_cursor.lower()
+
+        def word_matches(word: str) -> bool:
+            """True when the word before the cursor matches."""
+            word = word.lower()
+            return word.startswith(word_before_cursor)
+
+        for a in words:
+            if word_matches(a):
+                display = self.display_dict.get(a, a)
+                display_meta = self.meta_dict.get(a, "")
+                yield Completion(
+                    text=a,
+                    start_position=-len(word_before_cursor),
+                    display=display,
+                    display_meta=display_meta,
+                )
 
 
 class ProgramContext:
-    """Class to provide context for other functions. Also used for the GT: Flow CLI."""
+    """Class to provide context and data for other functions. Also used for the GT: Flow CLI."""
 
     def __init__(self,
                  output_path: Path | str = 'output/',
@@ -46,84 +103,79 @@ class ProgramContext:
             output_path (Path | str, optional): Output path. Defaults to 'output'.
             projects_path (Path | str, optional): Projects path from which to search from. Defaults to 'projects'.
             create_dirs (bool, optional): Whether or not to create the directories specified. Defaults to True.
-            config_path (Path | str, optional): Configuration file location. Will create one if nonexistent
+            config_path (Path | str, optional): Configuration file location. Will create one if nonexistent no matter what
         """
-        self.project_cache: str = ''
-        self.quiet = False
+        # Misc
+        self._project_cache: str = ''  # For 'last' in Interactive CLI
+        self.quiet = False  # Default value
+        self.running_from: Literal['WRAPPER', 'INTERACTIVE', 'DIRECT'] = 'WRAPPER'  # Default value
 
+        # Load the config
         self.config_path = Path(config_path) if config_path else Path('flow_config.yaml')
-        self.config_cache: dict = {}  # Used to skip schema validation
         self.graph_config: dict = {}
+        self._config_cache: dict = {}  # Used to skip schema validation
+        self._config_template = pkgutil.get_data('gregtech.flow', 'resources/config_template.yaml')
+        assert self._config_template is not None, 'Data file "resources/config_template.yaml" nonexistent, try reinstalling!'
         self.reload_graph_config()
-
-        config = self.config_path
-        template = pkgutil.get_data('gregtech.flow', 'resources/config_template.yaml')
-        assert template is not None, 'Data file "resources/config_template.yaml" nonexistent, try reinstalling!'
-
-        # Create config if not already created
-        if not config.exists():
-            with open(config, mode='wb') as cfg:
-                cfg.write(template)
-
-        # Check CONFIG_VER key
-        with config.open() as cfg:
-            load = yaml.load(cfg)
-            template_load = yaml.load(template)['CONFIG_VER']
-            if not load['CONFIG_VER'] == template_load:
-                raise RuntimeError(
-                    f'Config version mismatch! Delete the old configuration file to regenerate {load["CONFIG_VER"]} {template_load}')
 
         # Setup logger
         if self.graph_config['DEBUG_LOGGING']:
             log_level = logging.DEBUG
         else:
             log_level = logging.INFO
-        logging.basicConfig(handlers=[RichHandler(
-            level=log_level, markup=True)], format='%(message)s', datefmt='[%X]', level='NOTSET')
+        logging.basicConfig(handlers=[RichHandler(level=log_level, markup=True)],
+                            format='%(message)s',
+                            datefmt='[%X]',
+                            level='NOTSET')
         self.logger = logging.getLogger('rich')
 
-        # Load the game data
+        # Load the data required for running GT: Flow's calculations
         data_yaml = pkgutil.get_data('gregtech.flow', 'resources/data.yaml')
         assert data_yaml is not None, 'Data file "resources/data.yaml" nonexistent, try reinstalling!'
         self.data = yaml.load(data_yaml)
 
-        # Create paths if selected option
-        output_path = Path(output_path)
-        if not output_path.exists() and create_dirs:
-            output_path.mkdir()
-        self.output_path = output_path
+        # Create output and projects directory
+        if create_dirs:
+            output_path = Path(output_path)
+            if not output_path.exists():
+                output_path.mkdir()
+            self.output_path = output_path
 
-        projects_path = Path(projects_path)
-        if not projects_path.exists() and create_dirs:
-            projects_path.mkdir()
-        self.projects_path = projects_path
+            projects_path = Path(projects_path)
+            if not projects_path.exists():
+                projects_path.mkdir()
+            self.projects_path = projects_path
 
-    def reload_graph_config(self) -> dict:
-        """Reloads the graph configuration file.
+    def reload_graph_config(self):
+        """Reloads the graph configuration file."""
+        # Create config if nonexistent
+        if not self.config_path.exists():
+            with open(self.config_path, mode='wb') as cfg:
+                cfg.write(self._config_template)
 
-        Returns:
-            dict: Graph configuration
-        """
+        # Validate config
         with self.config_path.open(mode='r') as f:
             graph_config = yaml.load(f)
 
             # Check for inequality between cache and loaded config
             # Used to skip expensive config schema validation
             # trivial check + equality check
-            if (len(graph_config.keys()) != len(self.config_cache.keys())) or (
-                    graph_config != self.config_cache):
+            if (len(graph_config.keys()) != len(self._config_cache.keys())) or (
+                    graph_config != self._config_cache):
                 validate_config(graph_config)
-                self.config_cache = graph_config
+                self._config_cache = graph_config
 
-        # TODO: Remove this check in favour of schema "required": ["x", "y", "z"]
-        # Checks for graph_config
-        if graph_config['GRAPHVIZ'] == 'path':
-            pass
-        else:
+            template_load = yaml.load(self._config_template)
+            if graph_config['CONFIG_VER'] != template_load['CONFIG_VER']:
+                raise ValueError(
+                    f'Config version mismatch! Delete the old configuration file to regenerate {graph_config["CONFIG_VER"]=} {template_load["CONFIG_VER"]=}')
+
+        if graph_config['GRAPHVIZ'] != 'path':
             if Path(graph_config['GRAPHVIZ']).exists() and Path(graph_config['GRAPHVIZ']).is_dir():
                 os.environ["PATH"] += os.pathsep + str(Path(graph_config['GRAPHVIZ']))
             else:
-                raise RuntimeError('Graphviz path does not exist')
+                raise FileNotFoundError(
+                    f'The Graphviz binaries path does not exist: "{graph_config["GRAPHVIZ"]}"')
         self.graph_config = graph_config
 
     def log(self, msg, level=logging.DEBUG):
@@ -136,47 +188,54 @@ class ProgramContext:
         log = self.logger
         log.log(level, f'{msg}')
 
-    def create_graph(self, project_name: Path | str) -> bool:
-        """Centralized graph creation function to check if the project exists or not.
+    def create_graph(self, project_name: Path | str) -> None:
+        """Centralized graph creation function. Also checks if the project exists or not.
 
         Args:
             project_name (Path | str): The project's path
-
-        Returns:
-            bool: Whether or not the project exists
         """
-        project_name = str(project_name)
-        if not project_name.endswith('.yaml'):
-            project_name += '.yaml'
+        # Standardize the project's name by forcing the suffix to be .yaml
+        project_name = Path(project_name)
+        if project_name.suffix == '':
+            project_name = project_name.with_suffix('.yaml')
+        elif project_name.suffix != '.yaml':
+            raise ValueError(f'Invalid project extension: {project_name}')
 
-        project_relpath = self.projects_path / f'{project_name}'
+        project_relpath = self.projects_path / project_name
 
-        if project_relpath.exists():
-            title = ''
-            with project_relpath.open(mode='r') as f:
-                doc_load = list(yaml.load_all(f))
-                if len(doc_load) >= 2:
-                    header = doc_load[0]
-                    title = header['title']
-                    self.log(
-                        f'Current project: "{title}" by [bright_green]{header["creator"]}', logging.INFO)
-                else:
-                    self.log(f'Current project: "{project_name}"', logging.INFO)
+        # Check existence
+        if not project_relpath.exists():
+            raise FileNotFoundError(f'The specified project "{project_name}" could not be found!')
 
-            recipes = load_project(
-                project_name, self.graph_config, self.projects_path)
+        title = ''
+        with project_relpath.open(mode='r') as f:
+            doc_load = list(yaml.load_all(f))
+            if len(doc_load) == 2:  # Check if has GT: Flow header
+                header = doc_load[0]
+                validate_header(header)
+                title = header['title']
+                self.log(
+                    f'Current project: "{title}" by [bright_green]{header["creator"]}',
+                    logging.INFO)
+            elif len(doc_load) == 1:
+                self.log(f'Current project: "{project_name}"', logging.INFO)
+            else:
+                raise ValueError(f'Found {len(doc_load)} YAML documents in 1 project!')
 
-            if project_name.endswith('.yaml'):
-                project_name = project_name[:-5]
+        recipes = load_project(
+            project_name, self.graph_config, self.projects_path)
 
-            equations_solver(
-                self, project_name, recipes, title)
-            return True
-        else:
-            return False
+        if project_name.suffix == '.yaml':
+            project_name = project_name.with_suffix('')
 
-    def create_filetree(self, path: Path, pfx: str = '', max_depth: int = 720,
-                        emoji: bool = True) -> Iterator[str] | list:
+        equations_solver(
+            self, project_name, recipes, title)
+
+    def create_filetree(self,
+                        path: Path,
+                        pfx: str = '',
+                        max_depth: int = 720,
+                        emoji: bool = True) -> Iterator[str]:
         """Creates a file tree of the input path.
 
         Args:
@@ -186,152 +245,193 @@ class ProgramContext:
             emoji (bool, optional): Whether or not to use emojis. Defaults to True.
 
         Yields:
-            Generator[str, None, None]: Lines of the file tree in string form.
+            Iterator[str]t: Lines of the file tree
         """
-        if max_depth > 0:
-            space = '    '
-            branch = '│   '
-            tee = '├── '
-            last = '└── '
+        if max_depth <= 0:
+            raise RecursionError('Exceeded set recursion limit of 720!')
+        # fmt: off
+        space =  '    '  # noqa
+        branch = '│   '  # noqa
+        tee =    '├── '  # noqa
+        last =   '└── '  # noqa
+        # fmt: on
 
-            contents = list(path.iterdir())
-            pointers = [tee] * (len(contents) - 1) + [last]
-            for pointer, path in zip(pointers, contents):
-                if emoji:
-                    if path.is_file():
-                        yield pfx + pointer + ':page_facing_up: ' + path.name
-                    else:
-                        yield pfx + pointer + ':file_folder: ' + path.name
+        contents = list(path.iterdir())
+        pointers = [tee] * (len(contents) - 1) + [last]
+        for pointer, path in zip(pointers, contents):
+            if emoji:
+                if path.is_file():
+                    yield pfx + pointer + ':page_facing_up: ' + path.name
                 else:
-                    yield pfx + pointer + path.name
-                if path.is_dir():
-                    extension = branch if pointer == tee else space
-                    yield from self.create_filetree(path, f'{pfx}{extension}')
-        else:
-            return ['Exceeded maximum recursion limit',]
+                    yield pfx + pointer + ':file_folder: ' + path.name
+            else:
+                yield pfx + pointer + path.name
+            if path.is_dir():
+                extension = branch if pointer == tee else space
+                yield from self.create_filetree(path, f'{pfx}{extension}', max_depth=max_depth - 1)
 
-    def interactive_cli(self, current_error) -> bool:
-        """The interactive CLI for GT: Flow.
-
-        Returns:
-            bool: Whether or not the project file was found
-        """
+    def interactive_cli(self, once: bool = False) -> None:
+        """The interactive CLI for GT: Flow."""
         @contextlib.contextmanager
-        def floor_ceiling(cs: Console, title: str):
-            """Context manager for Rule() above and below."""
-            if not self.quiet:
-                cs.print('')
+        def print_encase(cs: Console, title: str | Literal['latest.log'], *, confirm: bool = False):
+            """Prints a horizontal rule below and above. Also needs a title."""
+            if (not self.quiet) or (title != 'latest.log'):
+                cs.print()
                 cs.print(
                     Rule(style='bright_white',
                          title=f'[bold bright_white]{title}',
                          align='center'))
                 yield
                 cs.print(Rule(style='bright_white'))
-                cs.print('')
+                if confirm:
+                    input()
+                else:
+                    cs.print()
             else:
                 yield
-                cs.print('')
+                cs.print()
 
+        # <-- Setup -->
+        self.running_from = 'INTERACTIVE'
+        reserved_lines = shutil.get_terminal_size().lines - 12
+        prompt_session: PromptSession = PromptSession(completer=PathCompleter(directory=self.projects_path),
+                                                      style=Style.from_dict(
+                                                          {'bigger_than': '#ffffff'}),
+                                                      complete_style=CompleteStyle.COLUMN,  # Use UP and DOWN
+                                                      reserve_space_for_menu=min(
+                                                      8, max(0, reserved_lines)),  # 0 <= lines <= 8
+                                                      enable_history_search=False,
+                                                      complete_while_typing=True)
+
+        # <-- Constants -->
         flow_red = '#ff6961'
         flow_yellow = '#f8f38d'
         flow_teal = '#08cad1'
         flow_purple = '#7253ed'
 
-        text_color = '#a5e075'
+        highlight = '#a5e075'
 
-        # TODO: Improvet the code look
-        header = Layout(Panel(Align(f'[bold {flow_purple} link=https://velolib.github.io/gregtech-flow/]GT: Flow Interactive CLI[/]', align='center',
-                        vertical='middle'), border_style=f'bold {flow_purple}'), name='header', size=3)
+        # <-- Rich components -->
+        # The header
+        header = Layout(
+            Panel(
+                Align(
+                    f'[bold {flow_purple} link=https://velolib.github.io/gregtech-flow/]GT: Flow Interactive CLI[/]',
+                    align='center',
+                    vertical='middle'),
+                border_style=f'bold {flow_purple}'),
+            name='header',
+            size=3)
 
-        guide_text = textwrap.dedent(f'''\
-        [{text_color}]Please enter project path (example: "[underline]power/oil/light_fuel.yaml[/]")[/]
-        [{text_color}]Tab completion is [underline]enabled[/][/]
-        [bright_white]Valid commands:[/]
-        [bright_white]- [/][{text_color}]end[/][bright_white] / [/][{text_color}]stop[/][bright_white] / [/][{text_color}]exit[/][bright_white]: Stop the program[/]
-        [bright_white]- [/][{text_color}]all[/][bright_white]: Select all files for graph creation[/]
-        [bright_white]- [/][{text_color}]last[/][bright_white]: The last project inputted (or just type nothing)[/]
-        [bright_white]- [/][{text_color}]tree[/][bright_white]: Prints the './projects/' file tree[/]
-        ''')
-        guide = Layout(Panel(guide_text, border_style=f'bold {flow_teal}',
-                       title='guide.txt', title_align='left'), name='guide')
+        # guide.txt
+        guide_text = Group(f'[{highlight}]Please enter project path (example: "[underline]power/oil/light_fuel.yaml[/]")[/]',
+                           Rule(style=flow_teal),
+                           inspect.cleandoc(f'''\
+                                             [bright_white bold]Valid commands:[/]
+                                             [bright_white]- [/][{highlight}]end[/][bright_white] / [/][{highlight}]stop[/][bright_white] / [/][{highlight}]exit[/][bright_white]: Stop the program[/]
+                                             [bright_white]- [/][{highlight}]all[/][bright_white]: Select all files for graph creation[/]
+                                             [bright_white]- [/][{highlight}]last[/][bright_white]: The last project inputted (or just input nothing)[/]
+                                             [bright_white]- [/][{highlight}]tree[/][bright_white]: Prints the "[underline]projects/[/underline]" file tree[/]'''))
 
-        links_text = textwrap.dedent(f'''\
-        [{text_color} link=https://github.com/velolib/gregtech-flow]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow]https://github.com/velolib/gregtech-flow[/]
-        [{text_color} link=https://github.com/velolib/gregtech-flow/wiki]Website[/][bright_white]: [/][underline bright_cyan link=https://velolib.github.io/gregtech-flow/]https://velolib.github.io/gregtech-flow/[/]
-        ''')
-        links = Layout(Panel(links_text, border_style=f'bold {flow_yellow}',
-                       title='links.txt', title_align='left'), name='links')
+        guide = Layout(
+            Panel(
+                guide_text,
+                border_style=f'bold {flow_teal}',
+                title='guide.txt',
+                title_align='left'),
+            name='guide')
 
-        errors = Layout(Panel('[bright_white]No errors found.' if not current_error else f'[{flow_red}]' +
-                        current_error, border_style=f'bold {flow_red}', title='errors.log', title_align='left'), name='errors')
+        # links.md
+        links_text = inspect.cleandoc(f'''\
+                                       [{highlight}]GitHub Repository[/][bright_white]: [/][underline bright_cyan link=https://github.com/velolib/gregtech-flow]https://github.com/velolib/gregtech-flow[/]
+                                       [{highlight}]Website[/][bright_white]          : [/][underline bright_cyan link=https://velolib.github.io/gregtech-flow/]https://velolib.github.io/gregtech-flow[/]''')
+        links = Layout(
+            Panel(
+                links_text,
+                border_style=f'bold {flow_yellow}',
+                title='links.md',
+                title_align='left'),
+            name='links')
 
-        root_layout = Layout()
-        root_layout.size = 4
-        root_layout.split_column(header, Layout(name='content', size=9))
-        root_layout['content'].split_row(guide, Layout(name='right_sect'))
+        # license.txt
+        license = Layout(
+            Panel(
+                inspect.cleandoc(f'''
+                                  [bold bright_white underline link=https://github.com/velolib/gregtech-flow/blob/master/LICENSE.txt]MIT License[/]
+                                  [{flow_purple} underline link=https://github.com/velolib/gregtech-flow]gregtech-flow[/][{highlight}][bright_white]:[/bright_white] Copyright (c) 2023[/] [{flow_purple} underline link=https://github.com/velolib]velolib[/]
+                                  [{flow_yellow} underline link=https://github.com/OrderedSet86/gtnh-flow]gtnh-flow[/]    [{highlight}][bright_white]:[/bright_white] Copyright (c) 2022[/] [{flow_yellow} underline link=https://github.com/OrderedSet86]OrderedSet86[/]'''),
+                border_style=f'bold {flow_red}',
+                title='license.txt',
+                title_align='left'),
+            name='license')
 
-        # TODO: Increase functionality of the errors panel
-        root_layout['content']['right_sect'].split_column(links, errors)
+        # Interface (everything combined)
+        interface = Layout()
+        interface.size = 4
 
-        console = Console(height=12)
+        interface.split_column(header, Layout(name='content', size=9))
 
-        prompt_style = Style.from_dict({'bigger_than': '#ffffff'})
-        prompt_message = [('class:bigger_than', '> ')]
+        interface['content'].split_row(guide, Layout(name='right_sect'))
 
-        while True:
-            console.print(root_layout)
-            console.print('[bright_white]> ', end='')
+        interface['content']['right_sect'].split_column(links, license)
 
-            projects = list(map(lambda p: str(p.relative_to(self.projects_path)),
-                            self.projects_path.glob('**/*.yaml')))
-            path_completer = WordCompleter(projects)
+        console = Console(height=12, soft_wrap=True)
 
-            sel_option = prompt(prompt_message, completer=path_completer,  # type: ignore
-                                style=prompt_style)  # type: ignore
-            match sel_option:
-                case 'end' | 'stop' | 'exit':
-                    exit()
-                case 'all':
-                    with floor_ceiling(console, 'latest.log'):
-                        self.logger.info(f'Getting config from: "{self.config_path}"')
-                        valid_paths = [self.create_graph(v.relative_to(self.projects_path)) for v in Path(
-                            self.projects_path).glob('**/*.yaml') if 'dev' not in str(v)]
-                    return all(valid_paths)
-                case 'last' | '':
-                    with floor_ceiling(console, 'latest.log'):
-                        self.logger.info(f'Getting config from: "{self.config_path}"')
-                        create_graph = self.create_graph(self.project_cache)
-                        if not create_graph:
-                            print('')
-                    return create_graph
-                case 'tree':
-                    console.print('')
-                    console.print(Rule(style='bright_white',
-                                  title='[bold bright_white]tree.txt', align='center'))
-                    for x in self.create_filetree(Path(self.projects_path)):
-                        console.print(x)
-                    console.print(Rule(style='bright_white'))
-                    prompt('')
-                    return True
-                case _:
-                    with floor_ceiling(console, 'latest.log'):
-                        self.logger.info(f'Getting config from: "{self.config_path}"')
-                        create_graph = self.create_graph(sel_option)
-                        if not create_graph:
-                            print('')
-                    self.project_cache = sel_option
-                    return create_graph
+        try:
+            while True:
+                console.print(interface)
+                sel_option = prompt_session.prompt([('class:bigger_than', '> ')])
 
-    def direct_cli(self, path: Path) -> bool:
+                match sel_option:
+                    case 'end' | 'stop' | 'exit':
+                        sys.exit(0)
+                    case 'all':
+                        with print_encase(console, 'latest.log'):
+                            self.logger.info(f'Getting config from: "{self.config_path}"')
+                            for proj in Path(self.projects_path).glob('**/*.yaml'):
+                                if Path(self.projects_path, 'dev') not in proj.parents:
+                                    self.create_graph(proj.relative_to(self.projects_path))
+                    case 'last' | '':
+                        with print_encase(console, 'latest.log'):
+                            self.logger.info(f'Getting config from: "{self.config_path}"')
+                            self.create_graph(self._project_cache)
+                    case 'tree':
+                        with print_encase(console, 'tree.txt', confirm=True):
+                            for x in self.create_filetree(Path(self.projects_path)):
+                                console.print(x)
+                    case _:
+                        with print_encase(console, 'latest.log'):
+                            self.logger.info(f'Getting config from: "{self.config_path}"')
+                            self.create_graph(sel_option)
+                        self._project_cache = sel_option
+                if once:
+                    sys.exit(0)
+                self.reload_graph_config()
+        except Exception as exc:
+            exc.add_note(self.running_from)
+            raise
+
+    def direct_cli(self, path: Path) -> None:
         """Direct CLI implementation for GT: Flow.
 
         Args:
             path (Path): The path inputted from the command line
-
-        Returns:
-            bool: Whether or not a project was found at the inputted path
         """
-        return self.create_graph(str(path))
+        self.running_from = 'DIRECT'
+        if not self.quiet:
+            rprint(
+                Panel(
+                    Align(
+                        '[bold #7253ed link=https://velolib.github.io/gregtech-flow/]GT: Flow Direct CLI[/]',
+                        align='center',
+                        vertical='middle'),
+                    border_style='bold #7253ed'))
+            self.logger.info(f'Getting config from: "{self.config_path}"')
+        try:
+            self.create_graph(str(path))
+        except Exception as exc:
+            exc.add_note(self.running_from)
+            raise
 
     def _run_typer(self,
                    path: Optional[Path] = typer.Argument(
@@ -341,45 +441,23 @@ class ProgramContext:
                    config: Optional[Path] = typer.Option(None, help='Configuration file path'),
                    once: bool = typer.Option(False, help='Only run Interactive CLI once')):
         """For typer."""
-        logger = self.logger
         if quiet:
-            logger.setLevel(logging.CRITICAL + 1)
+            self.logger.setLevel(logging.CRITICAL + 1)
         self.quiet = bool(quiet)
 
         if config:
             config = Path(config).absolute()
             if config.is_file() and config.exists():
                 self.config_path = Path(config).resolve()
-            elif config.is_dir() and config.exists():
-                raise RuntimeError(f'Specified configuration path "{config}" is a directory.')
             else:
-                raise RuntimeError(
+                raise FileNotFoundError(
                     f'Specified configuration path "{config}" is invalid or does not exist.')
 
-        icli_error = None
-        while True:
-            if path is None:
-                result = self.interactive_cli(icli_error)
-                if not result:
-                    raise RuntimeError('Project could not be found!')
-                if once:
-                    exit(0)
-                self.reload_graph_config()
-            else:
-                if not quiet:
-                    rprint(
-                        Panel(
-                            Align(
-                                '[bold #7253ed link=https://velolib.github.io/gregtech-flow/]GT: Flow Direct CLI[/]',
-                                align='center',
-                                vertical='middle'),
-                            border_style='bold #7253ed'))
-                    self.logger.info(f'Getting config from: "{self.config_path}"')
-                result = self.direct_cli(path)
-                if not result:
-                    raise RuntimeError(f'The specified project "{path}" could not be found!')
-                else:
-                    exit(0)
+        if path is None:
+            self.interactive_cli(once=once)
+        else:
+            self.direct_cli(path)
+            sys.exit(0)
 
     def run(self) -> None:
         """Runs the CLI."""

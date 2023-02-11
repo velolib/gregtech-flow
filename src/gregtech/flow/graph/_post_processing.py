@@ -367,9 +367,6 @@ def add_summary_node(self: 'Graph') -> None:
         elif direction == 1:
             # Outputs
             edges = self.adj['sink']['I']
-        else:
-            raise NotImplementedError(f'How did this happen? Invalid direction: {direction}')
-
         for edge in edges:
             _, _, ing_name = edge
             edge_data = self.edges[edge]

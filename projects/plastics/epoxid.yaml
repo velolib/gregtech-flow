@@ -1,12 +1,8 @@
 ---
 title: Epoxid Line without Phenol
+version: 2.2.8
 creator: velo
 description: Relatively fast epoxid processing line with external phenol, oxygen, and chlorine input. Also powers itself via refinery gas.
-metadata:
-  power output: Sufficient
-  output state: Fluid
-  output handling: Partial
-  recycling: Full
 ---
 
 - m: lcr

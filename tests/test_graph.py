@@ -11,8 +11,8 @@ import shutil
 
 from gregtech.flow.recipe.load_project import load_project
 from gregtech.flow.graph._solver import equations_solver
-from gregtech.flow.cli import ProgramContext
-from gregtech.flow import flow
+from gregtech.flow.cli import ProgramContext, PromptSession
+from gregtech.flow.wrapper import flow
 
 # ---------------------------------------------------------------------------- #
 #                               Preliminary setup                              #
@@ -30,8 +30,17 @@ match sys.platform:
 
 @pytest.fixture(autouse=True)
 def initialize():
+    def rmtree(directory):
+        directory = Path(directory)
+        for item in directory.iterdir():
+            if item.is_dir():
+                rmtree(item)
+            else:
+                item.unlink()
+        directory.rmdir()
     if Path('output/').absolute().exists():
-        shutil.rmtree(str(Path('output/').absolute()))
+        rmtree(Path('output/').absolute())
+    yield
 
 def get_projects(ignore_broken: bool = True, remove_project: bool = False):
     if ignore_broken:
@@ -133,10 +142,10 @@ def test_dcli_when_fail(s):
     pc.quiet = True
     try:
         pc._run_typer(Path(s), True, False, once=False)
-    except RuntimeError:
-        assert True == True
     except SystemExit:
         assert True == False, f'Succeeded on {s}.'
+    except Exception:
+        assert True == True
     else:
         assert True == False, f'Succeeded on {s}.'
 
@@ -149,9 +158,12 @@ def test_icli_when_succeed(project_name):
     """
     pc = ProgramContext(config_path=pytest.os_config)
     pc.quiet = True
+    
+    def fake(self, *_, **__):
+        return project_name
 
     with pytest.raises(SystemExit):
-        with mock.patch('gregtech.flow.cli.prompt', return_value = project_name):
+        with mock.patch.object(PromptSession, 'prompt', fake):
             pc._run_typer(None, False, Path(pytest.os_config), True)
     
     if not (Path('projects') / Path(project_name).with_suffix('.yaml')).exists():

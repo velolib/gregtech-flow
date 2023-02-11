@@ -6,6 +6,7 @@ from bisect import bisect_right
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
+from gregtech.flow.exceptions import OverclockError
 from gregtech.flow.recipe.basic_types import Ingredient, IngredientCollection
 
 if TYPE_CHECKING:
@@ -34,7 +35,7 @@ def require(recipe: 'Recipe', requirements: Sequence[tuple[str, typing.Type[typi
         key, req_type, reason = req
         pass_conditions = [key in vars(recipe), isinstance(getattr(recipe, key, None), req_type)]
         if not all(pass_conditions):
-            raise RuntimeError(
+            raise OverclockError(
                 f'Improper config! "{recipe.machine}" requires key "{key}" - it is used for {reason}.')
 
 
@@ -66,8 +67,8 @@ class OverclockHandler:
             Recipe: Overclocked recipe
         """
         if recipe.machine not in self.overclock_data['gtpp_stats']:
-            raise RuntimeError(
-                'Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats')
+            raise OverclockError(
+                'Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats - report to dev!')
 
         # Get per-machine boosts
         speed_boost, eu_discount, parallels_per_tier = self.overclock_data['gtpp_stats'][recipe.machine]
@@ -173,7 +174,7 @@ class OverclockHandler:
 
         chem_plant_pipe_casings = self.overclock_data['pipe_casings']
         if recipe.pipe_casings not in chem_plant_pipe_casings:
-            raise RuntimeError(
+            raise OverclockError(
                 f'Expected chem pipe casings in {list(chem_plant_pipe_casings)}\ngot "{recipe.pipe_casings}". (More are allowed, I just haven\'t added them yet.)')
 
         recipe.dur /= self.overclock_data['coil_data'][recipe.coils]['multiplier']
@@ -336,7 +337,7 @@ class OverclockHandler:
 
         # First do parallel step of GTpp
         if recipe.machine not in self.overclock_data['gtpp_stats']:
-            raise RuntimeError(
+            raise OverclockError(
                 'Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats')
 
         # Get per-machine boosts
@@ -506,7 +507,7 @@ class OverclockHandler:
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
         if oc_count < 0:
-            raise RuntimeError(
+            raise OverclockError(
                 f'Recipe has negative overclock! Min voltage is {base_voltage}, given OC voltage is {user_voltage}.\n{recipe}')
         return oc_count
 

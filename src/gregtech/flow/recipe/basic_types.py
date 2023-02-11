@@ -1,7 +1,6 @@
 """Class abstractions for GT: Flow projects."""
 
-import logging
-import textwrap
+import inspect
 from collections import defaultdict
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -26,20 +25,15 @@ class Ingredient:
         Raises:
             DeprecationWarning: A feature or attribute of this Ingredient is deprecated.
         """
-        logger = logging.getLogger('rich')
         first_word = self.name.split(' ')[0]
         if '[' in first_word and ']' in first_word:
-            logger.warning(textwrap.dedent('''\
-                You are using square brackets in your I/O!
-                Support for square bracket tags "[]" will be phased out in the future.
-                Switch to using parentheses "()" instead.'''))
+            raise DeprecationWarning(inspect.cleandoc('''You are using square brackets in your I/O!
+                                                        Support for square bracket tags "[]" will be phased out in the future.
+                                                        Switch to using parentheses "()" instead.'''))
         if self.name not in {"EU"} and self.name.casefold() != self.name:
-            raise DeprecationWarning(textwrap.dedent(f'''\
-                You are using uppercase characters in your I/O ({self.name})!
-                Most characters will be lowercased, so switch to using unique I/O names or just use lowercase characters!
-                The program will not be able to run if you keep using uppercase characters.
-                                                     '''))
-        self.name = self.name.casefold().replace('(', '[', 1).replace(')', ']', 1)
+            raise DeprecationWarning(inspect.cleandoc(f'''You are using uppercase characters in your I/O ({self.name})!
+                                                        Most characters will be lowercased, so switch to using unique I/O names or just use lowercase characters!
+                                                        The program will not be able to run if you keep using uppercase characters.'''))
 
 
 class IngredientCollection:
@@ -69,7 +63,7 @@ class IngredientCollection:
     @singledispatchmethod
     def __getitem__(self, idx) -> list:
         """Getitem method."""
-        raise NotImplementedError(f'Invalid index: {idx}')
+        raise TypeError(f'Invalid index type: {type(idx)}({idx})')
 
     @__getitem__.register  # type: ignore [arg-type]
     def _(self, idx: str) -> list[float]:
@@ -87,7 +81,7 @@ class IngredientCollection:
         if isinstance(idx, str):
             return self._ingdict[idx]
         else:
-            raise RuntimeError(f'Improper access to {self} using {idx}')
+            raise TypeError(f'Improper access to {self} using {idx}')
 
     @__getitem__.register  # type: ignore [arg-type]
     def _(self, idx: int) -> Ingredient:
@@ -105,7 +99,7 @@ class IngredientCollection:
         if isinstance(idx, int):
             return self._ings[idx]
         else:
-            raise RuntimeError(f'Improper access to {self} using {idx}')
+            raise TypeError(f'Improper access to {self} using {idx}')
 
     def __repr__(self) -> str:
         """Returns an "official" string representation of this IngredientCollection."""

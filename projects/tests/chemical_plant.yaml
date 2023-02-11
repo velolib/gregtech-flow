@@ -26,13 +26,13 @@
     nitrogen: 1000
     hydrogen: 3000
   O:
-    '[nitric] ammonia': 1000
+    (nitric) ammonia: 1000
   eut: 384
   dur: 16
 - m: LCR
   tier: IV
   I:
-    '[nitric] ammonia': 1000
+    (nitric) ammonia: 1000
     oxygen: 1000
   O:
     nitric acid: 1000
