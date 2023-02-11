@@ -17,37 +17,37 @@ def unalias_machine_name(name: str) -> str:
         str: Standardized machine name
     """
     aliases = {
-        # <--CAL--> #
+        # <-- CAL --> #
         'cal': 'circuit assembly line',
 
-        # <--Chemplant--> #
+        # <-- Chemplant --> #
         'chem plant': 'chemical plant',
         'exxonmobil': 'chemical plant',
 
-        # <--Electric Blast Furnace--> #
+        # <-- Electric Blast Furnace --> #
         'ebf': 'electric blast furnace',
         'blast furnace': 'electric blast furnace',
 
-        # <--Industrials--> #
+        # <-- Industrials --> #
         'industrial mixer': 'industrial mixing machine',
         'industrial rock breaker': 'boldarnator',
         'industrial thermal centrifuge': 'large thermal refinery',
 
-        # <--Isamill--> #
+        # <-- Isamill --> #
         'isamill': 'isamill grinding machine',
 
-        # <--Large X Y--> #
+        # <-- Large X Y --> #
         'lcr': 'large chemical reactor',
         'lpf': 'large processing factory',
 
-        # <--TGS--> #
+        # <-- TGS --> #
         'tgs': 'tree growth simulator',
 
-        # <--Industrial Dehydrator--> #
+        # <-- Industrial Dehydrator --> #
         'utupu tanuri': 'industrial dehydrator',
         'utupu-tanuri': 'industrial dehydrator',
 
-        # <--Turbines--> #
+        # <-- Turbines --> #
         'xl gas turbine': 'XL Turbo Gas Turbine',
         'xl steam turbine': 'XL Turbo Steam Turbine',
         'xl turbo gas turbine': 'XL Turbo Gas Turbine',
@@ -57,7 +57,7 @@ def unalias_machine_name(name: str) -> str:
         'xlgt': 'XL Turbo Gas Turbine',
         'xlst': 'XL Turbo Steam Turbine',
 
-        # <--No category--> #
+        # <-- No category --> #
         'flotation cell': 'flotation cell regulator',
 
         'fusion': 'fusion reactor',
