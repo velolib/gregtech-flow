@@ -1,4 +1,4 @@
-name: Publish to PyPI & Create Releasee
+name: Publish to PyPI & Create Release
 
 on:
   workflow_dispatch:
