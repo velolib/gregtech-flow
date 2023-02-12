@@ -1,12 +1,8 @@
 ---
 title: TGSless Benzene Power Plant
+version: 2.2.8
 creator: velo
 description: Benzene burning power line without TGS, and using LGTs with Shadowmetal Turbines
-metadata:
-  power output: Significant
-  output state: Energy
-  output handling: Full
-  recycling: Full
 ---
 
 - m: industrial coke oven

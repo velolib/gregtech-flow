@@ -1,4 +1,8 @@
-from gregtech.flow.cli import main
+# flake8: noqa
+"""GT: Flow
+=
 
-if __name__ == '__main__':
-    main()
+YAML Driven Flowcharts for Gregtech: New Horizons
+
+https://velolib.github.io/gregtech-flow/
+"""

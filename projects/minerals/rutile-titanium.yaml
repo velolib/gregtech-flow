@@ -1,12 +1,8 @@
 ---
 title: Rutile Dust -> Hot Titanium Processing
+version: 2.2.8
 creator: velo
 description: Easy rutile dust into titanium processing with only rutile dust input
-metadata:
-  power output: None
-  output state: Hot
-  output handling: Full
-  recycling: Full
 ---
 
 - m: large chemical reactor

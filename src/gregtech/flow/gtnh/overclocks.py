@@ -1,23 +1,56 @@
-# Standard libraries
+"""GregTech: New Horizons overclock calculations for GT: Flow."""
+
+from __future__ import annotations
+
 import math
+import typing
 from bisect import bisect_right
+from typing import TYPE_CHECKING
 
-# Internal libraries
-from gregtech.flow.data.basicTypes import Ingredient, IngredientCollection
+from gregtech.flow.exceptions import OverclockError
+from gregtech.flow.recipe.basic_types import Ingredient, IngredientCollection
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from gregtech.flow.cli import ProgramContext
+    from gregtech.flow.recipe.basic_types import Recipe
 
 
-def require(recipe, requirements):
+def require(recipe: Recipe, requirements: Sequence[tuple[str, type[typing.Any], str]]):
+    """Raises error with reason if inputted recipe does not have attribute with specific type.
+
+    Requirements format is for example:
+
+    (('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'), ('heat', int, 'calculating perfect OCs and heat requirement (eg "4300").'))
+
+    The first argument is the attribute name, then the type, then the reason why it is needed.
+
+    Args:
+        recipe (Recipe): Recipe object
+        requirements (Sequence[tuple[str, typing.Type, str]]): Requirements to check from
+
+    Raises:
+        RuntimeError: Improper config machine requires {key}. Also displays reason.
+    """
     # requirements should be a list of [key, type, reason]
     for req in requirements:
         key, req_type, reason = req
         pass_conditions = [key in vars(recipe), isinstance(getattr(recipe, key, None), req_type)]
         if not all(pass_conditions):
-            raise RuntimeError(f'Improper config! "{recipe.machine}" requires key "{key}" - it is used for {reason}.')
+            raise OverclockError(
+                f'Improper config! "{recipe.machine}" requires key "{key}" - it is used for {reason}.')
 
 
 class OverclockHandler:
+    """Class for all overclocks."""
 
-    def __init__(self, parent_context):
+    def __init__(self, parent_context: ProgramContext):
+        """Initializes OverclockHandler and instance variables from program context.
+
+        Args:
+            parent_context (ProgramContext): ProgramContext object, mainly used for configuration
+        """
         self.parent_context = parent_context
         self.ignore_underclock = False  # Whether to throw an error or actually underclock if
         # USER_VOLTAGE < EUT
@@ -27,123 +60,171 @@ class OverclockHandler:
         self.voltages = self.overclock_data['voltage_data']['tiers']
         self.voltage_cutoffs = [32 * pow(4, x) + 1 for x in range(len(self.voltages))]
 
-    def modifyGTpp(self, recipe):
-        if recipe.machine not in self.overclock_data['GTpp_stats']:
-            raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:GTpp_stats')
+    def modify_gtplusplus(self, recipe: Recipe) -> Recipe:
+        """GT++ overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
+        if recipe.machine not in self.overclock_data['gtpp_stats']:
+            raise OverclockError(
+                'Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats - report to dev!')
 
         # Get per-machine boosts
-        SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['GTpp_stats'][recipe.machine]
-        SPEED_BOOST = 1 / (SPEED_BOOST + 1)
+        speed_boost, eu_discount, parallels_per_tier = self.overclock_data['gtpp_stats'][recipe.machine]
+        speed_boost = 1 / (speed_boost + 1)
 
         # Calculate base parallel count and clip time to 1 tick
         available_eut = self.voltage_cutoffs[self.voltages.index(recipe.user_voltage)]
-        MAX_PARALLEL = (self.voltages.index(recipe.user_voltage) + 1) * PARALLELS_PER_TIER
-        NEW_RECIPE_TIME = max(recipe.dur * SPEED_BOOST, 1)
+        max_parallels = (self.voltages.index(recipe.user_voltage) + 1) * parallels_per_tier
+        new_recipe_time = max(recipe.dur * speed_boost, 1)
 
         # Calculate current EU/t spend
-        x = recipe.eut * EU_DISCOUNT
-        y = min(int(available_eut / x), MAX_PARALLEL)
-        TOTAL_EUT = x * y
+        x = recipe.eut * eu_discount
+        y = min(int(available_eut / x), max_parallels)
+        total_eut = x * y
 
         # Debug info
-        self.parent_context.cLog('Base GT++ OC stats:')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
+        self.parent_context.log('Base GT++ OC stats:')
+        self.parent_context.log(
+            f'{available_eut=} {max_parallels=} {new_recipe_time=} {total_eut=} {y=}')
 
         # Attempt to GT OC the entire parallel set until no energy is left
-        while TOTAL_EUT < available_eut:
-            OC_EUT = TOTAL_EUT * 4
-            OC_DUR = NEW_RECIPE_TIME / 2
-            if OC_EUT <= available_eut:
-                if OC_DUR < 1:
+        while total_eut < available_eut:
+            oc_eut = total_eut * 4
+            oc_dur = new_recipe_time / 2
+            if oc_eut <= available_eut:
+                if oc_dur < 1:
                     break
-                self.parent_context.cLog('OC to')
-                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}')
-                TOTAL_EUT = OC_EUT
-                NEW_RECIPE_TIME = OC_DUR
+                self.parent_context.log('OC to')
+                self.parent_context.log(f'{oc_eut=} {oc_dur=}')
+                total_eut = oc_eut
+                new_recipe_time = oc_dur
             else:
                 break
 
-        recipe.eut = TOTAL_EUT
-        recipe.dur = NEW_RECIPE_TIME
+        recipe.eut = total_eut
+        recipe.dur = new_recipe_time
         recipe.I *= y
         recipe.O *= y
 
         return recipe
 
-    def modifyGTppSetParallel(self, recipe, MAX_PARALLEL, speed_per_tier=1):
+    def modify_gtplusplus_custom(self, recipe: Recipe, max_parallels: int,
+                                 speed_per_tier: int | float = 1) -> Recipe:
+        """GT++ overclock with extra inputs.
+
+        Args:
+            recipe (Recipe): Recipe object
+            max_parallels (int): Maximum parallels
+            speed_per_tier (int): Speed per tier
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         available_eut = self.voltage_cutoffs[self.voltages.index(recipe.user_voltage)]
 
         x = recipe.eut
-        y = min(int(available_eut / x), MAX_PARALLEL)
-        TOTAL_EUT = x * y
-        NEW_RECIPE_TIME = round(recipe.dur * (speed_per_tier)**(self.voltages.index(recipe.user_voltage) + 1), 2)
+        y = min(int(available_eut / x), max_parallels)
+        total_eut = x * y
+        new_recipe_time = round(recipe.dur * (speed_per_tier) **
+                                (self.voltages.index(recipe.user_voltage) + 1), 2)
 
-        self.parent_context.cLog('Base GT++ OC stats:')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
+        self.parent_context.log('Base GT++ OC stats:')
+        self.parent_context.log(
+            f'{available_eut=} {max_parallels=} {new_recipe_time=} {total_eut=} {y=}')
 
-        while TOTAL_EUT < available_eut:
-            OC_EUT = TOTAL_EUT * 4
-            OC_DUR = NEW_RECIPE_TIME / 2
-            if OC_EUT <= available_eut:
-                if OC_DUR < 20:
+        while total_eut < available_eut:
+            oc_eut = total_eut * 4
+            oc_dur = new_recipe_time / 2
+            if oc_eut <= available_eut:
+                if oc_dur < 20:
                     break
-                self.parent_context.cLog('OC to')
-                self.parent_context.cLog(f'{OC_EUT=} {OC_DUR=}')
-                TOTAL_EUT = OC_EUT
-                NEW_RECIPE_TIME = OC_DUR
+                self.parent_context.log('OC to')
+                self.parent_context.log(f'{oc_eut=} {oc_dur=}')
+                total_eut = oc_eut
+                new_recipe_time = oc_dur
             else:
                 break
 
-        recipe.eut = TOTAL_EUT
-        recipe.dur = NEW_RECIPE_TIME
+        recipe.eut = total_eut
+        recipe.dur = new_recipe_time
         recipe.I *= y
         recipe.O *= y
 
         return recipe
 
-    def modifyChemPlant(self, recipe):
+    def modify_chemplant(self, recipe: Recipe) -> Recipe:
+        """Chemplant overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         require(
             recipe,
             [
-                ['coils', str, 'calculating recipe duration (eg "nichrome").'],
-                ['pipe_casings', str, 'calculating throughput multiplier (eg "steel").']
+                ('coils', str, 'calculating recipe duration (eg "nichrome").'),
+                ('pipe_casings', str, 'calculating throughput multiplier (eg "steel").')
             ]
         )
         # assert 'solid_casings' in dir(recipe), 'Chem plant requires "solid_casings" argument (eg "vigorous laurenium")'
 
         chem_plant_pipe_casings = self.overclock_data['pipe_casings']
         if recipe.pipe_casings not in chem_plant_pipe_casings:
-            raise RuntimeError(
+            raise OverclockError(
                 f'Expected chem pipe casings in {list(chem_plant_pipe_casings)}\ngot "{recipe.pipe_casings}". (More are allowed, I just haven\'t added them yet.)')
 
-        recipe.dur /= self.overclock_data['coil_multipliers'][recipe.coils]
+        recipe.dur /= self.overclock_data['coil_data'][recipe.coils]['multiplier']
         throughput_multiplier = chem_plant_pipe_casings[recipe.pipe_casings]
         recipe.I *= throughput_multiplier
         recipe.O *= throughput_multiplier
 
-        recipe = self.modifyStandard(recipe)
+        recipe = self.modify_standard(recipe)
 
         return recipe
 
-    def modifyZhuhai(self, recipe):
-        recipe = self.modifyStandard(recipe)
+    def modify_zhuhai(self, recipe: Recipe) -> Recipe:
+        """Zhuhai overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
+        recipe = self.modify_standard(recipe)
         parallel_count = (self.voltages.index(recipe.user_voltage) + 2) * 2
         recipe.O *= parallel_count
         return recipe
 
-    def modifyEBF(self, recipe):
+    def modify_ebf(self, recipe: Recipe) -> Recipe:
+        """EBF overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         require(
             recipe,
             [
-                ['coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'],
-                ['heat', int, 'calculating perfect OCs and heat requirement (eg "4300").'],
+                ('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'),
+                ('heat', int, 'calculating perfect OCs and heat requirement (eg "4300").'),
             ]
         )
         base_voltage = bisect_right(self.voltage_cutoffs, recipe.eut)
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
 
-        actual_heat = self.overclock_data['coil_heat'][recipe.coils] + 100 * min(0, user_voltage - 2)
+        actual_heat = self.overclock_data['coil_data'][recipe.coils]['heat'] + \
+            100 * min(0, user_voltage - 2)
         excess_heat = actual_heat - recipe.heat
         eut_discount = 0.95 ** (excess_heat // 900)
         perfect_ocs = (excess_heat // 1800)
@@ -153,34 +234,65 @@ class OverclockHandler:
 
         return recipe
 
-    def modifyPyrolyse(self, recipe):
+    def modify_pyrolyse(self, recipe: Recipe) -> Recipe:
+        """Pyrolyse Oven overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         require(
             recipe,
             [
-                ['coils', str, 'calculating recipe time (eg "nichrome").']
+                ('coils', str, 'calculating recipe time (eg "nichrome").')
             ]
         )
-        oc_count = self.calculateStandardOC(recipe)
+        oc_count = self.calculate_standard_oc(recipe)
         recipe.eut = recipe.eut * 4**oc_count
-        recipe.dur = recipe.dur / 2**oc_count / self.overclock_data['coil_multipliers'][recipe.coils]
+        recipe.dur = recipe.dur / 2**oc_count / \
+            self.overclock_data['coil_data'][recipe.coils]['multiplier']
 
         return recipe
 
-    def modifyMultiSmelter(self, recipe):
+    def modify_multismelter(self, recipe: Recipe) -> Recipe:
+        """Multi Smelter overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
+        require(
+            recipe,
+            [
+                ('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").')
+            ]
+        )
         recipe.eut = 4
         recipe.dur = 500
-        recipe = self.modifyStandard(recipe)
-        coil_list = list(self.overclock_data['coil_multipliers'])
+        recipe = self.modify_standard(recipe)
+        coil_list = list(self.overclock_data['coil_data'].keys())
         batch_size = 8 * 2**max(4, coil_list.index(recipe.coils))
         recipe.I *= batch_size
         recipe.O *= batch_size
         return recipe
 
-    def modifyTGS(self, recipe):
+    def modify_tgs(self, recipe: Recipe) -> Recipe:
+        """Tree Growth Simulator overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         require(
             recipe,
             [
-                ['saw_type', str, 'calculating throughput of TGS (eg "saw", "buzzsaw").']
+                ('saw_type', str, 'calculating throughput of TGS (eg "saw", "buzzsaw").')
             ]
         )
         saw_multipliers = {
@@ -191,80 +303,101 @@ class OverclockHandler:
         assert recipe.saw_type in saw_multipliers, f'"saw_type" must be in {saw_multipliers}'
 
         oc_idx = self.voltages.index(recipe.user_voltage)
-        tTier = oc_idx + 1
-        TGS_base_output = (2 * (tTier**2) - (2 * tTier) + 5) * 5
-        TGS_wood_out = TGS_base_output * saw_multipliers[recipe.saw_type]
+        t_tier = oc_idx + 1
+        tgs_base_output = (2 * (t_tier**2) - (2 * t_tier) + 5) * 5
+        tgs_wood_out = tgs_base_output * saw_multipliers[recipe.saw_type]
 
-        assert len(recipe.O) <= 1, 'Automatic TGS overclocking only supported for single output - ask dev to support saplings'
+        assert len(
+            recipe.O) <= 1, 'Automatic TGS overclocking only supported for single output - ask dev to support saplings'
 
         # Mutate final recipe
         if len(recipe.O) == 0:
-            recipe.O = IngredientCollection(Ingredient('wood', TGS_wood_out))
+            recipe.O = IngredientCollection(Ingredient('wood', tgs_wood_out))
         else:
-            recipe.O = IngredientCollection(Ingredient(recipe.O._ings[0].name, TGS_wood_out))
+            recipe.O = IngredientCollection(Ingredient(recipe.O._ings[0].name, tgs_wood_out))
         recipe.eut = self.voltage_cutoffs[oc_idx] - 1
         # print(oc_idx)
         recipe.dur = max(100 / (2**(oc_idx)), 1)
 
         return recipe
 
-    def modifyUtupu(self, recipe):
+    def modify_utupu(self, recipe: Recipe) -> Recipe:
+        """Industrial Dehydrator (Utupu-Tanuri) overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         require(
             recipe,
             [
-                ['coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'],
-                ['heat', int, 'calculating heat and perfect OCs for recipes (eg "4300").'],
+                ('coils', str, 'calculating heat and perfect OCs for recipes (eg "nichrome").'),
+                ('heat', int, 'calculating heat and perfect OCs for recipes (eg "4300").'),
             ]
         )
 
         # First do parallel step of GTpp
-        if recipe.machine not in self.overclock_data['GTpp_stats']:
-            raise RuntimeError('Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:GTpp_stats')
+        if recipe.machine not in self.overclock_data['gtpp_stats']:
+            raise OverclockError(
+                'Missing OC data for GT++ multi - add to gtnhClasses/overclocks.py:gtpp_stats')
 
         # Get per-machine boosts
-        SPEED_BOOST, EU_DISCOUNT, PARALLELS_PER_TIER = self.overclock_data['GTpp_stats'][recipe.machine]
-        SPEED_BOOST = 1 / (SPEED_BOOST + 1)
+        speed_boost, eut_discount, parallels_per_tier = self.overclock_data['gtpp_stats'][recipe.machine]
+        speed_boost = 1 / (speed_boost + 1)
 
         # Calculate base parallel count and clip time to 1 tick
         available_eut = self.voltage_cutoffs[self.voltages.index(recipe.user_voltage)]
-        MAX_PARALLEL = (self.voltages.index(recipe.user_voltage) + 1) * PARALLELS_PER_TIER
-        NEW_RECIPE_TIME = max(recipe.dur * SPEED_BOOST, 1)
+        max_parallels = (self.voltages.index(recipe.user_voltage) + 1) * parallels_per_tier
+        new_recipe_time = max(recipe.dur * speed_boost, 1)
 
         # Calculate current EU/t spend
-        x = recipe.eut * EU_DISCOUNT
-        y = min(int(available_eut / x), MAX_PARALLEL)
-        TOTAL_EUT = x * y
+        x = recipe.eut * eut_discount
+        y = min(int(available_eut / x), max_parallels)
+        total_eut = x * y
 
         # Debug info
-        self.parent_context.cLog('Base GT++ OC stats:')
-        self.parent_context.cLog(f'{available_eut=} {MAX_PARALLEL=} {NEW_RECIPE_TIME=} {TOTAL_EUT=} {y=}')
+        self.parent_context.log('Base GT++ OC stats:')
+        self.parent_context.log(
+            f'{available_eut=} {max_parallels=} {new_recipe_time=} {total_eut=} {y=}')
 
         # Now do GT EBF OC
-        base_voltage = bisect_right(self.voltage_cutoffs, TOTAL_EUT)
+        base_voltage = bisect_right(self.voltage_cutoffs, total_eut)
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
 
         # + 100 * min(0, user_voltage - 1) # I assume there's no bonus heat on UT
-        actual_heat = self.overclock_data['coil_heat'][recipe.coils]
+        actual_heat = self.overclock_data['coil_data'][recipe.coils]['heat']
         excess_heat = actual_heat - recipe.heat
         eut_discount = 0.95 ** (excess_heat // 900)
         perfect_ocs = (excess_heat // 1800)
 
-        recipe.eut = TOTAL_EUT * 4**oc_count * eut_discount
-        recipe.dur = NEW_RECIPE_TIME / 2**oc_count / 2**max(min(perfect_ocs, oc_count), 0)
+        recipe.eut = total_eut * 4**oc_count * eut_discount
+        recipe.dur = new_recipe_time / 2**oc_count / 2**max(min(perfect_ocs, oc_count), 0)
         recipe.I *= y
         recipe.O *= y
 
         return recipe
 
-    def modifyFusion(self, recipe):
+    def modify_fusion(self, recipe: Recipe) -> Recipe:
+        """Fusion Reactor overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         # Ignore "tier" and just use "mk" argument for OCs
         # start is also in "mk" notation
         require(
             recipe,
             [
-                ['mk', int, 'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'],
-                ['start', int, 'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'],
+                ('mk', int,
+                    'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'),
+                ('start', int,
+                    'overclocking fusion. mk = actual mark run at, start = base mk. (eg mk=3, start=2)'),
             ]
         )
 
@@ -279,12 +412,21 @@ class OverclockHandler:
         recipe.machine = f'MK{recipe.mk} {recipe.machine}'
         return recipe
 
-    def modifyTurbine(self, recipe, fuel_type):
+    def modify_turbine(self, recipe: Recipe, fuel_type: str) -> Recipe:
+        """Turbine overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+            fuel_type (str): Turbine fuel type
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         require(
             recipe,
             [
-                ['material', str, 'calculating power output (eg "infinity").'],
-                ['size', str, 'calculating power output (eg "large").'],
+                ('material', str, 'calculating power output (eg "infinity").'),
+                ('size', str, 'calculating power output (eg "large").'),
             ]
         )
 
@@ -314,8 +456,8 @@ class OverclockHandler:
             )
 
             burn_value = turbine_data['fuels'][fuel_type][fuel]
-            optimal_flow_L_t = math.floor(optimal_eut / burn_value)
-            output_eut = math.floor(optimal_flow_L_t * burn_value * efficiency / 100)
+            optimalflow_l_per_t = math.floor(optimal_eut / burn_value)
+            output_eut = math.floor(optimalflow_l_per_t * burn_value * efficiency / 100)
         else:
             raise NotImplementedError('Specifying "flow" feature not implemented yet')
 
@@ -326,11 +468,11 @@ class OverclockHandler:
 
         additional = []
         if fuel_type == 'steam_fuels':
-            additional.append(Ingredient('(recycle) distilled water', optimal_flow_L_t // 160))
+            additional.append(Ingredient('(recycle) distilled water', optimalflow_l_per_t // 160))
 
         recipe.eut = 0
         recipe.dur = 1
-        recipe.I._ings[0].quant = optimal_flow_L_t
+        recipe.I._ings[0].quant = optimalflow_l_per_t
         recipe.O = IngredientCollection(*[
             Ingredient('EU', output_eut),
             *additional
@@ -339,35 +481,77 @@ class OverclockHandler:
 
         return recipe
 
-    def modifyXT(self, recipe, fuel_type):
-        recipe = self.modifyTurbine(recipe, fuel_type)
+    def modify_xl_turbine(self, recipe: Recipe, fuel_type: str) -> Recipe:
+        """XL Turbine overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+            fuel_type (str): Turbine fuel type
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
+        recipe = self.modify_turbine(recipe, fuel_type)
         recipe.I *= 16
         recipe.O *= 16
 
         return recipe
 
-    def calculateStandardOC(self, recipe):
+    def calculate_standard_oc(self, recipe: Recipe) -> int:
+        """Calculate standard OC count.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         base_voltage = bisect_right(self.voltage_cutoffs, recipe.eut)
         user_voltage = self.voltages.index(recipe.user_voltage)
         oc_count = user_voltage - base_voltage
         if oc_count < 0:
-            raise RuntimeError(
+            raise OverclockError(
                 f'Recipe has negative overclock! Min voltage is {base_voltage}, given OC voltage is {user_voltage}.\n{recipe}')
         return oc_count
 
-    def modifyStandard(self, recipe):
-        oc_count = self.calculateStandardOC(recipe)
+    def modify_standard(self, recipe: Recipe) -> Recipe:
+        """Standard overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
+        oc_count = self.calculate_standard_oc(recipe)
         recipe.eut = recipe.eut * 4**oc_count
         recipe.dur = recipe.dur / 2**oc_count
         return recipe
 
-    def modifyPerfect(self, recipe):
-        oc_count = self.calculateStandardOC(recipe)
+    def modify_perfect(self, recipe: Recipe) -> Recipe:
+        """Perfect overclock.
+
+        Args:
+            recipe (Recipe): Recipe object
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
+        oc_count = self.calculate_standard_oc(recipe)
         recipe.eut = recipe.eut * 4**oc_count
         recipe.dur = recipe.dur / 4**oc_count
         return recipe
 
-    def overclockRecipe(self, recipe, ignore_underclock=False):
+    def overclock_recipe(self, recipe: Recipe, ignore_underclock: bool = False) -> Recipe:
+        """Overclocks a recipe by selecting its overclock based on its **standardized** name.
+
+        Args:
+            recipe (Recipe): Recipe object
+            ignore_underclock (bool, optional): Whether or not to ignore underclocks. Defaults to False.
+
+        Returns:
+            Recipe: Overclocked recipe
+        """
         # Modifies recipe according to overclocks
         # By the time that the recipe arrives here, it should have a "user_voltage" argument which indicates
         # what the user is actually providing.
@@ -375,54 +559,55 @@ class OverclockHandler:
 
         machine_overrides = {
             # GT multis
-            'pyrolyse oven': self.modifyPyrolyse,
-            'large chemical reactor': self.modifyPerfect,
-            'electric blast furnace': self.modifyEBF,
-            'multi smelter': self.modifyMultiSmelter,
-            'circuit assembly line': self.modifyPerfect,
-            'fusion reactor': self.modifyFusion,
+            'pyrolyse oven': self.modify_pyrolyse,
+            'large chemical reactor': self.modify_perfect,
+            'electric blast furnace': self.modify_ebf,
+            'multi smelter': self.modify_multismelter,
+            'circuit assembly line': self.modify_perfect,
+            'fusion reactor': self.modify_fusion,
 
-            'large gas turbine': lambda recipe: self.modifyTurbine(recipe, 'gas_fuels'),
-            'XL Turbo Gas Turbine': lambda recipe: self.modifyXT(recipe, 'gas_fuels'),
+            'large gas turbine': lambda recipe: self.modify_turbine(recipe, 'gas_fuels'),
+            'XL Turbo Gas Turbine': lambda recipe: self.modify_xl_turbine(recipe, 'gas_fuels'),
 
-            'large steam turbine': lambda recipe: self.modifyTurbine(recipe, 'steam_fuels'),
-            'XL Turbo Steam Turbine': lambda recipe: self.modifyXT(recipe, 'steam_fuels'),
+            'large steam turbine': lambda recipe: self.modify_turbine(recipe, 'steam_fuels'),
+            'XL Turbo Steam Turbine': lambda recipe: self.modify_xl_turbine(recipe, 'steam_fuels'),
 
             # Basic GT++ multis
-            'industrial centrifuge': self.modifyGTpp,
-            'industrial material press': self.modifyGTpp,
-            'industrial electrolyzer': self.modifyGTpp,
-            'maceration stack': self.modifyGTpp,
-            'wire factory': self.modifyGTpp,
-            'industrial mixing machine': self.modifyGTpp,
-            'industrial sifter': self.modifyGTpp,
-            'large thermal refinery': self.modifyGTpp,
-            'industrial wash plant': self.modifyGTpp,
-            'industrial extrusion machine': self.modifyGTpp,
-            'large processing factory': self.modifyGTpp,
-            'industrial arc furnace': self.modifyGTpp,
-            'large scale auto-assembler': self.modifyGTpp,
-            'cutting factory controller': self.modifyGTpp,
-            'boldarnator': self.modifyGTpp,
-            'dangote - distillery': self.modifyGTpp,
-            'thermic heating device': self.modifyGTpp,
+            'industrial centrifuge': self.modify_gtplusplus,
+            'industrial material press': self.modify_gtplusplus,
+            'industrial electrolyzer': self.modify_gtplusplus,
+            'maceration stack': self.modify_gtplusplus,
+            'wire factory': self.modify_gtplusplus,
+            'industrial mixing machine': self.modify_gtplusplus,
+            'industrial sifter': self.modify_gtplusplus,
+            'large thermal refinery': self.modify_gtplusplus,
+            'industrial wash plant': self.modify_gtplusplus,
+            'industrial extrusion machine': self.modify_gtplusplus,
+            'large processing factory': self.modify_gtplusplus,
+            'industrial arc furnace': self.modify_gtplusplus,
+            'large scale auto-assembler': self.modify_gtplusplus,
+            'cutting factory controller': self.modify_gtplusplus,
+            'boldarnator': self.modify_gtplusplus,
+            'dangote - distillery': self.modify_gtplusplus,
+            'thermic heating device': self.modify_gtplusplus,
 
             # Special GT++ multis
-            'industrial coke oven': lambda recipe: self.modifyGTppSetParallel(recipe, 24, speed_per_tier=0.96),
-            'dangote - distillation tower': lambda recipe: self.modifyGTppSetParallel(recipe, 12),
-            'dangote': lambda recipe: self.modifyGTppSetParallel(recipe, 12),
-            'chemical plant': self.modifyChemPlant,
-            'zhuhai': self.modifyZhuhai,
-            'tree growth simulator': self.modifyTGS,
-            'industrial dehydrator': self.modifyUtupu,
-            'flotation cell regulator': self.modifyPerfect,
-            'isamill grinding machine': self.modifyPerfect,
+            'industrial coke oven': lambda recipe: self.modify_gtplusplus_custom(recipe, 24, speed_per_tier=0.96),
+            'dangote - distillation tower': lambda recipe: self.modify_gtplusplus_custom(recipe, 12),
+            'dangote': lambda recipe: self.modify_gtplusplus_custom(recipe, 12),
+            'chemical plant': self.modify_chemplant,
+            'zhuhai': self.modify_zhuhai,
+            'tree growth simulator': self.modify_tgs,
+            'industrial dehydrator': self.modify_utupu,
+            'flotation cell regulator': self.modify_perfect,
+            'isamill grinding machine': self.modify_perfect,
         }
 
         if getattr(recipe, 'do_not_overclock', False):
-            return recipe
+            retval = recipe
 
         if recipe.machine in machine_overrides:
-            return machine_overrides[recipe.machine](recipe)
+            retval = machine_overrides[recipe.machine](recipe)
         else:
-            return self.modifyStandard(recipe)
+            retval = self.modify_standard(recipe)
+        return retval

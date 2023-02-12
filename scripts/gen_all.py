@@ -1,11 +1,12 @@
+# flake8: noqa
 # Script to generate all projects in the repository.
 # Used for the website
 from gregtech.flow import flow
 from pathlib import Path
 import time
-import os
 import shutil
 import typer
+
 
 def main(assets_path_absolute: Path):
     if not assets_path_absolute.exists():
@@ -24,6 +25,7 @@ def main(assets_path_absolute: Path):
     [
         project.unlink() for project in (assets_path_absolute.glob('**/*')) if project.is_file() if project.suffix == ''
     ]
+
 
 if __name__ == '__main__':
     typer.run(main)

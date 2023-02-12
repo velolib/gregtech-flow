@@ -1,12 +1,8 @@
 ---
 title: Scheelite Dust -> Tungsten Dust Processing
+version: 2.2.8
 creator: velo
 description: Simple tungsten processing line with only hydrogen input
-metadata:
-  power output: None
-  output state: Dust
-  output handling: Full
-  recycling: Full
 ---
 
 - m: chemical reactor

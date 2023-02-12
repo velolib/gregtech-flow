@@ -34,7 +34,7 @@ To view the full documentation see the official [GT: Flow website](https://velol
 
 ## 📖 Samples
 Samples of the graphs included in the repository.
-<details open>
+<details>
     <summary><strong>Samples</strong></summary>
     <img src="https://raw.githubusercontent.com/velolib/gregtech-flow/c5f8a9e02e2a1f2f84ab92f0ce28d2a6c3e620cc/samples/rutile-titanium.svg" alt="Rutile -> Titanium">
     <img src="https://raw.githubusercontent.com/velolib/gregtech-flow/c5f8a9e02e2a1f2f84ab92f0ce28d2a6c3e620cc/samples/epoxid.svg" alt="Epoxid">

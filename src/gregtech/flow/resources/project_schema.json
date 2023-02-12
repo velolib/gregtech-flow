@@ -1,0 +1,580 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://velolib.github.io/gregtech-flow/",
+  "type": "array",
+  "title": "The GT: Flow standard project content schema",
+  "description": "https://velolib.github.io/gregtech-flow/",
+  "$comment": "A lot of regexes are used because there are no case-insensitive enums.",
+  "$defs": {
+    "coils": {
+      "type": "string",
+      "anyOf": [
+        {
+          "pattern": "^([Cc][Uu][Pp][Rr][Oo][Nn][Ii][Cc][Kk][Ee][Ll]|[Kk][Aa][Nn][Tt][Hh][Aa][Ll]|[Nn][Ii][Cc][Hh][Rr][Oo][Mm][Ee]|[Tt][Uu][Nn][Gg][Ss][Tt][Ee][Nn][Ss][Tt][Ee][Ee][Ll]|[Hh][Ss][Ss]-[Gg]|[Hh][Ss][Ss]-[Ss]|[Nn][Aa][Qq][Uu][Aa][Dd][Aa][Hh]|[Nn][Aa][Qq][Uu][Aa][Dd][Aa][Hh] [Aa][Ll][Ll][Oo][Yy]|[Tt][Rr][Ii][Nn][Ii][Uu][Mm]|[Ee][Ll][Ee][Cc][Tt][Rr][Uu][Mm] [Ff][Ll][Uu][Xx]|[Aa][Ww][Aa][Kk][Ee][Nn][Ee][Dd] [Dd][Rr][Aa][Cc][Oo][Nn][Ii][Uu][Mm]|[Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]|[Hh][Yy][Pp][Oo][Gg][Ee][Nn]|[Ee][Tt][Ee][Rr][Nn][Aa][Ll])$"
+        },
+        {
+          "enum": [
+            "cupronickel",
+            "kanthal",
+            "nichrome",
+            "tungstensteel",
+            "HSS-G",
+            "HSS-S",
+            "naquadah",
+            "naquadah alloy",
+            "trinium",
+            "electrum flux",
+            "awakened draconium",
+            "infinity",
+            "hypogen",
+            "eternal"
+          ]
+        }
+      ]
+    },
+    "base": {
+      "title": "GT: Flow Recipe",
+      "additionalProperties": true,
+      "properties": {
+        "m": {
+          "title": "Machine",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+          "anyOf": [
+            {
+              "$comment": "Any valid string",
+              "type": "string"
+            },
+            {
+              "$comment": "Every supported special OC multiblock (full names only)",
+              "type": "string",
+              "enum": [
+                "pyrolyse oven",
+                "large chemical reactor",
+                "electric blast furnace",
+                "multi smelter",
+                "circuit assembly line",
+                "fusion reactor",
+                "large gas turbine",
+                "XL Turbo Gas Turbine",
+                "large steam turbine",
+                "XL Turbo Steam Turbine",
+                "industrial centrifuge",
+                "industrial material press",
+                "industrial electrolyzer",
+                "maceration stack",
+                "wire factory",
+                "industrial mixing machine",
+                "industrial sifter",
+                "large thermal refinery",
+                "industrial wash plant",
+                "industrial extrusion machine",
+                "large processing factory",
+                "industrial arc furnace",
+                "large scale auto-assembler",
+                "cutting factory controller",
+                "boldarnator",
+                "dangote - distillery",
+                "thermic heating device",
+                "industrial coke oven",
+                "dangote - distillation tower",
+                "dangote",
+                "chemical plant",
+                "zhuhai",
+                "tree growth simulator",
+                "industrial dehydrator",
+                "flotation cell regulator",
+                "isamill grinding machine"
+              ]
+            },
+            {
+              "$comment": "Common singleblocks",
+              "type": "string",
+              "enum": [
+                "chemical reactor",
+                "centrifuge",
+                "forming press",
+                "electrolyzer",
+                "mixer",
+                "sifter",
+                "thermal centrifuge",
+                "ore washer",
+                "extruder",
+                "cutting machine",
+                "macerator",
+                "wiremill",
+                "assembler",
+                "circuit assembler"
+              ]
+            },
+            {
+              "$comment": "Other multiblocks",
+              "type": "string",
+              "enum": ["vacuum freezer", "distillation tower"]
+            }
+          ]
+        },
+        "group": {
+          "title": "Recipe Node Group",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+          "type": "string"
+        },
+        "tier": {
+          "title": "Recipe Selected Voltage Tier",
+          "type": "string",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+          "anyOf": [
+            {
+              "pattern": "^([Ll][Vv]|[Mm][Vv]|[Hh][Vv]|[Ee][Vv]|[Ii][Vv]|[Ll][Uu][Vv]|[Zz][Pp][Mm]|[Uu][Vv]|[Uu][Hh][Vv]|[Uu][Ee][Vv]|[Uu][Ii][Vv]|[Uu][Mm][Vv]|[Uu][Xx][Vv])$"
+            },
+            {
+              "enum": [
+                "LV",
+                "MV",
+                "HV",
+                "EV",
+                "IV",
+                "LuV",
+                "ZPM",
+                "UV",
+                "UHV",
+                "UEV",
+                "UIV",
+                "UMV",
+                "UXV"
+              ]
+            }
+          ]
+        },
+        "I": {
+          "title": "Recipe input ingredients",
+          "type": "object",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+          "additionalProperties": {
+            "title": "The ingredient that you want to input",
+            "type": "number",
+            "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
+          }
+        },
+        "O": {
+          "title": "Recipe output ingredients",
+          "type": "object",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+          "additionalProperties": {
+            "title": "The ingredient that you want to output",
+            "type": "number",
+            "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
+          }
+        },
+        "eut": {
+          "title": "Recipe EU/t",
+          "type": "integer",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
+        },
+        "dur": {
+          "title": "Recipe duration",
+          "type": "number",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
+        },
+        "target": {
+          "title": "Target material output per second",
+          "type": "object",
+          "maxProperties": 1,
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+          "additionalProperties": {
+            "title": "Material output",
+            "type": "number",
+            "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
+          }
+        },
+        "number": {
+          "title": "Target number of machines",
+          "type": "number",
+          "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields"
+        }
+      }
+    }
+  },
+  "items": {
+    "type": "object",
+    "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#main-fields",
+    "allOf": [
+      {
+        "$ref": "#/$defs/base"
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Ee][Bb][Ff]|[Ee][Ll][Ee][Cc][Tt]r[Ii][Cc] [Bb][Ll][Aa][Ss][Tt] [Ff][Uu][Rr][Nn][Aa][Cc][Ee]|[Bb][Ll][Aa][Ss][Tt] [Ff][Uu][Rr][Nn][Aa][Cc][Ee])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "heat": {
+                  "title": "EBF Recipe minimum heat",
+                  "type": "integer",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                },
+                "coils": {
+                  "$ref": "#/$defs/coils",
+                  "title": "EBF Recipe selected coils",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "heat", "coils"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Ii][Nn][Dd][Uu][Ss][Tt][Rr][Ii][Aa][Ll] [Dd][Ee][Hh][Yy][Dd][Rr][Aa][Tt][Oo][Rr]|[Uu][Tt][Uu][Pp][Uu]-[Tt][Aa][Nn][Uu][Rr][Ii]|[Uu][Tt][Uu][Pp][Uu] [Tt][Aa][Nn][Uu][Rr][Ii])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "heat": {
+                  "title": "Industrial Dehydrator minimum heat",
+                  "type": "integer",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                },
+                "coils": {
+                  "$ref": "#/$defs/coils",
+                  "title": "Industrial Dehydrator selected coils",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "heat", "coils"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Ee][Xx][Xx][Oo][Nn][Mm][Oo][Bb][Ii][Ll]|[Cc][Hh][Ee][Mm][Ii][Cc][Aa][Ll] [Pp][Ll][Aa][Nn][Tt]|[Cc][Hh][Ee][Mm] [Pp][Ll][Aa][Nn][Tt])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "coils": {
+                  "$ref": "#/$defs/coils",
+                  "title": "Chemical plant selected coils",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                },
+                "pipe_casings": {
+                  "title": "Chemical plant selected pipe casings",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields",
+                  "type": "string",
+                  "enum": ["bronze", "steel", "titanium", "tungstensteel"]
+                }
+              }
+            }
+          ],
+          "required": [
+            "m",
+            "tier",
+            "I",
+            "O",
+            "eut",
+            "dur",
+            "coils",
+            "pipe_casings"
+          ]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Tt][Rr][Ee][Ee] [Gg][Rr][Oo][Ww][Tt][Hh] [Ss][Ii][Mm][Uu][Ll][Aa][Tt][Oo][Rr]|[Tt][Gg][Ss])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "saw_type": {
+                  "title": "Tree Growth Simulator saw type",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields",
+                  "type": "string",
+                  "enum": ["saw", "buzzsaw", "chainsaw"]
+                },
+                "I": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "maxProperties": 0
+                },
+                "O": {
+                  "minProperties": 0,
+                  "maxProperties": 1
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "saw_type"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Ff][Uu][Ss][Ii][Oo][Nn]|[Ff][Uu][Ss][Ii][Oo][Nn] [Rr][Ee][Aa][Cc][Tt][Oo][Rr])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "mk": {
+                  "title": "Fusion Reactor selected mark",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields",
+                  "type": "integer"
+                },
+                "start": {
+                  "title": "Fusion Reactor minimum mark",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields",
+                  "type": "integer"
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "mk", "start"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "$comment": "This is for all of the turbines.",
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Ll][Gg][Tt]|[Ll][Aa][Rr][Gg][Ee] [Gg][Aa][Ss] [Tt][Uu][Rr][Bb][Ii][Nn][Ee]|[Xx][Ll][Gg][Tt]|[Xx][Ll] [Tt][Uu][Rr][Bb][Oo] [Gg][Aa][Ss] [Tt][Uu][Rr][Bb][Ii][Nn][Ee]|[Ll][Ss][Tt]|[Ll][Aa][Rr][Gg][Ee] [Ss][Tt][Ee][Aa][Mm] [Tt][Uu][Rr][Bb][Ii][Nn][Ee]|[Xx][Ll][Ss][Tt]|[Xx][Ll] [Tt][Uu][Rr][Bb][Oo] [Ss][Tt][Ee][Aa][Mm] [Tt][Uu][Rr][Bb][Ii][Nn][Ee]|[Xx][Ll] [Gg][Aa][Ss] [Tt][Uu][Rr][Bb][Ii][Nn][Ee]|[Xx][Ll] [Ss][Tt][Ee][Aa][Mm] [Tt][Uu][Rr][Bb][Ii][Nn][Ee])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "material": {
+                  "title": "Turbine rotor selected material",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields",
+                  "type": "string",
+                  "anyOf": [
+                    {
+                      "enum": [
+                        "infinity",
+                        "cosmic neutronium",
+                        "infinity catalyst",
+                        "awakened draconium",
+                        "black plutonium",
+                        "adamantium",
+                        "trinium",
+                        "ichorium",
+                        "draconium",
+                        "stellar alloy",
+                        "neutronium",
+                        "tritanium",
+                        "oriharukon",
+                        "melodic alloy",
+                        "enhanced galgodorian",
+                        "duranium",
+                        "naquadah alloy",
+                        "manyullyn",
+                        "shadow",
+                        "hss-e",
+                        "vibrant alloy",
+                        "hss-s",
+                        "tungstensteel",
+                        "quantium",
+                        "ultimet",
+                        "end steel",
+                        "desh",
+                        "osmium",
+                        "tungstencarbide",
+                        "naquadah",
+                        "enriched naquadah",
+                        "ardite",
+                        "endium",
+                        "ledox",
+                        "callisto ice",
+                        "blue steel",
+                        "red steel",
+                        "shadowsteel",
+                        "meteoric steel",
+                        "crystalline alloy",
+                        "enderium base",
+                        "vivid alloy",
+                        "hss-g",
+                        "galgodorian",
+                        "orichalcum",
+                        "haderoth",
+                        "tungsten",
+                        "iridium",
+                        "eximite",
+                        "inolashite",
+                        "oureclase",
+                        "vanadium steel",
+                        "titanium",
+                        "osmiridium",
+                        "enderium",
+                        "damascus steel",
+                        "energetic alloy",
+                        "knightmetal",
+                        "vyroxeres",
+                        "black steel",
+                        "steeleaf"
+                      ]
+                    },
+                    {
+                      "pattern": "^([Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy]|[Cc][Oo][Ss][Mm][Ii][Cc] [Nn][Ee][Uu][Tt][Rr][Oo][Nn][Ii][Uu][Mm]|[Ii][Nn][Ff][Ii][Nn][Ii][Tt][Yy] [Cc][Aa][Tt][Aa][Ll][Yy][Ss][Tt]|[Aa][Ww][Aa][Kk][Ee][Nn][Ee][Dd] [Dd][Rr][Aa][Cc][Oo][Nn][Ii][Uu][Mm]|[Bb][Ll][Aa][Cc][Kk] [Pp][Ll][Uu][Tt][Oo][Nn][Ii][Uu][Mm]|[Aa][Dd][Aa][Mm][Aa][Nn][Tt][Ii][Uu][Mm]|[Tt][Rr][Ii][Nn][Ii][Uu][Mm]|[Ii][Cc][Hh][Oo][Rr][Ii][Uu][Mm]|[Dd][Rr][Aa][Cc][Oo][Nn][Ii][Uu][Mm]|[Ss][Tt][Ee][Ll][Ll][Aa][Rr] [Aa][Ll][Ll][Oo][Yy]|[Nn][Ee][Uu][Tt][Rr][Oo][Nn][Ii][Uu][Mm]|[Tt][Rr][Ii][Tt][Aa][Nn][Ii][Uu][Mm]|[Oo][Rr][Ii][Hh][Aa][Rr][Uu][Kk][Oo][Nn]|[Mm][Ee][Ll][Oo][Dd][Ii][Cc] [Aa][Ll][Ll][Oo][Yy]|[Ee][Nn][Hh][Aa][Nn][Cc][Ee][Dd] [Gg][Aa][Ll][Gg][Oo][Dd][Oo][Rr][Ii][Aa][Nn]|[Dd][Uu][Rr][Aa][Nn][Ii][Uu][Mm]|[Nn][Aa][Qq][Uu][Aa][Dd][Aa][Hh] [Aa][Ll][Ll][Oo][Yy]|[Mm][Aa][Nn][Yy][Uu][Ll][Ll][Yy][Nn]|[Ss][Hh][Aa][Dd][Oo][Ww]|[Hh][Ss][Ss]-[Ee]|[Vv][Ii][Bb][Rr][Aa][Nn][Tt] [Aa][Ll][Ll][Oo][Yy]|[Hh][Ss][Ss]-[Ss]|[Tt][Uu][Nn][Gg][Ss][Tt][Ee][Nn][Ss][Tt][Ee][Ee][Ll]|[Qq][Uu][Aa][Nn][Tt][Ii][Uu][Mm]|[Uu][Ll][Tt][Ii][Mm][Ee][Tt]|[Ee][Nn][Dd] [Ss][Tt][Ee][Ee][Ll]|[Dd][Ee][Ss][Hh]|[Oo][Ss][Mm][Ii][Uu][Mm]|[Tt][Uu][Nn][Gg][Ss][Tt][Ee][Nn][Cc][Aa][Rr][Bb][Ii][Dd][Ee]|[Nn][Aa][Qq][Uu][Aa][Dd][Aa][Hh]|[Ee][Nn][Rr][Ii][Cc][Hh][Ee][Dd] [Nn][Aa][Qq][Uu][Aa][Dd][Aa][Hh]|[Aa][Rr][Dd][Ii][Tt][Ee]|[Ee][Nn][Dd][Ii][Uu][Mm]|[Ll][Ee][Dd][Oo][Xx]|[Cc][Aa][Ll][Ll][Ii][Ss][Tt][Oo] [Ii][Cc][Ee]|[Bb][Ll][Uu][Ee] [Ss][Tt][Ee][Ee][Ll]|[Rr][Ee][Dd] [Ss][Tt][Ee][Ee][Ll]|[Ss][Hh][Aa][Dd][Oo][Ww][Ss][Tt][Ee][Ee][Ll]|[Mm][Ee][Tt][Ee][Oo][Rr][Ii][Cc] [Ss][Tt][Ee][Ee][Ll]|[Cc][Rr][Yy][Ss][Tt][Aa][Ll][Ll][Ii][Nn][Ee] [Aa][Ll][Ll][Oo][Yy]|[Ee][Nn][Dd][Ee][Rr][Ii][Uu][Mm] [Bb][Aa][Ss][Ee]|[Vv][Ii][Vv][Ii][Dd] [Aa][Ll][Ll][Oo][Yy]|[Hh][Ss][Ss]-[Gg]|[Gg][Aa][Ll][Gg][Oo][Dd][Oo][Rr][Ii][Aa][Nn]|[Oo][Rr][Ii][Cc][Hh][Aa][Ll][Cc][Uu][Mm]|[Hh][Aa][Dd][Ee][Rr][Oo][Tt][Hh]|[Tt][Uu][Nn][Gg][Ss][Tt][Ee][Nn]|[Ii][Rr][Ii][Dd][Ii][Uu][Mm]|[Ee][Xx][Ii][Mm][Ii][Tt][Ee]|[Ii][Nn][Oo][Ll][Aa][Ss][Hh][Ii][Tt][Ee]|[Oo][Uu][Rr][Ee][Cc][Ll][Aa][Ss][Ee]|[Vv][Aa][Nn][Aa][Dd][Ii][Uu][Mm] [Ss][Tt][Ee][Ee][Ll]|[Tt][Ii][Tt][Aa][Nn][Ii][Uu][Mm]|[Oo][Ss][Mm][Ii][Rr][Ii][Dd][Ii][Uu][Mm]|[Ee][Nn][Dd][Ee][Rr][Ii][Uu][Mm]|[Dd][Aa][Mm][Aa][Ss][Cc][Uu][Ss] [Ss][Tt][Ee][Ee][Ll]|[Ee][Nn][Ee][Rr][Gg][Ee][Tt][Ii][Cc] [Aa][Ll][Ll][Oo][Yy]|[Kk][Nn][Ii][Gg][Hh][Tt][Mm][Ee][Tt][Aa][Ll]|[Vv][Yy][Rr][Oo][Xx][Ee][Rr][Ee][Ss]|[Bb][Ll][Aa][Cc][Kk] [Ss][Tt][Ee][Ee][Ll]|[Ss][Tt][Ee][Ee][Ll][Ee][Aa][Ff])$"
+                    }
+                  ]
+                },
+                "size": {
+                  "title": "Turbine rotor size",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields",
+                  "type": "string",
+                  "anyOf": [
+                    {
+                      "enum": ["small", "normal", "large", "huge"]
+                    },
+                    {
+                      "pattern": "^([Ss][Mm][Aa][Ll][Ll]|[Nn][Oo][Rr][Mm][Aa][Ll]|[Ll][Aa][Rr][Gg][Ee]|[Hh][Uu][Gg][Ee])$"
+                    }
+                  ]
+                },
+                "I": {
+                  "$comment": "Turbines should only have 1 input.",
+                  "minProperties": 1,
+                  "maxProperties": 1
+                },
+                "O": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "maxProperties": 0
+                },
+                "eut": {
+                  "type": "integer",
+                  "enum": [0]
+                },
+                "dur": {
+                  "type": "integer",
+                  "enum": [0]
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "material", "size"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Mm][Uu][Ll][Tt][Ii] [Ss][Mm][Ee][Ll][Tt][Ee][Rr])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "coils": {
+                  "$ref": "#/$defs/coils",
+                  "title": "Multi Smelter selected coils",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "coils"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "m": {
+              "pattern": "^([Pp][Yy][Rr][Oo][Ll][Yy][Ss][Ee] [Oo][Vv][Ee][Nn])$"
+            }
+          }
+        },
+        "then": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/base"
+            },
+            {
+              "properties": {
+                "coils": {
+                  "$ref": "#/$defs/coils",
+                  "title": "Pyrolyse Oven selected coils",
+                  "description": "https://velolib.github.io/gregtech-flow/docs/documentation/projects.html#special-fields"
+                }
+              }
+            }
+          ],
+          "required": ["m", "tier", "I", "O", "eut", "dur", "coils"]
+        },
+        "else": {
+          "required": ["m", "tier", "I", "O", "eut", "dur"]
+        }
+      }
+    ]
+  }
+}

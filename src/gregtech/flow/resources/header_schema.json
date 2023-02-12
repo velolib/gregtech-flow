@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://velolib.github.io/gregtech-flow/",
+  "type": "object",
+  "title": "The GT: Flow project header schema",
+  "description": "https://velolib.github.io/gregtech-flow/",
+  "additionalProperties": false,
+  "required": ["title", "version", "creator", "description"],
+  "properties": {
+    "title": {
+      "title": "Title",
+      "description": "The project's title",
+      "type": "string"
+    },
+    "version": {
+      "title": "GT:NH version",
+      "description": "The intended GT:NH version. Semantic version only (x.x.x or x.x.x.x).",
+      "type": "string",
+      "pattern": "^([0-9].[0-9].[0-9]|[0-9].[0-9].[0-9].[0-9])$"
+    },
+    "creator": {
+      "title": "Creator",
+      "description": "The project's creators. Separate with comma spaces if multiple.",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "description": "The project's description",
+      "type": "string"
+    }
+  }
+}

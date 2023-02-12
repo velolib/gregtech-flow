@@ -1,12 +1,8 @@
 ---
 title: LCR Sisg
+version: 2.2.8
 creator: OrderedSet86
 description: Sisg automation with LCRs. Not chlorine neutral
-metadata:
-  power output: None
-  output state: Dust
-  output handling: Full
-  recycling: Full
 ---
 - m: large chemical reactor
   tier: HV
