@@ -1,7 +1,7 @@
 # flake8: noqa
 # Script to generate all projects in the repository.
 # Used for the website
-from gregtech.flow import flow
+from gregtech.flow.wrapper import flow
 from pathlib import Path
 import time
 import shutil
