@@ -1,11 +1,17 @@
 coverage:
   status:
-    patch: off
+    patch:
+      default:
+        target: auto
+        threshold: 0%
+        base: auto
+        branches:
+          - master
+        if_ci_failed: ignore
     project:
       default:
         target: 70
         threshold: 10%
         branches:
           - master
-          - development
         if_ci_failed: error #success, failure, error, ignore
