@@ -4,7 +4,7 @@ flow = 'gregtech.__main__:run_cli'
 [tool.poetry]
 name = "gregtech-flow"
 packages = [{ include = "gregtech", from = "./src" }]
-version = "0.4.5"
+version = "1.0.0"
 description = "YAML Driven Flowcharts for Gregtech: New Horizons"
 authors = ["velolib <vlocitize@gmail.com>"]
 license = "MIT"
