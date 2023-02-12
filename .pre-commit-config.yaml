@@ -11,6 +11,7 @@ repos:
     rev: v3.3.1
     hooks:
     - id: pyupgrade
+      args: [--keep-runtime-typing]
   - repo: https://github.com/pre-commit/mirrors-autopep8
     rev: 'v2.0.1'
     hooks:

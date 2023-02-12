@@ -13,7 +13,7 @@ import pkgutil
 import shutil
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Optional
 
 import typer
 from prompt_toolkit import PromptSession
@@ -439,11 +439,11 @@ class ProgramContext:
             raise
 
     def _run_typer(self,
-                   path: Path | None = typer.Argument(
+                   path: Optional[Path] = typer.Argument(
                        None, help='Project path relative to ./projects'),
-                   quiet: bool | None = typer.Option(
+                   quiet: Optional[bool] = typer.Option(
                        False, '--quiet', '-q', help='Disable logging'),
-                   config: Path | None = typer.Option(None, help='Configuration file path'),
+                   config: Optional[Path] = typer.Option(None, help='Configuration file path'),
                    once: bool = typer.Option(False, help='Only run Interactive CLI once')):
         """For typer."""
         if quiet:
