@@ -1,10 +1,10 @@
-name: Publish to PyPI & Create Release
+name: Publish to PyPI
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*.*.*"
+  release:
+    types:
+      - "published"
 
 permissions:
   contents: read
