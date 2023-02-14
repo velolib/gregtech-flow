@@ -25,7 +25,7 @@ def strip_brackets(self: Graph, ing: str) -> str:
         prefix = False
         if ing[:2] == '\u2588 ':
             prefix = True
-        stripped = ing.split(']')[-1].strip()
+        stripped = ing.split(')')[-1].strip()
         if prefix and stripped[:2] != '\u2588 ':
             stripped = '\u2588 ' + stripped
         return stripped
